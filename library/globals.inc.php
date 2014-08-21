@@ -726,6 +726,17 @@ $GLOBALS_METADATA = array(
       xl('This specifies the Printing of the Custom End of Day Report grouped Provider or allow the Printing of Totals Only')
     ),
 
+	'label_type' => array(
+        xl('Patient Label Type'),
+        array(
+            '0' => xl('None'),
+			'1' => xl('5160'),
+            '2' => xl('5161'),
+            '3' => xl('5162')
+		),
+        '0',                              // default	
+		xl('Avery Label type for printing patient labels from popups in left nav screen'),
+    ),
   ),
     // E-Sign Tab
     //
