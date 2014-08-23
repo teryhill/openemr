@@ -2226,7 +2226,7 @@ $GLOBALS_METADATA = array(
        'D', //defaut
        xl("Choose Download or Display Inline"),
     ),
-   	
+
     'chart_label_type' => array(
         xl('Patient Label Type'),
         array(
