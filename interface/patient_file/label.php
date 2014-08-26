@@ -2,8 +2,8 @@
 /** 
 * interface/patient_file/label.php Displaying a PDF file of Labels for printing. 
 * 
-* Functions to allow safe database modifications 
-* during upgrading and patches. 
+* Program for displaying Chart Labels 
+* via the popups on the left nav screen
 * 
 * Copyright (C) 2014 Terry Hill <terry@lillysystems.com> 
 * 
@@ -28,8 +28,8 @@ $fake_register_globals=false;
 $sanitize_all_escapes=true;
 
 require_once("../globals.php");
-require_once("../../library/classes/PDF_Label.php");
-require_once("../../library/formatting.inc.php");
+require_once("$srcdir/classes/PDF_Label.php");
+require_once("$srcdir/formatting.inc.php");
 
 //Get the data to place on labels
 //
