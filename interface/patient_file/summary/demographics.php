@@ -346,6 +346,12 @@ $(document).ready(function(){
     $("#vitals_ps_expand").load("vitals_fragment.php");
 <?php } ?>
 
+    // Initialize track_anything
+    $("#track_anything_ps_expand").load("track_anything_fragment.php");
+    
+    
+    // Initialize labdata
+    $("#labdata_ps_expand").load("labdata_fragment.php");
 <?php
   // Initialize for each applicable LBF form.
   $gfres = sqlStatement("SELECT option_id FROM list_options WHERE " .
@@ -1021,6 +1027,46 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
 
 
 
+
+ <?php // labdata ?>
+    <tr>
+     <td width='650px'>
+<?php // labdata expand collapse widget
+  $widgetTitle = xl("Labs");
+  $widgetLabel = "labdata";
+  $widgetButtonLabel = xl("Trend");
+  $widgetButtonLink = "../summary/labdata.php";#"../encounter/trend_form.php?formname=labdata";
+  $widgetButtonClass = "";
+  $linkMethod = "html";
+  $bodyClass = "notab";
+  // check to see if any labdata exist
+  $spruch = "SELECT procedure_report.date_collected AS date " .
+			"FROM procedure_report " . 
+			"JOIN procedure_order ON  procedure_report.procedure_order_id = procedure_order.procedure_order_id " . 
+			"WHERE procedure_order.patient_id = ? " . 
+			"ORDER BY procedure_report.date_collected DESC ";
+  $existLabdata = sqlQuery($spruch, array($pid) );	
+  if ($existLabdata) {
+    $widgetAuth = true;
+  }
+  else {
+    $widgetAuth = false;
+  }
+  $fixedWidth = true;
+  expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
+    $widgetButtonLink, $widgetButtonClass, $linkMethod, $bodyClass,
+    $widgetAuth, $fixedWidth);
+?>
+      <br/>
+      <div style='margin-left:10px' class='text'><img src='../../pic/ajax-loader.gif'/></div><br/>
+      </div>
+     </td>
+    </tr>
+<?php  // end labdata ?>
+
+
+
+
 <?php if ($vitals_is_registered && acl_check('patients', 'med')) { ?>
     <tr>
      <td width='650px'>
@@ -1340,18 +1386,7 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
     }
             
 	// Show PAST appointments.
-	// added by Terry Hill to allow reverse sorting of the appointments
- 	$direction = "ASC";
-	if ($GLOBALS['num_past_appointments_to_show'] < 0) {
-	   $direction = "DESC";
-	   ($showpast = -1 * $GLOBALS['num_past_appointments_to_show'] );
-	   }
-	   else
-	   {
-	   $showpast = $GLOBALS['num_past_appointments_to_show'];
-	   }
-	   
-	if (isset($pid) && !$GLOBALS['disable_calendar'] && $showpast > 0) {
+	if (isset($pid) && !$GLOBALS['disable_calendar'] && $GLOBALS['num_past_appointments_to_show'] > 0) {
 	 $query = "SELECT e.pc_eid, e.pc_aid, e.pc_title, e.pc_eventDate, " .
 	  "e.pc_startTime, e.pc_hometext, u.fname, u.lname, u.mname, " .
 	  "c.pc_catname, e.pc_apptstatus " .
@@ -1359,13 +1394,13 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
 	  "openemr_postcalendar_categories AS c WHERE " .
 	  "e.pc_pid = ? AND e.pc_eventDate < CURRENT_DATE AND " .
 	  "u.id = e.pc_aid AND e.pc_catid = c.pc_catid " .
-	  "ORDER BY e.pc_eventDate $direction , e.pc_startTime DESC " . 
-      "LIMIT " . $showpast;
+	  "ORDER BY e.pc_eventDate, e.pc_startTime DESC " . 
+      "LIMIT " . $GLOBALS['num_past_appointments_to_show'];
 	
      $pres = sqlStatement($query, array($pid) );
 
 	// appointments expand collapse widget
-        $widgetTitle = xl("Past Appointments");
+        $widgetTitle = xl("Past Appoinments");
         $widgetLabel = "past_appointments";
         $widgetButtonLabel = '';
         $widgetButtonLink = '';
@@ -1413,6 +1448,42 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
         </div>
     </td>
     </tr>
+    
+           <?php // TRACK ANYTHING -----
+		
+		// Determine if track_anything form is in use for this site.
+		$tmp = sqlQuery("SELECT count(*) AS count FROM registry WHERE " .
+						"directory = 'track_anything' AND state = 1");
+		$track_is_registered = $tmp['count'];
+		if($track_is_registered){
+			echo "<tr> <td>";
+			// track_anything expand collapse widget
+			$widgetTitle = xl("Tracks");
+			$widgetLabel = "track_anything";
+			$widgetButtonLabel = xl("Tracks");
+			$widgetButtonLink = "../../forms/track_anything/create.php";
+			$widgetButtonClass = "";
+			$widgetAuth = "";  // don't show the button
+			$linkMethod = "html";
+			$bodyClass = "notab";
+			// check to see if any tracks exist
+			$spruch = "SELECT id " .
+				"FROM forms " . 
+				"WHERE pid = ? " .
+				"AND formdir = ? "; 
+			$existTracks = sqlQuery($spruch, array($pid, "track_anything") );	
+
+			$fixedWidth = false;
+			expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
+				$widgetButtonLink, $widgetButtonClass, $linkMethod, $bodyClass,
+				$widgetAuth, $fixedWidth);
+?>
+      <br/>
+      <div style='margin-left:10px' class='text'><img src='../../pic/ajax-loader.gif'/></div><br/>
+      </div>
+     </td>
+    </tr>
+<?php  }  // end track_anything ?>
     </table>
 
 	</div> <!-- end right column div -->
