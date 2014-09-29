@@ -36,6 +36,7 @@ require_once("formatting.inc.php");
 require_once("user.inc");
 require_once("patient.inc");
 require_once("lists.inc");
+require_once(dirname(__FILE__) . "/lbf.inc.php");
 
 $date_init = "";
 
@@ -179,7 +180,8 @@ function generate_form_field($frow, $currvalue) {
   $field_id    = $frow['field_id'];
   $list_id     = $frow['list_id'];
   $backup_list = $frow['list_backup_id'];
-  
+  $LBF_or_not  = substr($frow['form_id'],0,3);
+
   // escaped variables to use in html
   $field_id_esc= htmlspecialchars( $field_id, ENT_QUOTES);
   $list_id_esc = htmlspecialchars( $list_id, ENT_QUOTES);
@@ -195,6 +197,14 @@ function generate_form_field($frow, $currvalue) {
     $description = '';
   }
 
+  // Added 7-2014 by Yisrael Kleinman. Support edit option S which uses the saved value from the previous encounter as
+  // the default value. Added a check for LBF (Terry Hill terry@lillysystems.com
+  
+  IF ($LBF_or_not == 'LBF') {
+      if (strpos($frow['edit_options'], 'S') !== FALSE AND (strlen($currescaped) == 0)) {
+	     $currescaped = LBF_past_value($field_id);  	 
+      }
+  }
   // added 5-2009 by BM to allow modification of the 'empty' text title field.
   //  Can pass $frow['empty_title'] with this variable, otherwise
   //  will default to 'Unassigned'.
@@ -864,11 +874,23 @@ function generate_form_field($frow, $currvalue) {
   //$data_type == 33
 
   else if($data_type == 34){
-    $arr = explode("|*|*|*|",$currvalue);
-    echo "<a href='../../../library/custom_template/custom_template.php?type=form_{$field_id}&contextName=".htmlspecialchars($list_id_esc,ENT_QUOTES)."' class='iframe_medium' style='text-decoration:none;color:black;'>";
-    echo "<div id='form_{$field_id}_div' class='text-area'>".htmlspecialchars($arr[0],ENT_QUOTES)."</div>";
-    echo "<div style='display:none'><textarea name='form_{$field_id}' id='form_{$field_id}' stye='display:none'>".$currvalue."</textarea></div>";
-    echo "</a>";
+ // Added to allow prefilling of nations notes with the 'S' option. by Terry Hill 9/25/14 Did not add LBF check
+ // since nations notes appears to be only used in the LBF's
+    if (strpos($frow['edit_options'], 'S') !== FALSE AND (strlen($currescaped) !== 0)) {
+	  $arr = explode("|*|*|*|",$currescaped);
+	  echo "<a href='../../../library/custom_template/custom_template.php?type=form_{$field_id}&contextName=".htmlspecialchars($list_id_esc,ENT_QUOTES)."' class='iframe_medium' style='text-decoration:none;color:black;'>";
+      echo "<div id='form_{$field_id}_div' class='text-area'>".htmlspecialchars($arr[0],ENT_QUOTES)."</div>";
+      echo "<div style='display:none'><textarea name='form_{$field_id}' id='form_{$field_id}' stye='display:none'>".$currescaped."</textarea></div>";
+      echo "</a>";
+	}
+	else
+	{
+      $arr = explode("|*|*|*|",$currvalue);
+      echo "<a href='../../../library/custom_template/custom_template.php?type=form_{$field_id}&contextName=".htmlspecialchars($list_id_esc,ENT_QUOTES)."' class='iframe_medium' style='text-decoration:none;color:black;'>";
+      echo "<div id='form_{$field_id}_div' class='text-area'>".htmlspecialchars($arr[0],ENT_QUOTES)."</div>";
+      echo "<div style='display:none'><textarea name='form_{$field_id}' id='form_{$field_id}' stye='display:none'>".$currvalue."</textarea></div>";
+      echo "</a>";
+	}
   }
 
   //facilities drop-down list
