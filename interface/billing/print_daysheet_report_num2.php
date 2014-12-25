@@ -456,8 +456,8 @@ if ($totals_only != 1) {
 	 if (($iter{'code_type'}) != 'Insurance Payment' AND ($iter{'code_type'}) != 'Patient Payment' AND $iter{'paytype'} != 'PCP') {
 	     print  "</span></td><td width=100><span class=text><center>" . text($iter{'code_type'}). "</center>";
 	 }
-      print  "</span></td><td width=100><span class=text><center>" . text($iter{'provider_id'}). "</center>"; 
-      print  "</span></td><td width=100><span class=text><center>" . text($iter{'user'}). "</center>" ;
+      print  "</span></td><td width=100><span class=text><center>" . $iter{'provider_id'}. "</center>"; 
+      print  "</span></td><td width=100><span class=text><center>" . $iter{'user'}. "</center>" ;
       print  "</span></td><td width=100><span class=text>";
       print  "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{"date"}))). "</center>";
       print  "</span></td>\n";
@@ -718,8 +718,8 @@ for ($i=1 ; $i<$k; ) {
 print "<table border=1><tr>\n";
 print "<br><br>";
 
-Printf ("<td width=70><span class=text><b><center>". xlt("User "). "</center></b><center>".$user_info[user][$i]). "</center>";
-Printf ("<td width=140><span class=text><b><center>". xlt("Charges ")."</center></b><center>"." %1\$.2f",$user_info[fee][$i]). "</center>"; 
+Printf ("<td width=70><span class=text><b><center>". xlt("User") . ' ' . "</center></b><center>".$user_info[user][$i]). "</center>";
+Printf ("<td width=140><span class=text><b><center>". xlt("Charges") . ' ' . "</center></b><center>"." %1\$.2f",$user_info[fee][$i]). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",$user_info[insadj][$i]). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments") . ' ' . "</center></b><center>"."%1\$.2f",$user_info[inspay][$i]). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'. '."</center></b><center>"."%1\$.2f",$user_info[patadj][$i]). "</center>"; 
