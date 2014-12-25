@@ -373,10 +373,10 @@ if ($totals_only != 1) {
         }
 		
 	    // Displays name
-		print "<tr><td colspan=50><hr><span class=bold>" . "     " . text($name{"fname"}) . " " . text($name{"lname"}) . "</span><br><br></td></tr><tr>\n";
+		print "<tr><td colspan=50><hr><span class=bold>" . "     " . $name{"fname"} . " " . $name{"lname"} . "</span><br><br></td></tr><tr>\n";
         //==================================
 
-    if (text($iter{'code_type'}) === 'COPAY' || text($iter{'code_type'}) === 'Patient Payment' || text($iter{'code_type'}) === 'Insurance Payment' ) { 
+    if ($iter{'code_type'} === 'COPAY' || $iter{'code_type'} === 'Patient Payment' || $iter{'code_type'} === 'Insurance Payment' ) { 
 
       print "<td width=40><span class=text><center><b>" . xlt("Units") . "</b></center>";
       print "</span></td><td width=100><span class=text><center><b>" . xlt("Fee"). "</b></center>" ;
@@ -407,7 +407,7 @@ if ($totals_only != 1) {
 	// get dollar amounts to appear on pat,ins payments and copays
 	
 	if ($iter{'code_type'} != 'payment_info') {
-	if (text($iter{'code_type'}) === 'COPAY' || text($iter{'code_type'}) === 'Patient Payment' || text($iter{'code_type'}) === 'Insurance Payment' ) {  
+	if ($iter{'code_type'} === 'COPAY' || $iter{'code_type'} === 'Patient Payment' || $iter{'code_type'} === 'Insurance Payment' ) {  
 	   print "<td width=40><span class=text><center>" . "1". "</center>" ;
 	  
 	  // start fee output
@@ -416,19 +416,19 @@ if ($totals_only != 1) {
 	  //    [pat_adjust_dollar] => 0.00
 	  //    [ins_adjust_dollar] => 0.00
 	  if (($iter{'ins_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
-	   print  "</span></td><td width=100><span class=text><center>" . "(". text($iter{'ins_adjust_dollar'}).")". "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . "(". $iter{'ins_adjust_dollar'}.")". "</center>";
 	  }
 	  if (($iter{'ins_code'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
-	   print  "</span></td><td width=100><span class=text><center>" . "(". text($iter{'ins_code'}).")". "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . "(". $iter{'ins_code'}.")". "</center>";
 	  }
 	  if (($iter{'code_type'}) != "Patient Payment" AND ($iter{'code_type'}) != 'Insurance Payment' ){
-	   print  "</span></td><td width=100><span class=text><center>" . "(". text($iter{"code"}).")". "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . "(". $iter{"code"}.")". "</center>";
 	  }
 	  if (($iter{'pat_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Patient Payment' ){
-	   print  "</span></td><td width=100><span class=text><center>" . "(". text($iter{'pat_adjust_dollar'}).")". "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . "(". $iter{'pat_adjust_dollar'}.")". "</center>";
 	  }
 	  if (($iter{'pat_code'}) != 0 AND ($iter{'code_type'}) === 'Patient Payment' ){
-	   print  "</span></td><td width=100><span class=text><center>" . "(". text($iter{'pat_code'}).")". "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . "(". $iter{'pat_code'}.")". "</center>";
 	  }
       // end fee output
 	  
@@ -441,63 +441,63 @@ if ($totals_only != 1) {
 	 if (($iter{'ins_code'}) > 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
 	     print  "</span></td><td width=250><span class=text><center>" . xlt('Insurance Payment'). "</center>";
 	 }
-	 if (($iter{'pat_code'}) > 0 AND ($iter{'code_type'}) === 'Patient Payment' AND text($iter{'paytype'}) != 'PCP' ){
+	 if (($iter{'pat_code'}) > 0 AND ($iter{'code_type'}) === 'Patient Payment' AND $iter{'paytype'} != 'PCP' ){
 	     print  "</span></td><td width=250><span class=text><center>" . xlt('Patient Payment'). "</center>";
 	 }
 	 if (($iter{'ins_code'}) < 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
 	     print  "</span></td><td width=250><span class=text><center>" . xlt('Insurance Credit'). "</center>";
 	 }
-	 if (($iter{'pat_code'}) < 0 AND ($iter{'code_type'}) === 'Patient Payment' AND text($iter{'paytype'}) != 'PCP' ){
+	 if (($iter{'pat_code'}) < 0 AND ($iter{'code_type'}) === 'Patient Payment' AND $iter{'paytype'} != 'PCP' ){
 	     print  "</span></td><td width=250><span class=text><center>" . xlt('Patient Credit'). "</center>";
 	 }
-	 if (text($iter{'paytype'}) === 'PCP') { 
+	 if ($iter{'paytype'} === 'PCP') { 
 	  print  "</span></td><td width=250><span class=text><center>" . xlt('COPAY'). "</center>";
 	 }
-	 if (($iter{'code_type'}) != 'Insurance Payment' AND ($iter{'code_type'}) != 'Patient Payment' AND text($iter{'paytype'}) != 'PCP') {
-	     print  "</span></td><td width=100><span class=text><center>" . text($iter{'code_type'}). "</center>";
+	 if (($iter{'code_type'}) != 'Insurance Payment' AND ($iter{'code_type'}) != 'Patient Payment' AND $iter{'paytype'} != 'PCP') {
+	     print  "</span></td><td width=100><span class=text><center>" . $iter{'code_type'}. "</center>";
 	 }
-      print  "</span></td><td width=100><span class=text><center>" . text($iter{'provider_id'}). "</center>"; 
-      print  "</span></td><td width=100><span class=text><center>" . text($iter{'user'}). "</center>" ;
+      print  "</span></td><td width=100><span class=text><center>" . $iter{'provider_id'}. "</center>"; 
+      print  "</span></td><td width=100><span class=text><center>" . $iter{'user'}. "</center>" ;
       print  "</span></td><td width=100><span class=text>";
-      print  "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{"date"}))). "</center>";
+      print  "</span></td><td width=100><span class=small><center>" . (date("Y-m-d",strtotime($iter{"date"}))). "</center>";
       print  "</span></td>\n";
 	}
 	else
 	{
-	  if (text(date("Y-m-d",strtotime($iter{'bill_date'}))) === '1969-12-31') { 
-       print "<td width=40><span class=text><center>" . text($iter{'units'}) . "</center>" ;
-       print "</span></td><td width=100><span class=text><center>" . text($iter{'fee'}) . "</center>";
+	  if (date("Y-m-d",strtotime($iter{'bill_date'})) === '1969-12-31') { 
+       print "<td width=40><span class=text><center>" . $iter{'units'} . "</center>" ;
+       print "</span></td><td width=100><span class=text><center>" . $iter{'fee'} . "</center>";
        if ($GLOBALS['language_default'] === 'English (Standard)'){
-	     print "</span></td><td width=250><span class=text><center>" . ucwords(strtolower(substr(text($iter{'code_text'}),0,38))) . "</center>";
+	     print "</span></td><td width=250><span class=text><center>" . ucwords(strtolower(substr($iter{'code_text'},0,38))) . "</center>";
 	   }
 	   else
 	   {
-	     print "</span></td><td width=250><span class=text><center>" . substr(text($iter{'code_text'}),0,38) . "</center>";
+	     print "</span></td><td width=250><span class=text><center>" . substr($iter{'code_text'},0,38) . "</center>";
 	   }
-       print "</span></td><td width=100><span class=text><center>" . text($iter{'provider_id'}) . "</center>" ;
-       print "</span></td><td width=100><span class=text><center>" . text($iter{'user'}) . "</center>" ;
+       print "</span></td><td width=100><span class=text><center>" . $iter{'provider_id'} . "</center>" ;
+       print "</span></td><td width=100><span class=text><center>" . $iter{'user'} . "</center>" ;
        print "</span></td><td width=100><span class=text><center>" . xlt("Not Billed"). "</center>";
-       print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'date'}))). "</center>";
-       print "</span></td><td width=100><span class=small><center>" . text($iter{'encounter'}). "</center>";
+       print "</span></td><td width=100><span class=small><center>" . (date("Y-m-d",strtotime($iter{'date'}))). "</center>";
+       print "</span></td><td width=100><span class=small><center>" . $iter{'encounter'}. "</center>";
        print "</span></td>\n";
 	 }
 	 else
 	 {
 	  if ($iter{'fee'} != 0) {
-      print "<td width=40><span class=text><center>" . text($iter{"units"}) . "</center>";
-      print "</span></td><td width=100><span class=text><center>" . text($iter{'fee'}) . "</center>";
+      print "<td width=40><span class=text><center>" . $iter{"units"} . "</center>";
+      print "</span></td><td width=100><span class=text><center>" . $iter{'fee'} . "</center>";
       if ($GLOBALS['language_default'] === 'English (Standard)'){
-	    print "</span></td><td width=250><span class=text><center>" . ucwords(strtolower(substr(text($iter{'code_text'}),0,38))) . "</center>";
+	    print "</span></td><td width=250><span class=text><center>" . ucwords(strtolower(substr($iter{'code_text'},0,38))) . "</center>";
 	  }
 	  else
 	  {
-	    print "</span></td><td width=250><span class=text><center>" . substr(text($iter{'code_text'}),0,38) . "</center>";
+	    print "</span></td><td width=250><span class=text><center>" . substr($iter{'code_text'},0,38) . "</center>";
 	  }
-      print "</span></td><td width=100><span class=text><center>" . text($iter{'provider_id'}) . "</center>";
-      print "</span></td><td width=100><span class=text><center>" . text($iter{'user'}) . "</center>";
-      print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'bill_date'}))) . "</center>";
-      print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'date'}))). "</center>";
-      print "</span></td><td width=100><span class=small><center>" . text($iter{'encounter'}). "</center>";
+      print "</span></td><td width=100><span class=text><center>" . $iter{'provider_id'} . "</center>";
+      print "</span></td><td width=100><span class=text><center>" . $iter{'user'} . "</center>";
+      print "</span></td><td width=100><span class=small><center>" . (date("Y-m-d",strtotime($iter{'bill_date'}))) . "</center>";
+      print "</span></td><td width=100><span class=small><center>" . (date("Y-m-d",strtotime($iter{'date'}))). "</center>";
+      print "</span></td><td width=100><span class=small><center>" . $iter{'encounter'}. "</center>";
       print "</span></td>\n";
 	  }
 	 }
@@ -711,7 +711,7 @@ if ($totals_only == 1) {
 $from_date = oeFormatShortDate(substr($query_part_day,37,10));
 $to_date = oeFormatShortDate(substr($query_part_day,63,10));
 print "<br><br>";
-?><font size = 5 ><?php echo xlt('Totals for '). $from_date . xlt(" To ") . $to_date ?></font><?php
+?><font size = 5 ><?php echo xlt('Totals for '). $from_date . ' ' . xlt('To') . ' ' . $to_date ?></font><?php
 }
 
 for ($i=1 ; $i<$k; ) {
@@ -719,11 +719,11 @@ print "<table border=1><tr>\n";
 print "<br><br>";
 
 Printf ("<td width=70><span class=text><b>". xlt("User "). "</center></b><center>".$user_info[user][$i]). "</center>";
-Printf ("<td width=140><span class=text><b><center>". xlt("Charges ")."</center></b><center>"." %1\$.2f",$user_info[fee][$i]). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Charges") . ' ' ."</center></b><center>"." %1\$.2f",$user_info[fee][$i]). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",$user_info[insadj][$i]). "</center>"; 
-Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments ")."</center></b><center>"."%1\$.2f",$user_info[inspay][$i]). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments") . ' ' . "</center></b><center>"."%1\$.2f",$user_info[inspay][$i]). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'. '."</center></b><center>"."%1\$.2f",$user_info[patadj][$i]). "</center>"; 
-Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments ")."</center></b><center>"."%1\$.2f",$user_info[patpay][$i]). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments"). ' ' ."</center></b><center>"."%1\$.2f",$user_info[patpay][$i]). "</center>"; 
 
 $gtotal_fee = $gtotal_fee + $user_info[fee][$i];
 $gtotal_insadj = $gtotal_insadj + $user_info[insadj][$i];
@@ -738,12 +738,12 @@ print "</br></td>";
 print "<table border=1><tr>\n";
 print "<br><br>";
 
-Printf ("<td width=70><span class=text><b><center>". xlt("Grand Totals "));
-Printf ("<td width=140><span class=text><b><center>". xlt("Total Charges ")."</center></b><center>"." %1\$.2f",$gtotal_fee). "</center>"; 
+Printf ("<td width=70><span class=text><b><center>". xlt("Grand Totals").' ');
+Printf ("<td width=140><span class=text><b><center>". xlt("Total Charges").' '."</center></b><center>"." %1\$.2f",$gtotal_fee). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",$gtotal_insadj). "</center>"; 
-Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments ")."</center></b><center>"."%1\$.2f",$gtotal_inspay). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments") . ' ' ."</center></b><center>"."%1\$.2f",$gtotal_inspay). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'. '."</center></b><center>"."%1\$.2f",$gtotal_patadj). "</center>"; 
-Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments ")."</center></b><center>"."%1\$.2f",$gtotal_patpay). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments"). ' ' . "</center></b><center>"."%1\$.2f",$gtotal_patpay). "</center>"; 
 
 print "</br></td>";
 print "</table>";
