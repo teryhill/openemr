@@ -2252,5 +2252,102 @@ $GLOBALS_METADATA = array(
     ),
 	
    ),
+   
+     // Statment Tab
+  //
+  'Statement' => array(
+
+  	'use_custom_statement' => array(
+      xl('Use Custom Statement'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('This will use the custom Statment showing the description instead of the codes.')
+    ),
+
+  	'use_dunning_message' => array(
+      xl('Use Custom Dunning Messages'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('This will allow use of the custom Dunning Messages on the statements.')
+    ),
+
+    'no_dun_msg_text' => array(
+      xl('No account message'),
+      'text',                           // data type
+      '',
+      xl('Text for account message reflecting waiting on Insurance to pay.')
+    ),
+	
+    'first_dun_msg_set' => array(
+      xl('Number of days before showing first account message'),
+      'num',                           // data type
+      '30',
+      xl('Number of days before showing first account message.')
+    ),
+
+    'first_dun_msg_text' => array(
+      xl('First account message'),
+      'text',                           // data type
+      '',
+      xl('Text for first account message.')
+    ),
+    
+    'second_dun_msg_set' => array(
+      xl('Number of days before showing second account message'),
+      'num',                           // data type
+      '60',
+      xl('Number of days before showing second account message.')
+    ),
+
+    'second_dun_msg_text' => array(
+      xl('Second account message'),
+      'text',                           // data type
+      '',
+      xl('Text for second account message.')
+    ),  
+
+    'third_dun_msg_set' => array(
+      xl('Number of days before showing third account message'),
+      'num',                           // data type
+      '90',
+      xl('Number of days before showing third account message.')
+    ),
+
+    'third_dun_msg_text' => array(
+      xl('Third account message'),
+      'text',                           // data type
+      '',
+      xl('Text for third account message.')
+    ),
+    
+    'fourth_dun_msg_set' => array(
+      xl('Number of days before showing fourth account message'),
+      'num',                           // data type
+      '120',
+      xl('Number of days before showing fourth account message.')
+    ),
+
+    'fourth_dun_msg_text' => array(
+      xl('Fourth account message'),
+      'text',                           // data type
+      '',
+      xl('Text for fourth account message.')
+    ),
+
+    'fifth_dun_msg_set' => array(
+      xl('Number of days before showing fifth account message'),
+      'num',                           // data type
+      '150',
+      xl('Number of days before showing fifth account message.')
+    ),
+
+    'fifth_dun_msg_text' => array(
+      xl('Fifth account message'),
+      'text',                           // data type
+      '',
+      xl('Text for fifth account message.')
+    ),
+  ),
+   
 );
 ?>
