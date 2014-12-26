@@ -2270,13 +2270,6 @@ $GLOBALS_METADATA = array(
       '0',                              // default = false
       xl('This will allow use of the custom Dunning Messages on the statements.')
     ),
-
-    'no_dun_msg_text' => array(
-      xl('No account message'),
-      'text',                           // data type
-      '',
-      xl('Text for account message reflecting waiting on Insurance to pay.')
-    ),
 	
     'first_dun_msg_set' => array(
       xl('Number of days before showing first account message'),

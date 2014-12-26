@@ -165,10 +165,6 @@ if ($GLOBALS['use_dunning_message']) {
           break;		  
      }	
     }
-    else
-	{
-	  $dun_message = $GLOBALS['no_dun_msg_text'];
-	} 
  }
  // Text only labels
  
