@@ -215,6 +215,7 @@ if ($INTEGRATED_AR) {
 		{ 
         $line['desc']    = ($key == 'CO-PAY') ? "Patient Payment" : "Procedure $key";
 	    } 
+        $line['amount']  = sprintf("%.2f", $value['chg']);
         $line['adjust']  = sprintf("%.2f", $value['adj']);
         $line['paid']    = sprintf("%.2f", $value['chg'] - $value['bal']);
         $line['notice']  = $duncount + 1;
