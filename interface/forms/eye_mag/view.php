@@ -199,50 +199,50 @@ formHeader("Chart: ".$pat_data['fname']." ".$pat_data['lname']." ".$visit_date);
                      <table border="0" cellpadding="2" class="up" style="vetical-align:text-bottom;font-size:1.1em;padding:10px;">
                         <tr>
                           <td class="title"><?php echo xlt('Timing'); ?>:</td>
-                          <td><i><?php echo xlt('When and how often?'); ?></i>
+                          <td><i><?php echo xlt('When and how often') . '?' ; ?></i>
                             <textarea name="TIMING1" id="TIMING1" class="HPI_text"><?php echo text($TIMING1); ?></textarea>
                           </td>
                         </tr>
                         <tr>
                           <td class="title"><?php echo xlt('Context'); ?>:</td>
-                          <td><i><?php echo xlt('Does it occur in certain situations?'); ?></i>
+                          <td><i><?php echo xlt('Does it occur in certain situations') . '?' ; ?></i>
                             <textarea name="CONTEXT1" id="CONTEXT1" class="HPI_text"><?php echo text($CONTEXT1); ?></textarea>
                               <br />
                           </td>
                         </tr>
                         <tr>
                           <td class="title"><?php echo xlt('Severity'); ?>:</td>
-                          <td><i><?php echo xlt('How bad is it? 0-10, mild, moderate, severe?'); ?></i>
+                          <td><i><?php echo xlt('How bad is it') . '? ' . '0-10, ' . xlt('mild') .', '. xlt('moderate') . ', ' . xlt('severe') . '?' ; ?></i>
                             <textarea name="SEVERITY1" id="SEVERITY1" class="HPI_text"><?php echo text($SEVERITY1); ?></textarea>
                             </td>
                         </tr>
                         <tr>
                           <td  class="title"><?php echo xlt('Modifying'); ?>:</td>
-                          <td><i ><?php echo xlt('Does anything makes it better? Worse?'); ?></i><textarea name="MODIFY1" id="MODIFY1" class="HPI_text"><?php echo text($MODIFY1); ?></textarea>
+                          <td><i ><?php echo  xlt('Does anything makes it better') . '? '. xlt('Worse') .'?' ; ?></i><textarea name="MODIFY1" id="MODIFY1" class="HPI_text"><?php echo text($MODIFY1); ?></textarea>
                               </td>
                         </tr>
                         <tr>
                           <td class="title"><?php echo xlt('Associated'); ?>:</td>
-                          <td><i><?php echo xlt('Anything else happen at the same time?'); ?></i>
+                          <td><i><?php echo echo xlt('Anything else happen at the same time').'?'; ?></i>
                             <textarea name="ASSOCIATED1" id="ASSOCIATED1" class="HPI_text"><?php echo text($ASSOCIATED1); ?></textarea>
                             </td>
                         </tr>
                         <tr>
                           <td class="title"><?php echo xlt('Location'); ?>:</td>
-                          <td><i><?php echo xlt('Where on your body does it occur?'); ?></i>
+                          <td><i><?php echo xlt('Where on your body does it occur').'?'; ?></i>
                             <textarea name="LOCATION1" id="LOCATION1" class="HPI_text"><?php echo text($LOCATION1); ?></textarea>                        
                           </td>
                         </tr>
                         <tr>
                           <td class="title"><?php echo xlt('Quality'); ?>:</td>
-                          <td><i><?php echo xlt('eg. aching, burning, radiating pain'); ?></i>
+                          <td><i><?php echo xlt('eg') . '. ' .  xlt('aching') . ', '. xlt('burning') . ', ' . xlt('radiating pain'); ?></i>
                             <textarea name="QUALITY1" id="QUALITY1" class="HPI_text"><?php echo text($QUALITY1); ?></textarea>
                                 
                         </td>
                         </tr> 
                         <tr>
                           <td class="title"><?php echo xlt('Duration'); ?>:</td>
-                          <td><i><?php echo xlt('How long does it last?'); ?></i><textarea name="DURATION1" id="DURATION1" class="HPI_text"><?php echo text($DURATION1); ?></textarea>
+                          <td><i><?php echo xlt('How long does it last').'?'; ?></i><textarea name="DURATION1" id="DURATION1" class="HPI_text"><?php echo text($DURATION1); ?></textarea>
                        <br />&nbsp;</td>
                         </tr>
                       </table>
@@ -263,14 +263,14 @@ formHeader("Chart: ".$pat_data['fname']." ".$pat_data['lname']." ".$visit_date);
                   <table border="0" width="100%" cellspacing="0" cellpadding="0" style="min-height: 2.5in;text-align:left;font-size:0.8em;">
                     <tr>
                       <td class="right up" style="vertical-align:top;padding-right:10px;">
-                        <b><span title="<?php echo xla('In the patient\'s words'); ?>"><?php echo xlt('CC'); ?>:
+                        <b><span title="<?php echo xla('In the patient) . '\'' . xla('s '). xla('words'); ?>"><?php echo xlt('CC'); ?>:
                         </span>  </b>
                       </td>    
                       <td><textarea name="CC1" id="CC1" class="HPI_text"><?php echo text($CC1); ?></textarea></td>
                     </tr> 
                     <tr>
                       <td class="right" style="vertical-align:top;padding-right:10px;">
-                        <span title="<?php echo xla('History of Present Illness:  A detailed HPI may be completed by using 
+                        <span title="<?php echo xla('History of Present Illness') . ':  ' . xla('A detailed HPI may be completed by using 
                     either four or more HPI elements OR the status of three chronic or inactive problems.'); ?>" style="height:1in;font-weight:600;vertical-align:text-top;"><?php echo xlt('HPI'); ?>:
                         </span>
                       </td>    
@@ -688,7 +688,7 @@ formHeader("Chart: ".$pat_data['fname']." ".$pat_data['lname']." ".$visit_date);
                                             <input type="radio" value="1" id="Bifocal" name="RX1" <?php if ($RX1 == '1') echo 'checked="checked"'; ?> /></span><br /><br />
                                             <label for="Trifocal" class="input-helper input-helper--checkbox"><?php echo xlt('Trifocal'); ?></label>
                                             <input type="radio" value="2" id="Trifocal" name="RX1" <?php if ($RX1 == '2') echo 'checked="checked"'; ?> /></span><br /><br />
-                                            <label for="Progressive" class="input-helper input-helper--checkbox"><?php echo xlt('Prog.'); ?></label>
+                                            <label for="Progressive" class="input-helper input-helper--checkbox"><?php echo xlt('Prog'). '.'; ?></label>
                                             <input type="radio" value="3" id="Progressive" name="RX1" <?php if ($RX1 == '3') echo 'checked="checked"'; ?> /></span><br />
                                         </td>
                                     </tr>
@@ -823,7 +823,7 @@ formHeader("Chart: ".$pat_data['fname']." ".$pat_data['lname']." ".$visit_date);
                                 <span class="closeButton fa  fa-close" id="Close_CR" name="Close_CR"></span>
                                 <a class="closeButton2 fa fa-print" onclick="top.restoreSession();  return false;" href="../../forms/<?php echo $form_folder; ?>/SpectacleRx.php?target=CR&id=<?php echo attr($pid); ?>"></a>
                                 <table id="cycloplegia">
-                                    <th colspan=9><?php echo xlt('Cycloplegic (Wet) Refraction'); ?></th>
+                                    <th colspan=9><?php echo xlt('Cycloplegic'). ' (' .xlt('Wet').') 'xlt('Refraction'); ?></th>
                                     <tr>
                                         <td></td>
                                         <td><?php echo xlt('Sph'); ?></td>
@@ -1201,17 +1201,17 @@ formHeader("Chart: ".$pat_data['fname']." ".$pat_data['lname']." ".$visit_date);
                                       <td><input type="text" size="1" name="LMRD" id="LMRD" value="<?php echo attr($LMRD); ?>"></td>
                                   </tr>
                                   <tr>
-                                      <td class="right" title="<?php echo xla('Vertical Fissure: central height between lid margins'); ?>"><?php echo xlt('Vert Fissure'); ?></td>
+                                      <td class="right" title="<?php echo xla('Vertical Fissure'). ': ' . xla('central height between lid margins'); ?>"><?php echo xlt('Vert Fissure'); ?></td>
                                       <td><input type="text" size="1" name="RVFISSURE" id="RVFISSURE" value="<?php echo attr($RVFISSURE); ?>"></td>
                                       <td><input type="text" size="1" name="LVFISSURE" id="LVFISSURE" value="<?php echo attr($LVFISSURE); ?>"></td>
                                   </tr>
                                                                  <tr>
-                                      <td class="right" title="<?php echo xla('Any carotid bruits appreciated?'); ?>"><?php echo xlt('Carotid'); ?></td>
+                                      <td class="right" title="<?php echo xla('Any carotid bruits appreciated').'?'; ?>"><?php echo xlt('Carotid'); ?></td>
                                       <td><input  type="text"  name="RCAROTID" id="RCAROTID" value="<?php echo attr($RCAROTID); ?>"></td>
                                       <td><input  type="text"  name="LCAROTID" id="LCAROTID" value="<?php echo attr($LCAROTID); ?>"></td>
                                   </tr>
                                   <tr>
-                                      <td class="right" title="<?php echo xla('Temporal Arteries'); ?>""><?php echo xlt('Temp. Art.'); ?></td>
+                                      <td class="right" title="<?php echo xla('Temporal Arteries'); ?>""><?php echo xlt('Temp') .'. '.xlt('Art').'. '; ?></td>
                                       <td><input type="text" size="1" name="RTEMPART" id="RTEMPART" value="<?php echo attr($RTEMPART); ?>"></td>
                                       <td><input type="text" size="1" name="LTEMPART" id="LTEMPART" value="<?php echo attr($LTEMPART); ?>"></td>
                                   </tr>
@@ -1419,7 +1419,7 @@ formHeader("Chart: ".$pat_data['fname']." ".$pat_data['lname']." ".$visit_date);
                                       </tr> 
                                       <tr>
                                           <td><textarea name="ODAC" id="ODAC" class=" right"><?php echo text($ODAC); ?></textarea></td>
-                                          <td style="text-align:center;font-size:0.9em;"><?php echo xlt('A/C'); ?></td>
+                                          <td style="text-align:center;font-size:0.9em;"><?php echo xlt('A').'/'.xlt('C'); ?></td>
                                           <td><textarea name="OSAC" id="OSAC" class=""><?php echo text($OSAC); ?></textarea></td>
                                       </tr>
                                       <tr>
