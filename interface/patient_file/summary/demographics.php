@@ -346,12 +346,6 @@ $(document).ready(function(){
     $("#vitals_ps_expand").load("vitals_fragment.php");
 <?php } ?>
 
-    // Initialize track_anything
-    $("#track_anything_ps_expand").load("track_anything_fragment.php");
-    
-    
-    // Initialize labdata
-    $("#labdata_ps_expand").load("labdata_fragment.php");
 <?php
   // Initialize for each applicable LBF form.
   $gfres = sqlStatement("SELECT option_id FROM list_options WHERE " .
@@ -1400,7 +1394,7 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
      $pres = sqlStatement($query, array($pid) );
 
 	// appointments expand collapse widget
-        $widgetTitle = xl("Past Appoinments");
+        $widgetTitle = xl("Past Appointments");
         $widgetLabel = "past_appointments";
         $widgetButtonLabel = '';
         $widgetButtonLink = '';
@@ -1448,42 +1442,6 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
         </div>
     </td>
     </tr>
-    
-           <?php // TRACK ANYTHING -----
-		
-		// Determine if track_anything form is in use for this site.
-		$tmp = sqlQuery("SELECT count(*) AS count FROM registry WHERE " .
-						"directory = 'track_anything' AND state = 1");
-		$track_is_registered = $tmp['count'];
-		if($track_is_registered){
-			echo "<tr> <td>";
-			// track_anything expand collapse widget
-			$widgetTitle = xl("Tracks");
-			$widgetLabel = "track_anything";
-			$widgetButtonLabel = xl("Tracks");
-			$widgetButtonLink = "../../forms/track_anything/create.php";
-			$widgetButtonClass = "";
-			$widgetAuth = "";  // don't show the button
-			$linkMethod = "html";
-			$bodyClass = "notab";
-			// check to see if any tracks exist
-			$spruch = "SELECT id " .
-				"FROM forms " . 
-				"WHERE pid = ? " .
-				"AND formdir = ? "; 
-			$existTracks = sqlQuery($spruch, array($pid, "track_anything") );	
-
-			$fixedWidth = false;
-			expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
-				$widgetButtonLink, $widgetButtonClass, $linkMethod, $bodyClass,
-				$widgetAuth, $fixedWidth);
-?>
-      <br/>
-      <div style='margin-left:10px' class='text'><img src='../../pic/ajax-loader.gif'/></div><br/>
-      </div>
-     </td>
-    </tr>
-<?php  }  // end track_anything ?>
     </table>
 
 	</div> <!-- end right column div -->
