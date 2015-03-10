@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 /** 
  * interface/patient_file/label.php Displaying a PDF file of Labels for printing. 
  * 
@@ -32,35 +31,22 @@ require_once("../globals.php");
 require_once("$srcdir/classes/PDF_Label.php");
 require_once("$srcdir/formatting.inc.php");
 
-//Get the data to place on labels
-//
-/* Copyright (C) 2014 Terry Hill <terry@lillysystems.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- */
-// I used the program example supplied with the Avery Label Print Class to produce this program
-//
-
-include_once("../globals.php");
-require_once('PDF_Label.php');
 
 //Get the data to place on labels
 //
+$limit_number= 1 ;
 
 $patdata = sqlQuery("SELECT " .
   "p.fname, p.mname, p.lname, p.pubpid, p.DOB, " .
   "p.street, p.city, p.state, p.postal_code, p.pid " .
   "FROM patient_data AS p " .
-  "WHERE p.pid = ? LIMIT 1", array($pid));
+  "WHERE p.pid = '$pid' LIMIT ".escape_limit($limit_number)); 
+
 // re-order the dates
 //
   
 $today = oeFormatShortDate($date='today');
 $dob = oeFormatShortDate($patdata['DOB']);
-
 
 //get label type and number of labels on sheet
 //
