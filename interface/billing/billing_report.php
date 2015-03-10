@@ -29,6 +29,7 @@ $daysheet = false;
 $daysheet_total = false;
 $provider_run = false;
 
+
 if ($GLOBALS['use_custom_daysheet'] != 0) { 
   $daysheet = true;
   if ($GLOBALS['daysheet_provider_totals'] == 1) {
@@ -226,6 +227,7 @@ function SubmitTheScreenPrint()
 <?php if ($GLOBALS['use_custom_daysheet'] == 3) { ?>
   document.the_form.action='print_daysheet_report_num3.php';
 <?php } ?>
+
   document.the_form.submit();
   return true;
  }
