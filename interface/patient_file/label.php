@@ -31,7 +31,6 @@ require_once("../globals.php");
 require_once("$srcdir/classes/PDF_Label.php");
 require_once("$srcdir/formatting.inc.php");
 
-
 //Get the data to place on labels
 //
 $limit_number= 1 ;
