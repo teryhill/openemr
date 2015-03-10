@@ -33,6 +33,10 @@ include_once("$srcdir/../interface/reports/report.inc.php");
 require_once("$srcdir/formatting.inc.php");
 include_once("$srcdir/daysheet.inc.php");
 
+<<<<<<< HEAD
+=======
+	
+>>>>>>> DaySheet report (end of day report) , take 2.
 //global variables:
 if (!isset($_GET["mode"])) {
     if (!isset($_GET["from_date"])) {
@@ -164,7 +168,11 @@ $anypats = count($ret);
 
 $old_pid = -1;
 $first_time = 1;
+<<<<<<< HEAD
 
+=======
+$new_old_pid = -1;
+>>>>>>> DaySheet report (end of day report) , take 2.
 
 // $iter has encounter information
 
@@ -177,11 +185,18 @@ foreach ($ret as $iter) {
 $user_list = array_unique($catch_user);
 // reorder the list starting with array element zero
 $final_list = array_values($user_list);
+<<<<<<< HEAD
+=======
+
+>>>>>>> DaySheet report (end of day report) , take 2.
 // sort array in assending order
 sort($final_list);
 
 $all4 = array_natsort($ret, pid, fulname, asc);
+<<<<<<< HEAD
 
+=======
+>>>>>>> DaySheet report (end of day report) , take 2.
 if ($_POST['end_of_day_totals_only'] == 1){
 $totals_only = 1;
 }
@@ -355,60 +370,122 @@ switch ($iter{'user'}) {
 if ($the_first_time == 1) {
   $user = $iter{'user'};
   $first_user = $iter{'user'};
+<<<<<<< HEAD
+=======
+  $new_old_pid = $iter{'pid'};
+>>>>>>> DaySheet report (end of day report) , take 2.
   $the_first_time = 0;
 }  
 
 if ($totals_only != 1) {
 
     if ($old_pid != $iter{'pid'} AND ($iter{'code_type'} != 'payment_info')) {
+<<<<<<< HEAD
 	
 	   // $name has patient information
         $name = getPatientData($iter{"pid"});	
 
        // formats the displayed text
 	   //   
+=======
+
+
+	   // $name has patient information
+        $name = getPatientData($iter{'pid'});	
+
+       // formats the displayed text
+	   // 
+
+ 	     if ($old_pid == $new_old_pid) {
+			 if ($line_total != 0) {
+			  print "<td width=100><br><span class=text><b><center>" . xlt('Total') . "</b></center>";
+			  Printf ("<br></span></td><td width=100><span class=text><center>"." %1\$.2f",$line_total). "</center></td>"; 
+			 }
+			 else
+			 {
+			  print "<td width=100><br><span class=text><b><center>" . xlt('Total') . "</b></center>";
+			  Printf ("<br></span></td><td width=100><span class=text><center>"." %1\$.2f",$line_total_pay). "</center></td>"; 
+			 }
+			 $line_total = 0;
+			 $line_total_pay = 0;
+		 }
+	   
+>>>>>>> DaySheet report (end of day report) , take 2.
 	   if ($first_time) {
             print "<table border=0><tr>\n";     // small table
             $first_time=0;
         }
 		
 	    // Displays name
+<<<<<<< HEAD
 		print "<tr><td colspan=50><hr><span class=bold>" . "     " . text($name{"fname"}) . " " . text($name{"lname"}) . "</span><br><br></td></tr><tr>\n";
         //==================================
 
     if ($iter{'code_type'} === 'COPAY' || $iter{'code_type'} === 'Patient Payment' || $iter{'code_type'} === 'Insurance Payment' ) { 
 
       print "<td width=40><span class=text><center><b>" . xlt("Units") . "</b></center>";
+=======
+
+		print "<tr><td colspan=10><hr><span class=bold>" . text($name{"fname"}) . " " . text($name{"lname"}) . "</span><br><br></td></tr><tr>\n";
+        //==================================
+
+    if (text($iter{'code_type'}) === 'COPAY' || text($iter{'code_type'}) === 'Patient Payment' || text($iter{'code_type'}) === 'Insurance Payment' ) { 
+
+      print "<td width=100><span class=text><center><b>" . xlt("Units") . "</b></center>";
+>>>>>>> DaySheet report (end of day report) , take 2.
       print "</span></td><td width=100><span class=text><center><b>" . xlt("Fee"). "</b></center>" ;
       print "</span></td><td width=100><span class=text><center><b>" . xlt("Code"). "</b></center>" ;
       print "</span></td><td width=100><span class=text><b>";
 	  print "</span></td><td width=100><span class=text><center><b>" . xlt("User"). "</b></center>";
+<<<<<<< HEAD
       print "</span></td><td width=100><span class=small><b>";
+=======
+      print "</span></td><td width=100><span class=small><b>" ;
+>>>>>>> DaySheet report (end of day report) , take 2.
       print "</span></td><td width=100><span class=small><center><b>". xlt("Post Date"). "</b></center>";
       print "</span></td><td></tr><tr>\n";
 	 }
 	 else
 	 {
+<<<<<<< HEAD
       print "<td width=40><span class=text><b><center>" . xlt("Units"). "</b></center>"; 
+=======
+      print "<td width=100><span class=text><b><center>" . xlt("Units"). "</b></center>"; 
+>>>>>>> DaySheet report (end of day report) , take 2.
       print "</span></td><td width=100><span class=text><center><b>" . xlt("Fee"). "</b></center>"; 
       print "</span></td><td width=100><span class=text><center><b>" . xlt("Code") . "</b></center>";
       print "</span></td><td width=100><span class=text><b><center>" . xlt("Provider Id"). "</b></center>";
       print "</span></td><td width=100><span class=text><b><center>" . xlt("User"). "</b></center>";
       print "</span></td><td width=100><span class=small><center><b>" . xlt("Bill Date"). "</b></center>"; 
       print "</span></td><td width=100><span class=small><center><b>". xlt("Date of Service"). "</b></center>";
+<<<<<<< HEAD
       print "</span></td><td width=100><span class=small><center><b>". xlt("Encounter"). "</b></center>";
+=======
+>>>>>>> DaySheet report (end of day report) , take 2.
       print "</span></td><td></tr><tr>\n";
 
      }   
         //Next patient
+<<<<<<< HEAD
 		$old_pid = $iter{"pid"};
+=======
+
+		$old_pid = $iter{'pid'};
+        
+	
+>>>>>>> DaySheet report (end of day report) , take 2.
     }
     
 	// get dollar amounts to appear on pat,ins payments and copays
 	
 	if ($iter{'code_type'} != 'payment_info') {
+<<<<<<< HEAD
 	if ($iter{'code_type'} === 'COPAY' || $iter{'code_type'} === 'Patient Payment' || $iter{'code_type'} === 'Insurance Payment' ) {  
 	   print "<td width=40><span class=text><center>" . "1". "</center>" ;
+=======
+	if (text($iter{'code_type'}) === 'COPAY' || text($iter{'code_type'}) === 'Patient Payment' || text($iter{'code_type'}) === 'Insurance Payment' ) {  
+	   print "<td width=100><span class=text><center>" . "1". "</center>" ;
+>>>>>>> DaySheet report (end of day report) , take 2.
 	  
 	  // start fee output
 	  //    [pat_code] => 0.00
@@ -416,6 +493,7 @@ if ($totals_only != 1) {
 	  //    [pat_adjust_dollar] => 0.00
 	  //    [ins_adjust_dollar] => 0.00
 	  if (($iter{'ins_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
+<<<<<<< HEAD
 	   print  "</span></td><td width=100><span class=text><center>" . text("(". $iter{'ins_adjust_dollar'}.")"). "</center>";
 	  }
 	  if (($iter{'ins_code'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
@@ -437,10 +515,40 @@ if ($totals_only != 1) {
 	 }
 	 if (($iter{'pat_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Patient Payment' ){
 	     print  "</span></td><td width=250><span class=text><center>" . xlt('Patient Adjustment'). "</center>";
+=======
+	   $line_total_pay = $line_total_pay + $iter{'ins_adjust_dollar'};
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'ins_adjust_dollar'}). "</center>";
+	  }
+	  if (($iter{'ins_code'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
+	  	   $line_total_pay = $line_total_pay + $iter{'ins_code'};
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'ins_code'}). "</center>";
+	  }
+	  if (($iter{'code_type'}) != 'Patient Payment' AND ($iter{'code_type'}) != 'Insurance Payment' ){
+	  	   $line_total_pay = $line_total_pay + $iter{"code"};
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{"code"}). "</center>";
+	  }
+	  if (($iter{'pat_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Patient Payment' ){
+	  	   $line_total_pay = $line_total_pay + $iter{'pat_adjust_dollar'};
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'pat_adjust_dollar'}). "</center>";
+	  }
+	  if (($iter{'pat_code'}) != 0 AND ($iter{'code_type'}) === 'Patient Payment' ){
+	  	   $line_total_pay = $line_total_pay + $iter{'pat_code'};
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'pat_code'}). "</center>";
+	  }
+
+      // end fee output
+	  
+	 if (($iter{'ins_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
+	     print  "</span></td><td width=250><span class=text><center>" . xlt("Insurance Adjustment"). "</center>";
+	 }
+	 if (($iter{'pat_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Patient Payment' ){
+	     print  "</span></td><td width=250><span class=text><center>" . xlt("Patient Adjustment"). "</center>";
+>>>>>>> DaySheet report (end of day report) , take 2.
 	 }
 	 if (($iter{'ins_code'}) > 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
 	     print  "</span></td><td width=250><span class=text><center>" . xlt('Insurance Payment'). "</center>";
 	 }
+<<<<<<< HEAD
 	 if (($iter{'pat_code'}) > 0 AND ($iter{'code_type'}) === 'Patient Payment' AND $iter{'paytype'} != 'PCP' ){
 	     print  "</span></td><td width=250><span class=text><center>" . xlt('Patient Payment'). "</center>";
 	 }
@@ -455,10 +563,27 @@ if ($totals_only != 1) {
 	 }
 	 if (($iter{'code_type'}) != 'Insurance Payment' AND ($iter{'code_type'}) != 'Patient Payment' AND $iter{'paytype'} != 'PCP') {
 	     print  "</span></td><td width=100><span class=text><center>" . text($iter{'code_type'}). "</center>";
+=======
+	 if (($iter{'pat_code'}) > 0 AND ($iter{'code_type'}) === 'Patient Payment' AND text($iter{'paytype'}) != 'PCP' ){
+	     print  "</span></td><td width=250><span class=text><center>" . xlt('Patient Payment'). "</center>";
+	 }
+	 if (($iter{'ins_code'}) < 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
+	     print  "</span></td><td width=250><span class=text><center>" . xlt("Insurance Credit"). "</center>";
+	 }
+	 if (($iter{'pat_code'}) < 0 AND ($iter{'code_type'}) === 'Patient Payment' AND text($iter{'paytype'}) != 'PCP' ){
+	     print  "</span></td><td width=250><span class=text><center>" . xlt("Patient Credit"). "</center>";
+	 }
+	 if (text($iter{'paytype'}) == 'PCP') { 
+	  print  "</span></td><td width=250><span class=text><center>" . xlt('COPAY'). "</center>";
+	 }
+	 if (($iter{'code_type'}) != 'Insurance Payment' AND ($iter{'code_type'}) != 'Patient Payment' AND text($iter{'paytype'}) != 'PCP') {
+	     print  "</span></td><td width=250><span class=text><center>" . text($iter{'code_type'}). "</center>";
+>>>>>>> DaySheet report (end of day report) , take 2.
 	 }
       print  "</span></td><td width=100><span class=text><center>" . text($iter{'provider_id'}). "</center>"; 
       print  "</span></td><td width=100><span class=text><center>" . text($iter{'user'}). "</center>" ;
       print  "</span></td><td width=100><span class=text>";
+<<<<<<< HEAD
       print  "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{"date"}))). "</center>";
       print  "</span></td>\n";
 	}
@@ -479,11 +604,34 @@ if ($totals_only != 1) {
        print "</span></td><td width=100><span class=text><center>" . xlt("Not Billed"). "</center>";
        print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'date'}))). "</center>";
        print "</span></td><td width=100><span class=small><center>" . text($iter{'encounter'}). "</center>";
+=======
+      print  "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'date'}))). "</center>";
+      print  "</span></td>\n";
+
+	}
+	else
+	{
+	  if (text(date("Y-m-d",strtotime($iter{'bill_date'}))) == "1969-12-31") { 
+       print "<td width=100><span class=text><center>" . text($iter{'units'}) . "</center>" ;
+       print "</span></td><td width=100><span class=text><center>" . text($iter{'fee'}) . "</center>";
+       if ($GLOBALS['language_default'] === 'English (Standard)'){
+	     print "</span></td><td width=250><span class=text><center>" . ucwords(strtolower(substr(text($iter{'code_text'}),0,38))) . "</center>";
+	   }
+	   else
+	   {
+	     print "</span></td><td width=250><span class=text><center>" . substr(text($iter{'code_text'}),0,38) . "</center>";
+	   }
+       print "</span></td><td width=100><span class=text><center>" . text($iter{'provider_id'}) . "</center>" ;
+       print "</span></td><td width=100><span class=text><center>" . text($iter{'user'}) . "</center>" ;
+       print "</span></td><td width=100><span class=text><center>" . xlt('Not Billed'). "</center>";
+       print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'date'}))). "</center>";
+>>>>>>> DaySheet report (end of day report) , take 2.
        print "</span></td>\n";
 	 }
 	 else
 	 {
 	  if ($iter{'fee'} != 0) {
+<<<<<<< HEAD
       print "<td width=40><span class=text><center>" . text($iter{"units"}) . "</center>";
       print "</span></td><td width=100><span class=text><center>" . text($iter{'fee'}) . "</center>";
       if ($GLOBALS['language_default'] === 'English (Standard)'){
@@ -498,6 +646,22 @@ if ($totals_only != 1) {
       print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'bill_date'}))) . "</center>";
       print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'date'}))). "</center>";
       print "</span></td><td width=100><span class=small><center>" . text($iter{'encounter'}). "</center>";
+=======
+	  $line_total = $line_total + $iter{'fee'};
+      print "<td width=100><span class=text><center>" . text($iter{"units"}) . "</center>";
+      print "</span></td><td width=100><span class=text><center>" . text($iter{'fee'}) . "</center>";
+       if ($GLOBALS['language_default'] === 'English (Standard)'){
+	     print "</span></td><td width=250><span class=text><center>" . ucwords(strtolower(substr(text($iter{'code_text'}),0,38))) . "</center>";
+	   }
+	   else
+	   {
+	     print "</span></td><td width=250><span class=text><center>" . substr(text($iter{'code_text'}),0,38) . "</center>";
+	   }
+      print "</span></td><td width=100><span class=text><center>" . text($iter{'provider_id'}) . "</center>";
+      print "</span></td><td width=100><span class=text><center>" . text($iter{'user'}) . "</center>";
+      print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{'bill_date'}))) . "</center>";
+      print "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{"date"}))). "</center>";
+>>>>>>> DaySheet report (end of day report) , take 2.
       print "</span></td>\n";
 	  }
 	 }
@@ -511,11 +675,23 @@ if ($totals_only != 1) {
     }
     $itero = $iter;
 
+<<<<<<< HEAD
 }
+=======
+	     if ($old_pid != $new_old_pid AND ($iter{'code_type'} != 'payment_info')) {
+	 	    $new_old_pid = $old_pid;
+		 }
+}
+
+>>>>>>> DaySheet report (end of day report) , take 2.
 }
 // end totals only
 
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> DaySheet report (end of day report) , take 2.
 // end for
 }
 
@@ -707,23 +883,54 @@ $user_info['patpay'][$k]  = $us19_patpay;
 ++$k;		
 }
 
+<<<<<<< HEAD
+=======
+if ($totals_only != 1) {	
+	    
+			 if ($line_total != 0) {
+			  print "<td width=100><br><span class=text><b><center>" . xlt('Total') . "</b></center>";
+			  Printf ("<br></span></td><td width=100><span class=text><center>"." %1\$.2f",$line_total). "</center></span></td>\n<br>"; 
+			  print "</tr><tr>\n";
+			 }
+			 else
+			 {
+			  print "<td width=100><br><span class=text><b><center>" . xlt('Total') . "</b></center>";
+			  Printf ("<br></span></td><td width=100><span class=text><center>"." %1\$.2f",$line_total_pay). "</center></td>\n<br>"; 
+			  print "</tr><tr>\n";
+			 }
+}
+>>>>>>> DaySheet report (end of day report) , take 2.
 if ($totals_only == 1) {
 $from_date = oeFormatShortDate(substr($query_part_day,37,10));
 $to_date = oeFormatShortDate(substr($query_part_day,63,10));
 print "<br><br>";
+<<<<<<< HEAD
 ?><font size = 5 ><?php echo xlt('Totals for '). $from_date . ' ' . xlt('To') . ' ' . $to_date ?></font><?php
+=======
+
+?><font size = 5 ><?php echo xlt('Totals for '). $from_date . xlt(" To ") . $to_date ?></font><?php
+>>>>>>> DaySheet report (end of day report) , take 2.
 }
 
 for ($i=1 ; $i<$k; ) {
 print "<table border=1><tr>\n";
 print "<br><br>";
 
+<<<<<<< HEAD
 Printf ("<td width=70><span class=text><b>". xlt("User "). "</center></b><center>".text($user_info[user][$i])). "</center>";
 Printf ("<td width=140><span class=text><b><center>". xlt("Charges") . ' ' ."</center></b><center>"." %1\$.2f",text($user_info[fee][$i])). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",text($user_info[insadj][$i])). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments") . ' ' . "</center></b><center>"."%1\$.2f",text($user_info[inspay][$i])). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'. '."</center></b><center>"."%1\$.2f",text($user_info[patadj][$i])). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments"). ' ' ."</center></b><center>"."%1\$.2f",text($user_info[patpay][$i])). "</center>"; 
+=======
+Printf ("<td width=70><span class=text><b><center>". xlt("User "). "</center></b><center>".$user_info[user][$i]). "</center>";
+Printf ("<td width=140><span class=text><b><center>". xlt("Charges ")."</center></b><center>"." %1\$.2f",$user_info[fee][$i]). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",$user_info[insadj][$i]). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments ")."</center></b><center>"."%1\$.2f",$user_info[inspay][$i]). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'. '."</center></b><center>"."%1\$.2f",$user_info[patadj][$i]). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments ")."</center></b><center>"."%1\$.2f",$user_info[patpay][$i]). "</center>"; 
+>>>>>>> DaySheet report (end of day report) , take 2.
 
 $gtotal_fee = $gtotal_fee + $user_info[fee][$i];
 $gtotal_insadj = $gtotal_insadj + $user_info[insadj][$i];
@@ -738,12 +945,21 @@ print "</br></td>";
 print "<table border=1><tr>\n";
 print "<br><br>";
 
+<<<<<<< HEAD
 Printf ("<td width=70><span class=text><b><center>". xlt("Grand Totals").' ');
 Printf ("<td width=140><span class=text><b><center>". xlt("Total Charges").' '."</center></b><center>"." %1\$.2f",text($gtotal_fee)). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",text($gtotal_insadj)). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments") . ' ' ."</center></b><center>"."%1\$.2f",text($gtotal_inspay)). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'. '."</center></b><center>"."%1\$.2f",text($gtotal_patadj)). "</center>"; 
 Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments"). ' ' . "</center></b><center>"."%1\$.2f",text($gtotal_patpay)). "</center>"; 
+=======
+Printf ("<td width=70><span class=text><b><center>". xlt("Grand Totals "));
+Printf ("<td width=140><span class=text><b><center>". xlt("Total Charges ")."</center></b><center>"." %1\$.2f",$gtotal_fee). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",$gtotal_insadj). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments ")."</center></b><center>"."%1\$.2f",$gtotal_inspay). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'.'."</center></b><center>"."%1\$.2f",$gtotal_patadj). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments ")."</center></b><center>"."%1\$.2f",$gtotal_patpay). "</center>"; 
+>>>>>>> DaySheet report (end of day report) , take 2.
 
 print "</br></td>";
 print "</table>";
