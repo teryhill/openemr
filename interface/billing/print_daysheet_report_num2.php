@@ -457,8 +457,8 @@ if ($totals_only != 1) {
 	 if (($iter{'code_type'}) != 'Insurance Payment' AND ($iter{'code_type'}) != 'Patient Payment' AND $iter{'paytype'} != 'PCP') {
 	     print  "</span></td><td width=100><span class=text><center>" . text($iter{'code_type'}). "</center>";
 	 }
-      print  "</span></td><td width=100><span class=text><center>" . $iter{'provider_id'}. "</center>"; 
-      print  "</span></td><td width=100><span class=text><center>" . $iter{'user'}. "</center>" ;
+      print  "</span></td><td width=100><span class=text><center>" . text($iter{'provider_id'}). "</center>"; 
+      print  "</span></td><td width=100><span class=text><center>" . text($iter{'user'}). "</center>" ;
       print  "</span></td><td width=100><span class=text>";
       print  "</span></td><td width=100><span class=small><center>" . text(date("Y-m-d",strtotime($iter{"date"}))). "</center>";
       print  "</span></td>\n";
