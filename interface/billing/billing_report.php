@@ -228,7 +228,7 @@ function SubmitTheScreenPrint()
   document.the_form.action='print_daysheet_report_num3.php';
 <?php } ?>
 
-  document.the_form.submit();
+  document.the_form.submit(); 
   return true;
  }
 function SubmitTheScreenExportOFX()
