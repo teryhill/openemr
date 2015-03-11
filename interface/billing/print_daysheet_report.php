@@ -956,9 +956,9 @@ if ($totals_only != 1) {
 	
 	if ($iter{'code_type'} != 'payment_info') {
 	 if ($iter{'code_type'} === 'COPAY' || $iter{'code_type'} === 'Patient Payment' || $iter{'code_type'} === 'Insurance Payment' ) {  
-	   print "<td width=70><span class=text><center>" . (date("Y-m-d",strtotime($iter{'date'}))). "</center>" ;
-	   print "</span></td><td width=50><span class=text><center>" . $iter{'pid'} . "</center>";
-       print "</span></td><td width=180><span class=text><center>" . $iter{'last'} . ", " . $iter{'first'} ."</center>";  
+	   print "<td width=70><span class=text><center>" . text(date("Y-m-d",strtotime($iter{'date'}))). "</center>" ;
+	   print "</span></td><td width=50><span class=text><center>" . text($iter{'pid'}) . "</center>";
+       print "</span></td><td width=180><span class=text><center>" . text($iter{'last'}) . ", " . text($iter{'first'}) ."</center>";  
 	  if (($iter{'ins_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
 	   print  "</span></td><td width=180><span class=text><center>" . xlt('Insurance Adjustment'). "</center>";
 	  }
@@ -985,26 +985,26 @@ if ($totals_only != 1) {
       print  "</span></td><td width=100><span class=text>";	  
 	  if (($iter{'ins_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
 	   $line_total_pay = $line_total_pay + $iter{'ins_adjust_dollar'};
-	   print  "</span></td><td width=100><span class=text><center>" . $iter{'ins_adjust_dollar'}. "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'ins_adjust_dollar'}). "</center>";
 	  }
 	  if (($iter{'ins_code'}) != 0 AND ($iter{'code_type'}) === 'Insurance Payment' ){
 	   $line_total_pay = $line_total_pay + $iter{'ins_code'};
-	   print  "</span></td><td width=100><span class=text><center>" . $iter{'ins_code'}. "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'ins_code'}). "</center>";
 	  }
 	  if (($iter{'code_type'}) != 'Patient Payment' AND ($iter{'code_type'}) != 'Insurance Payment' ){
 	   $line_total_pay = $line_total_pay + $iter{'code'};
-	   print  "</span></td><td width=100><span class=text><center>" . $iter{'code'}. "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'code'}). "</center>";
 	  }
 	  if (($iter{'pat_adjust_dollar'}) != 0 AND ($iter{'code_type'}) === 'Patient Payment' ){
 	   $line_total_pay = $line_total_pay + $iter{'pat_adjust_dollar'};
-	   print  "</span></td><td width=100><span class=text><center>" . $iter{'pat_adjust_dollar'}. "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'pat_adjust_dollar'}). "</center>";
 	  }
 	  if (($iter{'pat_code'}) != 0 AND ($iter{'code_type'}) === 'Patient Payment' ){
 	   $line_total_pay = $line_total_pay + $iter{'pat_code'};
-	   print  "</span></td><td width=100><span class=text><center>" . $iter{'pat_code'}. "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'pat_code'}). "</center>";
       }
 	  if (($iter{'code_type'}) != 'Insurance Payment' AND ($iter{'code_type'}) != 'Patient Payment' AND $iter{'paytype'} != 'PCP') {
-	   print  "</span></td><td width=100><span class=text><center>" . $iter{'code_type'}. "</center>";
+	   print  "</span></td><td width=100><span class=text><center>" . text($iter{'code_type'}). "</center>";
 	  }
       print  "</span></td><td width=100><span class=text>";
       print  "</span></td>\n";
@@ -1014,19 +1014,19 @@ if ($totals_only != 1) {
 	{
 	  if ($iter{'fee'} != 0) {
 	  $line_total = $line_total + $iter{'fee'};
-      print "<td width=70><span class=text><center>" . (date("Y-m-d",strtotime($iter{'date'}))) . "</center>";
-      print "</span></td><td width=50><span class=text><center>" . $iter{'pid'} . "</center>";
-      print "</span></td><td width=180><span class=text><center>" . $iter{'last'} . ", " . $iter{'first'} . "</center>";
+      print "<td width=70><span class=text><center>" . text(date("Y-m-d",strtotime($iter{'date'}))) . "</center>";
+      print "</span></td><td width=50><span class=text><center>" . text($iter{'pid'}) . "</center>";
+      print "</span></td><td width=180><span class=text><center>" . text($iter{'last'}) . ", " . text($iter{'first'}) . "</center>";
 	  if ($GLOBALS['language_default'] === 'English (Standard)'){
-         print "</span></td><td width=100><span class=text><center>" . ucwords(strtolower(substr($iter{'code_text'},0,25))) . "</center>";
+         print "</span></td><td width=100><span class=text><center>" . text(ucwords(strtolower(substr($iter{'code_text'},0,25)))) . "</center>";
 	   }
 	   else
 	   {
-         print "</span></td><td width=100><span class=text><center>" . substr($iter{'code_text'},0,25) . "</center>";
+         print "</span></td><td width=100><span class=text><center>" . text(substr($iter{'code_text'},0,25)) . "</center>";
 	   }
-      print "</span></td><td width=100><span class=text><center>" . $iter{'code'} . "</center>";
-      print "</span></td><td width=100><span class=small><center>" . substr($iter{'justify'},5,3) . "</center>";
-      print "</span></td><td width=100><span class=small><center>" . $iter{'fee'}. "</center>";
+      print "</span></td><td width=100><span class=text><center>" . text($iter{'code'}) . "</center>";
+      print "</span></td><td width=100><span class=small><center>" . text(substr($iter{'justify'},5,3)) . "</center>";
+      print "</span></td><td width=100><span class=small><center>" . text($iter{'fee'}). "</center>";
       print "</span></td>\n";
 	  }
 	}
