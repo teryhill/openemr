@@ -147,7 +147,7 @@ if ($code_type === 'all') {
 if (isset($_GET["mode"]) && $_GET["mode"] === 'bill') {
     billCodesList($list);
 }
-
+		
 $res_count = 0;
 $N = 1;
 $k = 1;

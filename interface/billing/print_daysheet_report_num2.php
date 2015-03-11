@@ -177,7 +177,6 @@ foreach ($ret as $iter) {
 $user_list = array_unique($catch_user);
 // reorder the list starting with array element zero
 $final_list = array_values($user_list);
-
 // sort array in assending order
 sort($final_list);
 
@@ -739,12 +738,12 @@ print "</br></td>";
 print "<table border=1><tr>\n";
 print "<br><br>";
 
-Printf ("<td width=70><span class=text><b><center>". xlt("Grand Totals") . ' ');
-Printf ("<td width=140><span class=text><b><center>". xlt("Total Charges") . ' ' . "</center></b><center>"." %1\$.2f",$gtotal_fee). "</center>"; 
-Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",$gtotal_insadj). "</center>"; 
-Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments") . ' ' . "</center></b><center>"."%1\$.2f",$gtotal_inspay). "</center>"; 
-Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'.'."</center></b><center>"."%1\$.2f",$gtotal_patadj). "</center>"; 
-Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments") . ' ' . "</center></b><center>"."%1\$.2f",$gtotal_patpay). "</center>"; 
+Printf ("<td width=70><span class=text><b><center>". xlt("Grand Totals").' ');
+Printf ("<td width=140><span class=text><b><center>". xlt("Total Charges").' '."</center></b><center>"." %1\$.2f",text($gtotal_fee)). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Adj").'. '."</center></b><center>"."%1\$.2f",text($gtotal_insadj)). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Insurance Payments") . ' ' ."</center></b><center>"."%1\$.2f",text($gtotal_inspay)). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Patient Adj").'. '."</center></b><center>"."%1\$.2f",text($gtotal_patadj)). "</center>"; 
+Printf ("<td width=140><span class=text><b><center>". xlt("Patient Payments"). ' ' . "</center></b><center>"."%1\$.2f",text($gtotal_patpay)). "</center>"; 
 
 print "</br></td>";
 print "</table>";
