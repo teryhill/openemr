@@ -1,10 +1,18 @@
 <?php
-// Copyright (C) 2009-2010 Rod Roark <rod@sunsetsystems.com>
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+/**
+ * Copyright (C) 2009-2015 Rod Roark <rod@sunsetsystems.com>
+ *
+ * 2015\03\25 I added the code to allow the postal code lookup (TLH)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * @package OpenEMR
+ * @author  Rod Roark <rod@sunsetsystems.com>
+ * @author  Terry Hill <terry@lillysystems.com>
+ * @link    http://www.open-emr.org
+*/
 
 require_once("../globals.php");
 require_once("$srcdir/acl.inc");
@@ -450,6 +458,8 @@ while ($frow = sqlFetchArray($fres)) {
   $list_id    = $frow['list_id'];
   $currvalue  = '';
 
+ if (substr($this_group,1,8) === 'Employer' && $GLOBALS['omit_employers']) continue;
+  
   if (strpos($field_id, 'em_') === 0) {
     $tmp = substr($field_id, 3);
     if (isset($result2[$tmp])) $currvalue = $result2[$tmp];
