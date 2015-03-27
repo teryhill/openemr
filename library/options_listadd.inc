@@ -20,7 +20,6 @@
 <div id="newlistitem" class="body_top" style="border: 2px outset #666; display:none; position:absolute; padding:5px; ">
  <input type="hidden" name="newlistitem_listid" id="newlistitem_listid" value="">
  <input type="hidden" name="newlistitem_fieldid" id="newlistitem_fieldid" value="">
- <input type="hidden" name="newlistitem_fieldid" id="newlistitem_fieldid" value="">
  <div id="specificForm">
  </div>
  <div style = 'text-align:center;'>

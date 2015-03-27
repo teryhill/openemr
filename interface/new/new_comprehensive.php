@@ -170,14 +170,14 @@ function auto_populate_city_state_record() {
 					document.getElementById('form_state').value = responce.state;
 					document.getElementById('form_country_code').focus();
 				} else {
-					alert('Postal mismatch: Data was retrieved, but the postal was wrong.');
+					alert("<?php xl('Postal mismatch: Data was retrieved, but the postal was wrong.'); ?>");
 				}
 			} else {
 				alert(responce.fail);
 			}
 		},
 		error: function() {
-			alert('Server Error: An unknown error occurred on the server.');
+			alert("<?php xl('Server Error: An unknown error occurred on the server.'); ?>");
 		}
 	});
 }

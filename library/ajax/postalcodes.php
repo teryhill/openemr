@@ -37,5 +37,5 @@ $postcode = sqlQuery('SELECT `notes` AS `city`, `mapping` AS `state`, `title` AS
 
 	echo json_encode($postcode);
 } else {
-	echo json_encode(array('fail' => 'Postal Code not provided.'));
+	echo json_encode(array('fail' => xl('Postal Code not provided.')));
 }
