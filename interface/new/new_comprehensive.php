@@ -154,6 +154,34 @@ function auto_populate_employer_address<?php echo $i ?>(){
 
 <?php } ?>
 
+function auto_populate_city_state_record() {
+	$.ajax({
+		url: "../../library/ajax/postalcodes.php",
+		type: "post",
+		data: {
+			"potal": document.getElementById('form_postal_code').value,
+		},
+		async: true,
+		success: function(responce) {
+			responce = JSON.parse(responce);
+			if(responce.fail === undefined || responce.fail === '') {
+				if(responce.postal == document.getElementById('form_postal_code').value) {
+					document.getElementById('form_city').value = responce.city;
+					document.getElementById('form_state').value = responce.state;
+					document.getElementById('form_country_code').focus();
+				} else {
+					alert('Postal mismatch: Data was retrieved, but the postal was wrong.');
+				}
+			} else {
+				alert(responce.fail);
+			}
+		},
+		error: function() {
+			alert('Server Error: An unknown error occurred on the server.');
+		}
+	});
+}
+
 function upperFirst(string,text) {
  return replace(string,text,text.charAt(0).toUpperCase() + text.substring(1,text.length));
 }
@@ -740,6 +768,12 @@ if (! $GLOBALS['simplified_demographics']) {
 </body>
 
 <script language="JavaScript">
+
+ <?php if($GLOBALS['postal_custom_addlist_widget']) { ?>
+$(document).ready(function() {
+ $("#form_postal_code").change(function() { auto_populate_city_state_record(); });
+});
+<?php } ?>
 
 // fix inconsistently formatted phone numbers from the database
 var f = document.forms[0];

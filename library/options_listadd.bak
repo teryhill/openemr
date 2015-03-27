@@ -6,8 +6,6 @@
  * demographics, history, and referral screens. This code could be used elsewhere
  * as long as it had the required supporting HTML and JS
  *
- * 03\24\2015 added code to support postal code add (TLH)
- *
  * REQUIRED to make work:
  *  - jQuery
  *  - form element with the class '.addtolist'
@@ -19,7 +17,6 @@
 <!-- hidden DIV used for creating new list items -->
 <div id="newlistitem" class="body_top" style="border: 2px outset #666; display:none; position:absolute; padding:5px; ">
  <input type="hidden" name="newlistitem_listid" id="newlistitem_listid" value="">
- <input type="hidden" name="newlistitem_fieldid" id="newlistitem_fieldid" value="">
  <input type="hidden" name="newlistitem_fieldid" id="newlistitem_fieldid" value="">
  <div id="specificForm">
  </div>
@@ -36,7 +33,6 @@
 
     // collect the custom state widget flag
     var stateCustomFlag = "<?php echo $GLOBALS['state_custom_addlist_widget']; ?>"
-    var postalCustomFlag = "<?php echo $GLOBALS['postal_custom_addlist_widget']; ?>"
     
     // generic form for input box
     var generic = "<input type='textbox' name='newlistitem_value' id='newlistitem_value' size='20' maxlength='50'>"
@@ -44,23 +40,14 @@
     // state form for input box
     var state   = "\
 <ul style='list-style-type:none; margin:0; padding:0;'>\
- <li style='font-weight:bold; font-size:120%; text-align:center;'>  <?php echo xlt('Enter new State'); ?> </li>\
- <li style='margin:0.5em 0 0 0; padding:0;'> <?php echo xlt('Full Name'). ':'; ?>\
-  <input type='textbox' name='newlistitem_value' id='newlistitem_value' size='20' maxlength='50'></li>\
- <li style='margin:0.5em 0 0 0; padding:0;'> <?php echo xlt('Abbreviation') .':'; ?>\
-  <input type='textbox' name='newlistitem_abbr' id='newlistitem_abbr' size='10' maxlength='50'></li>\
-</ul>\
-"
-    // Postal Code form for input box
-    var postal   = "\
-<ul style='list-style-type:none; margin:0; padding:0;'>\
- <li style='font-weight:bold; font-size:120%; text-align:center;'> <?php echo xlt('Enter new Postal Code'); ?> </li>\
- <li style='margin:0.5em 0 0 0; padding:0;'> <?php echo xlt('Code'). ':'; ?>\
-  <input type='textbox' name='newlistitem_abbr' id='newlistitem_abbr' size='5' maxlength='10'></li>\
- <li style='margin:0.5em 0 0 0; padding:0;'> <?php echo xlt('City') .':'; ?>\
-  <input type='textbox' name='newlistitem_value' id='newlistitem_value' size='20' maxlength='50'></li>\
- <li style='margin:0.5em 0 0 0; padding:0;'> <?php echo xlt('State') .':'; ?>\
-   <input type='textbox' name='newlistitem_city' id='newlistitem_city' size='2' maxlength='2'></li>\
+ <li style='font-weight:bold; font-size:120%; text-align:center;'>\
+  <?php echo htmlspecialchars(xl('Enter new State'),ENT_NOQUOTES); ?></li>\
+ <li style='margin:0.5em 0 0 0; padding:0;'>\
+  <?php echo htmlspecialchars(xl('Full Name', '', '', ':'),ENT_NOQUOTES); ?>\
+  <input type='textbox' name='newlistitem_value' id='newlistitem_value' size='20' maxlength='50'><li>\
+ <li style='margin:0.5em 0 0 0; padding:0;'>\
+  <?php echo htmlspecialchars(xl('Abbreviation', '', '', ':'),ENT_NOQUOTES); ?>\
+  <input type='textbox' name='newlistitem_abbr' id='newlistitem_abbr' size='10' maxlength='50'><li>\
 </ul>\
 "
 
@@ -82,7 +69,6 @@ $(document).ready(function(){
         // capture the ID of the list and specific field being modified from the object's ID
         $('#newlistitem_listid').val($(btnObj).attr("id").replace(/^addtolistid_/g, ""));
         $('#newlistitem_fieldid').val($(btnObj).attr("fieldid"));
-		$('#newlistitem_fieldid').val($(btnObj).attr("fieldid"));
 
         // REMOVE previous form
 	$("#specificForm").empty();
@@ -93,15 +79,6 @@ $(document).ready(function(){
          $("#specificForm").append(state);
 	 $('#newlistitem_value').val("");
 	 $('#newlistitem_abbr').val("");
-	}
-	else if (($("#newlistitem_listid").val() == "postal_codes") && (postalCustomFlag)) {
-	 // insert postal form and clear values
-         $("#specificForm").append(postal);
-	 $('#newlistitem_abbr').val("");
-	 $('#newlistitem_value').val("");
-	 $('#newlistitem_city').val("");
-
-
 	}
 	else {
 	 // insert generic form and clear values
@@ -119,13 +96,7 @@ $(document).ready(function(){
         topVal=e.pageY-(height/2)+"px";
         //show the DIV and set cursor focus
         $('#newlistitem').css({left:leftVal,top:topVal}).show();
-        if (($("#newlistitem_listid").val() == "postal_codes") && (postalCustomFlag)) {
-		$('#newlistitem_abbr').focus();
-		}
-		else
-		{
         $('#newlistitem_value').focus();
-		}
     };
    
     // hide the add-to-list DIV and clear its textbox
@@ -135,7 +106,6 @@ $(document).ready(function(){
     
     // save the new list item to the given list
     var SaveNewListItem = function(btnObj, e) {
-	if (($("#newlistitem_listid").val() != "postal_codes")) {
 	// VALIDATE the selected form
         //  Don't allow a number as first character
         //  Don't allow illegal characters (' and " for now) - still developing
@@ -150,7 +120,6 @@ $(document).ready(function(){
             $("#newlistitem_value").focus();
             return false;
         }
-	}	
 	//  Second, validate form specific fields
         if (($("#newlistitem_listid").val() == "state") && (stateCustomFlag)) {
             // state forms specific validation
@@ -173,19 +142,6 @@ $(document).ready(function(){
 	    var listid = $("#newlistitem_listid").val();
 	    var newitem = $('#newlistitem_value').val();
 	    var newitem_abbr = $('#newlistitem_abbr').val();
-		var newitem_city = "";
-	    
-	}	
-	else if (($("#newlistitem_listid").val() == "postal_codes") && (postalCustomFlag)) {
-	    // process postal form
-	    //  (note we have collected a title and abbreviation and city)
-	    var listid = $("#newlistitem_listid").val();
-		var newitem_abbr = $('#newlistitem_abbr').val();
-	    var newitem = $('#newlistitem_value').val();
-	    var newitem_city = $('#newlistitem_city').val();
-        var f = document.demographics_form;
-        f.form_city.value = $('#newlistitem_value').val();
-        f.form_state.value = $('#newlistitem_city').val();
 	    
 	}
 	else {
@@ -195,7 +151,6 @@ $(document).ready(function(){
 	    var listid = $("#newlistitem_listid").val();
 	    var newitem = $('#newlistitem_value').val();
 	    var newitem_abbr = $('#newlistitem_value').val();
-		var newitem_city = "";
 	}
 
         // make the AJAX call to save the new value to the specified list
@@ -204,7 +159,6 @@ $(document).ready(function(){
         $.getJSON("<?php echo $GLOBALS['webroot']; ?>/library/ajax/addlistitem.php",
                     {listid: listid,
 		     newitem: newitem,
-		     newitem_city: newitem_city,
 		     newitem_abbr: newitem_abbr},
                     function(jsondata, txtresponse) {
 		    	 if( jsondata.error == '' ){

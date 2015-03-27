@@ -1425,6 +1425,13 @@ $GLOBALS_METADATA = array(
       xl('Show the custom state form for the add list widget (will ask for title and abbreviation).')
     ),
 
+	'postal_custom_addlist_widget' => array(
+      xl('Postal Code List Widget Custom Fields'),
+      'bool',                           // data type
+      '1',                              // default
+      xl('Show the custom postal code form for the add list widget (will ask for postal code , city and state abbreviation).')
+    ),
+	
     'country_data_type' => array(
       xl('Country Data Type'),
       array(

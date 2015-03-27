@@ -2,7 +2,7 @@
 /**
  * Administration Lists Module.
  *
- * Copyright (C) 2007-2014 Rod Roark <rod@sunsetsystems.com>
+ * Copyright (C) 2007-2015 Rod Roark <rod@sunsetsystems.com>
  *
  * LICENSE: This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,10 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
  *
+ * Added Postal codes list changes 3/2015 (TLH)
+ *
  * @package OpenEMR
  * @author  Rod Roark <rod@sunsetsystems.com>
  * @author  Brady Miller <brady@sparmy.com>
  * @author  Teny <teny@zhservices.com> 
+ * @author  Terry Hill <terry@lillysystems.com> 
  * @link    http://www.open-emr.org
  */
 
@@ -356,7 +359,7 @@ function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping=''
   // IPPF includes the ability to map each list item to a "master" identifier.
   // Sports teams use this for some extra info for fitness levels.
   //
-  if ($GLOBALS['ippf_specific'] || $list_id == 'fitness') {
+  if ($GLOBALS['ippf_specific'] || $list_id == 'fitness' || $list_id == 'postal_codes') {
     echo "  <td align='center' class='optcell'>";
     echo "<input type='text' name='opt[$opt_line_no][mapping]' value='" .
         htmlspecialchars($mapping, ENT_QUOTES) . "' size='12' maxlength='15' class='optin' />";
@@ -367,14 +370,15 @@ function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping=''
   echo "<input type='text' name='opt[$opt_line_no][notes]' value='" .
       htmlspecialchars($notes, ENT_QUOTES) . "' size='25' maxlength='255' class='optin' />";
   echo "</td>\n";
-
-  echo "  <td align='center' class='optcell'>";
-  echo "<input type='text' name='opt[$opt_line_no][codes]' title='" .
+  if ($list_id != 'postal_codes') {
+    echo "  <td align='center' class='optcell'>";
+    echo "<input type='text' name='opt[$opt_line_no][codes]' title='" .
       xla('Clinical Term Code(s)') ."' value='" .
       htmlspecialchars($codes, ENT_QUOTES) . "' onclick='select_clin_term_code(this)' size='25' maxlength='255' class='optin' />";
-  echo "</td>\n";
-
-  echo " </tr>\n";
+    echo "</td>\n";
+  
+    echo " </tr>\n";
+  }
 }
 
 // Write a form line as above but for the special case of the Fee Sheet.
@@ -847,7 +851,14 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php echo xlt('Force Show'); ?></b></td>
 <?php } else { ?>
   <td title=<?php xl('Click to edit','e','\'','\''); ?>><b><?php  xl('ID','e'); ?></b></td>
-  <td><b><?php xl('Title'  ,'e'); ?></b></td>	
+  <td><b><?php 
+		   if ($list_id == 'postal_codes') {
+			xl('Postal Code','e');  
+		  }
+		  else {
+		  	xl('Title','e');
+		  } 
+  ?></b></td>  
   <?php //show translation column if not english and the translation lists flag is set 
   if ($GLOBALS['translate_lists'] && $_SESSION['language_choice'] > 1) {
     echo "<td><b>".xl('Translation')."</b><span class='help' title='".xl('The translated Title that will appear in current language')."'> (?)</span></td>";    
@@ -856,6 +867,8 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php xl('Default','e'); ?></b></td>
 <?php if ($list_id == 'taxrate') { ?>
   <td><b><?php xl('Rate'   ,'e'); ?></b></td>
+<?php } else if ($list_id == 'postal_codes') { ?>
+  <td><b><?php xl('State'  ,'e'); ?></b></td>    
 <?php } else if ($list_id == 'contrameth') { ?>
   <td><b><?php xl('Effectiveness','e'); ?></b></td>
 <?php } else if ($list_id == 'lbfnames') { ?>
@@ -872,11 +885,18 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php 
 		  if ($list_id == 'language') {
 		  	xl('ISO 639-2 Code','e');
-		  } else {
+		  } else if ($list_id == 'postal_codes') {
+			xl('City','e');  
+		  }
+		  else {
 		  	xl('Notes','e');
 		  } 
   ?></b></td>
-  <td><b><?php xl('Code(s)','e'); ?></b></td>
+  <td><b><?php 
+           if ($list_id != 'postal_codes') {
+			   xl('Code(s)','e');
+           }
+  ?></b></td>
 <?php } // end not fee sheet ?>
  </tr>
 
