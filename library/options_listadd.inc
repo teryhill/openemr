@@ -95,12 +95,10 @@ $(document).ready(function(){
 	}
 	else if (($("#newlistitem_listid").val() == "postal_codes") && (postalCustomFlag)) {
 	 // insert postal form and clear values
-         $("#specificForm").append(postal);
+     $("#specificForm").append(postal);
 	 $('#newlistitem_abbr').val("");
 	 $('#newlistitem_value').val("");
 	 $('#newlistitem_city').val("");
-
-
 	}
 	else {
 	 // insert generic form and clear values
@@ -170,22 +168,20 @@ $(document).ready(function(){
 	    // process state form
 	    //  (note we have collected a title and abbreviation)
 	    var listid = $("#newlistitem_listid").val();
-	    var newitem = $('#newlistitem_value').val();
-	    var newitem_abbr = $('#newlistitem_abbr').val();
-		var newitem_city = "";
-	    
+	    var newitem = $('#newlistitem_value').val().toUpperCase();
+	    var newitem_abbr = $('#newlistitem_abbr').val().toUpperCase();
+		var newitem_city = "";    
 	}	
 	else if (($("#newlistitem_listid").val() == "postal_codes") && (postalCustomFlag)) {
 	    // process postal form
 	    //  (note we have collected a title and abbreviation and city)
 	    var listid = $("#newlistitem_listid").val();
 		var newitem_abbr = $('#newlistitem_abbr').val();
-	    var newitem = $('#newlistitem_value').val();
-	    var newitem_city = $('#newlistitem_city').val();
+	    var newitem = $('#newlistitem_value').val().toUpperCase();
+	    var newitem_city = $('#newlistitem_city').val().toUpperCase();
         var f = document.demographics_form;
-        f.form_city.value = $('#newlistitem_value').val();
-        f.form_state.value = $('#newlistitem_city').val();
-	    
+        f.form_city.value = $('#newlistitem_value').val().toUpperCase();
+        f.form_state.value = $('#newlistitem_city').val().toUpperCase();    
 	}
 	else {
 	    // process generic form
