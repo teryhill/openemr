@@ -71,13 +71,6 @@ if ($exists_id) {
 	exit; 
 }
 
-if ($_GET['listid'] == 'postal_codes') {
- if (strlen(trim($title)) <5) { 
-	echo json_encode(array("error"=> xl('Postal Code must be at least 5 digits in length') ));
-	exit; 
- }
-}
-
 // determine the sequential order of the new item,
 // it should be the maximum number for the specified list plus one
 $seq = 0;
