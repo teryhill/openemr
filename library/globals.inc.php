@@ -920,6 +920,22 @@ $GLOBALS_METADATA = array(
       xl('This determines which color schema used for appointment')
     ),
 
+    'pat_trkr_timer' => array(
+      xl('Patient Flow Board Timer Interval'),
+      array(
+       '0' => '0',
+       '0:10' => '10',
+       '0:20' => '20',
+       '0:30' => '30',
+       '0:40' => '40',
+       '0:50' => '50',
+	   '0:59' => '60',
+      ),
+      '15',                              // default
+      xl('The screen refresh time in Seconds for the main Patient Flow Board Screen.').' ('.xl('Select 0 seconds to allow screen to be updated manually').')'
+
+    ),
+	
   ),
 
   // Security Tab

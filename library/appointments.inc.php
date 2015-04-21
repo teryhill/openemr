@@ -31,6 +31,65 @@ $ORDERHASH = array(
 	'status' => array( 'status', 'date', 'time', 'patient' )
 );
 
+function fetchtrkrEvents( $from_date, $to_date, $where_param = null, $orderby_param = null ) 
+{
+	
+if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
+	$getprovid = $_SESSION[authUserID];
+	$where =
+		"( (e.pc_endDate >= '$from_date' AND e.pc_eventDate <= '$to_date' AND p.lname != ' ' AND e.pc_recurrtype = '1' AND e.pc_aid = '$getprovid') OR " .
+  		  "(e.pc_eventDate >= '$from_date' AND p.lname != ' ' AND e.pc_eventDate <= '$to_date' AND e.pc_aid = '$getprovid') )";
+	}
+    else
+    {
+	$where =
+		"( (e.pc_endDate >= '$from_date' AND e.pc_eventDate <= '$to_date' AND p.lname != ' ' AND e.pc_recurrtype = '1') OR " .
+  		  "(e.pc_eventDate >= '$from_date' AND p.lname != ' ' AND e.pc_eventDate <= '$to_date') )";
+	}
+	if ( $where_param ) $where .= $where_param;
+	
+	$order_by = "e.pc_eventDate, e.pc_startTime";
+	if ( $orderby_param ) {
+		$order_by = $orderby_param;
+	}
+
+	$query = "SELECT " .
+  	"e.pc_eventDate, e.pc_endDate, e.pc_startTime, e.pc_endTime, e.pc_duration, e.pc_recurrtype, e.pc_recurrspec, e.pc_recurrfreq, e.pc_catid, e.pc_eid, " .
+  	"e.pc_title, e.pc_hometext, e.pc_apptstatus, " .
+	"t.id, t.user, t.date, t.roomnumber, t.pid, t.encnum, t.status, t.origappt, t.provider, t.arrivedatetime, t.inroomdatetime, t.drseendatetime, t.nurseseendatetime, t.techseendatetime, t.checkoutdatetime, " .
+  	"t.userdef1datetime, t.userdef1name, t.userdef2datetime, t.userdef2name, t.userdef3datetime, t.userdef3name, t.userdef4datetime, t.userdef4name, t.userdef5datetime, t.userdef5name, " .
+  	"t.userdef6datetime, t.userdef6name, t.userdef7datetime, t.userdef7name, t.userdef8datetime, t.userdef8name, t.userdef9datetime, t.userdef9name, t.userdef10datetime, t.userdef10name, " .
+  	"p.fname, p.mname, p.lname, p.pid, p.pubpid, p.phone_home, p.phone_cell, " .
+  	"u.fname AS ufname, u.mname AS umname, u.lname AS ulname, u.id AS uprovider_id, " .
+  	"c.pc_catname, c.pc_catid " .
+  	"FROM openemr_postcalendar_events AS e " .
+  	"LEFT OUTER JOIN patient_tracker AS t ON t.pid = e.pc_pid AND t.date = '$from_date' AND e.pc_starttime = t.origappt " .
+	"LEFT OUTER JOIN patient_data AS p ON p.pid = e.pc_pid " .
+  	"LEFT OUTER JOIN users AS u ON u.id = e.pc_aid " .
+	"LEFT OUTER JOIN openemr_postcalendar_categories AS c ON c.pc_catid = e.pc_catid " .
+	"WHERE $where " . 
+	"ORDER BY $order_by";
+
+	
+	$res = sqlStatement( $query );
+	$events = array();
+	if ( $res )
+	{
+		while ( $row = sqlFetchArray($res) ) 
+		{
+			// if it's a repeating appointment, fetch all occurances in date range
+			if ( $row['pc_recurrtype'] ) {
+				$reccuringEvents = getRecurringEvents( $row, $from_date, $to_date );
+				$events = array_merge( $events, $reccuringEvents );
+			} else {
+				$events []= $row;
+			}
+		}
+	}
+
+	return $events;
+}
+
 function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param = null ) 
 {
 	$where =

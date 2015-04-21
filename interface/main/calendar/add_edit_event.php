@@ -129,6 +129,16 @@ function DOBandEncounter()
    global $event_date,$info_msg;
 	 // Save new DOB if it's there.
 	 $patient_dob = trim($_POST['form_dob']);
+	 	 $tmph = $_POST['form_hour'] + 0;
+     $tmpm = $_POST['form_minute'] + 0;
+     if ($_POST['form_ampm'] == '2' && $tmph < 12) $tmph += 12;
+     $appttime = "$tmph:$tmpm:00";
+	 $track_date = date("Y-m-d H:i:s");
+	 $tkpid = $_POST['form_pid'];
+	 $tkprovider = $_POST['form_provider'];
+	 $tkstatus = $_POST['form_apptstatus'];
+	 $fill_dte   = "0000-00-00 00:00:00";
+	 
 	 if ($patient_dob && $_POST['form_pid']) {
 			 sqlStatement("UPDATE patient_data SET DOB = ? WHERE " .
 									 "pid = ?", array($patient_dob,$_POST['form_pid']) );
@@ -143,7 +153,148 @@ function DOBandEncounter()
 				 $info_msg .= xl("New encounter created with id"); 
 				 $info_msg .= " $encounter";
 		 }
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+           $username = $tmprow['username'];
+		     sqlInsert("INSERT INTO patient_tracker SET " .
+               "user = ?, " .
+			   "date = ?, " .
+               "pid = ?, " .
+			   "origappt = ?, " .
+			   "provider = ?, " .
+               "status = ?, " .
+        	   "arrivedatetime = ?, " .
+			   "arriveuser = ?, " .
+               "encnum = ? ",
+    			array($username,$event_date,$tkpid,$appttime,$tkprovider,$tkstatus,$track_date,$username,$encounter)
+    );	 
 	 }
+	 
+	     if ($GLOBALS['auto_create_new_encounters'] && $_POST['form_apptstatus'] == '~' && $event_date == date('Y-m-d'))
+	 {
+		 
+		 $encounter = todaysEncounterCheck($_POST['form_pid'], $event_date, $_POST['form_comments'], $_POST['facility'], $_POST['billing_facility'], $_POST['form_provider'], $_POST['form_category'], false);
+		 if($encounter){
+				 $info_msg .= xl("New encounter created with id"); 
+				 $info_msg .= " $encounter";
+		 }
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+           $username = $tmprow['username'];
+		     sqlInsert("INSERT INTO patient_tracker SET " .
+               "user = ?, " .
+			   "date = ?, " .
+               "pid = ?, " .
+        	   "origappt = ?, " .
+			   "provider = ?, " .
+               "status = ?, " .
+        	   "arrivedatetime = ?, " .
+			   "arriveuser = ?, " .
+               "encnum = ? ",
+    			array($username,$event_date,$tkpid,$appttime,$tkprovider,$tkstatus,$track_date,$username,$encounter)
+    );
+
+	 }
+	 
+ 	 if ($_POST['form_apptstatus'] == 'x' && $event_date == date('Y-m-d'))
+	 {
+
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+            $username = $tmprow['username'];
+		     sqlStatement("INSERT INTO patient_tracker SET " .
+			   "user = '$username', " .
+			   "date = '$event_date', " .
+			   "pid = '$tkpid', " .
+			   "origappt = '$appttime' , " .
+			   "provider = '$tkprovider', " .
+			   "checkoutuser = '$username', " .
+               "status = '$tkstatus', " .
+        	   "checkoutdatetime = '$track_date' ");
+
+	 }
+
+ 	 if ($_POST['form_apptstatus'] == '%' && $event_date == date('Y-m-d'))
+	 {
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+           $username = $tmprow['username'];
+		     sqlStatement("INSERT INTO patient_tracker SET " .
+			   "user = '$username', " .
+			   "date = '$event_date', " .
+			   "pid = '$tkpid', " .
+			   "origappt = '$appttime' , " .
+			   "provider = '$tkprovider', " .
+			   "checkoutuser = '$username', " .
+               "status = '$tkstatus', " .
+        	   "checkoutdatetime = '$track_date' ");
+
+	 }
+
+	 if ($_POST['form_apptstatus'] == '!' && $event_date == date('Y-m-d'))
+	 {
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+           $username = $tmprow['username'];
+             sqlStatement("UPDATE patient_tracker SET " .
+			   "user = '$username', " .
+			   "checkoutuser = '$username', " .
+               "status = '$tkstatus', " .
+        	   "checkoutdatetime = '$track_date' " . 
+				"WHERE pid = '$tkpid' AND date = '$event_date'");
+
+	 }
+
+ 	 if ($_POST['form_apptstatus'] == '?' && $event_date == date('Y-m-d'))
+	 {
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+           $username = $tmprow['username'];
+		     sqlStatement("INSERT INTO patient_tracker SET " .
+			   "user = '$username', " .
+			   "date = '$event_date', " .
+			   "pid = '$tkpid', " .
+			   "origappt = '$appttime' , " .
+			   "provider = '$tkprovider', " .
+			   "checkoutuser = '$username', " .
+               "status = '$tkstatus', " .	   
+        	   "checkoutdatetime = '$track_date' ");
+
+	 }
+	 
+	 	 if ($_POST['form_apptstatus'] == '>' && $event_date == date('Y-m-d'))
+	 {
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+           $username = $tmprow['username'];
+		     sqlStatement("UPDATE patient_tracker SET " .
+			   "user = '$username', " .
+               "status = '$tkstatus', " .
+			   "checkoutuser = '$username', " .
+        	   "checkoutdatetime = '$track_date' " . 
+				"WHERE pid = '$tkpid' AND date = '$event_date'");
+
+	 }
+	 
+	 	 	 if ($_POST['form_apptstatus'] == 'N' && $event_date == date('Y-m-d'))
+	 {
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+           $username = $tmprow['username'];
+		     sqlStatement("UPDATE patient_tracker SET " .
+			   "user = '$username', " .
+               "status = '$tkstatus', " .
+        	   "nurseseendatetime = '$track_date' ," .
+               "nurseseenuser = '$username', " .			   
+			   "drseendatetime = '$fill_dte' " .
+				"WHERE pid = '$tkpid' AND date = '$event_date'");
+
+	 }
+	 
+	 	 	 	 if ($_POST['form_apptstatus'] == 'D' && $event_date == date('Y-m-d'))
+	 {
+		   $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
+           $username = $tmprow['username'];
+		     sqlStatement("UPDATE patient_tracker SET " .
+			   "user = '$username', " .
+               "status = '$tkstatus', " .
+			   "drseenuser = '$username', " .
+        	   "drseendatetime = '$track_date' " . 
+				"WHERE pid = '$tkpid' AND date = '$event_date'");
+
+	 }  
  }
 //================================================================================================================
 
