@@ -259,6 +259,7 @@ if ($_POST['form_save'] && $_GET['mode'] != "user") {
 <script type="text/javascript" src="../../library/js/jquery.1.3.2.js"></script>
 <script type="text/javascript" src="../../library/js/common.js"></script>
 <script type="text/javascript" src="../../library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
+<script type="text/javascript" src="../../library/jscolor/jscolor.js"></script>
 <link rel="stylesheet" type="text/css" href="../../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
 
 <link rel="stylesheet" href='<?php  echo $css_header ?>' type='text/css'>
@@ -422,6 +423,13 @@ foreach ($GLOBALS_METADATA as $grpname => $grparr) {
       echo "  <input type='text' name='form_$i' id='form_$i' " .
         "size='50' maxlength='255' value='$fldvalue' />\n";
     }
+   else if ($fldtype == 'colortext') {
+      if ($_GET['mode'] == "user") {
+        $globalTitle = $globalValue;
+      }
+      echo "  <input class='color' type='text' name='form_$i' id='form_$i' " .
+        "size='10' maxlength='10' value='$fldvalue' />\n";
+    }	
     else if ($fldtype == 'pwd') {
 	  if ($_GET['mode'] == "user") {
         $globalTitle = $globalValue;

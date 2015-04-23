@@ -28,15 +28,10 @@ require_once("../interface/globals.php");
 require_once("$srcdir/patient.inc");
 require_once "$srcdir/appointments.inc.php";
 require_once("$srcdir/formatting.inc.php");
+require_once("$srcdir/options.inc.php");
 
 //$where = '';
 $firsttime = 1;
-
-function print_r2($val){
-        echo '<pre>';
-        print_r($val);
-        echo  '</pre>';
-}
 
 ?>
 <html>
@@ -60,7 +55,9 @@ function bpopup(pid) {
 }
 
 function npopup(pid) {
- window.open('../custom/patient_tracker_roomnum.php?record_id=' + pid ,'_blank', 'width=500,height=250,resizable=1');
+// parent.left_nav.clearactive()
+// window.open('../interface/patient_file/summary/demographics.php?pid=' + pid,'_blank', 'width=1000,height=750,resizable=1');
+ 
  return false;
 }
 
@@ -100,12 +97,7 @@ window.onload=refreshbegin
  <tr>
   <td  align='center'><br>
 
-  <!-- Reviewers this is being worked on and hopefully the demo will supply input for this if there is a need
-  <a href='javascript:;' class='css_button_small' style='color:gray' onclick="return setingspopup()"><span><?php echo xlt('Settings'); ?></span></a>-->
-
 <?php
-// Reviewers I am wondering if there is a need to allow the refresh to be set in user preferences in addition to a global setting
-
 if ($GLOBALS['pat_trkr_timer'] =='0') {
 ?>	
    <a href='javascript:;' class='css_button_small' align='center' style='color:gray' onclick="document.getElementById('pattrk').submit();"><span><?php echo xlt('Refresh Screen'); ?></span></a>
@@ -120,38 +112,41 @@ if ($GLOBALS['pat_trkr_timer'] =='0') {
 <table border='0' cellpadding='1' cellspacing='2' width='98%'>
 
  <tr bgcolor="#cccff">
-  <td class="dehead" align="center">
-   &nbsp;<?php  echo xlt('Patient'); ?>
+   <td class="dehead" align="center">
+   <?php  echo xlt('PID'); ?>
   </td>
   <td class="dehead" align="center">
-   &nbsp;<?php  echo xlt('Exam Room #'); ?>
+   <?php  echo xlt('Patient'); ?>
   </td>
   <td class="dehead" align="center">
-   &nbsp;<?php  echo xlt('Appt Time'); ?>
+   <?php  echo xlt('Exam Room #'); ?>
   </td>
   <td class="dehead" align="center">
-   &nbsp;<?php  echo xlt('Arrive Time'); ?>
+   <?php  echo xlt('Appt Time'); ?>
+  </td>
+  <td class="dehead" align="center">
+   <?php  echo xlt('Arrive Time'); ?>
   </td>
   <td class="dehead" align="center">
    <?php  echo xlt('Status'); ?>
   </td>
   <td class="dehead" align="center">
-   <?php  echo xlt('Time in Current Status'); ?>
+   <?php  echo xlt('Current Status Time'); ?>
   </td>
   <td class="dehead" align="center">
-   <?php  echo xlt('Visit Type'); ?>&nbsp;
+   <?php  echo xlt('Visit Type'); ?>
   </td>
   <td class="dehead" align="center">
-   <?php  echo xlt('Provider'); ?>&nbsp;
+   <?php  echo xlt('Provider'); ?>
   </td>
  <td class="dehead" align="center">
-   <?php  echo xlt('Total Time'); ?>&nbsp;
+   <?php  echo xlt('Total Time'); ?>
   </td>
  <td class="dehead" align="center">
    <?php  echo xlt('Check Out Time'); ?>
   </td>
-   <td class="dehead" align="left">
-   <?php  echo xlt('Last Status Updated by'); ?>
+   <td class="dehead" align="center">
+   <?php  echo xlt('Updated By'); ?>
   </td>
  </tr>
 
@@ -177,41 +172,36 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		if (strlen($docname)<= 3 ) continue;        
         $errmsg  = "";
 		$pc_apptstatus = $appointment['pc_apptstatus'];
-	
-        $bgcolor = ((++$orow & 1) ? "#ccffff" : "#ffffcc");
- /*********************************************************************
-        This has been migrate to the administration->lists
- $statuses = array(
-  '-' => '',
-  'x' => xl('x Cancelled'), // added Apr 2008 by JRM
-  '?' => xl('? No show'),
-  '@' => xl('@ Arrived'),
-  '~' => xl('~ Arrived late'),
-  '!' => xl('! Left w/o visit'),
-  '<' => xl('< In exam room'),
-  '>' => xl('> Checked out'),
-  '%' => xl('% Cancelled <  24h ')
- );
-*********************************************************************/
+
+        $bgcolor = ((++$orow & 1) ? $GLOBALS['pat_trak_top_color'] : $GLOBALS['pat_trak_bot_color']);
+
 ?>
         <tr bgcolor='<?php echo $bgcolor ?>'>
         <td class="detail" align="center">
-		 <?php echo $appointment['lname'] . ', ' . $appointment['fname'] . ' ' . $appointment['mname']; ?></a>
+        <?php echo text($appointment['pid']) ?>
+         </td>
+        <td class="detail" align="center">
+        <a href="" onclick="return npopup(
+        <?php 
+        echo $appointment['pid'];  
+        ?> ) "
+        >
+		 <?php echo text($appointment['lname']) . ', ' . text($appointment['fname']) . ' ' . text($appointment['mname']); ?></a>
          </td>
          <td class="detail" align="center">
          <?php 
 		 if ($appointment['pc_apptstatus']!='-' AND $appointment['pc_apptstatus']!='x' AND $appointment['pc_apptstatus'] !='%' AND $appointment['pc_apptstatus'] !='!' || $appointment['pc_apptstatus'] !='?' || $appointment['pc_apptstatus'] !='>') {
-		  echo $appointment['roomnumber'] ;
+		  echo text($appointment['roomnumber']) ;
 		 }
 		 ?>  
          </td>
          <td class="detail" align="center">
-         <?php echo $appointment['pc_startTime'] ?>
+         <?php echo text($appointment['pc_startTime']) ?>
          </td>
          <td class="detail" align="center">
         <?php 
 		if ($appointment['pc_apptstatus']!='-') {
-		echo substr($appointment['arrivedatetime'],11); 
+		echo text(substr($appointment['arrivedatetime'],11)); 
 		}
 		?>
          </td>
@@ -219,62 +209,16 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <td bgcolor='<?php echo $bgcolor ?>' class="detail" align="center">
 		<a href="" onclick="return bpopup(
          <?php 
-
-		 switch (true) {
-           case ($appointment['pc_apptstatus']=='@'):    //  '@ Arrived'
-            $statusverb = 'Arrived';
-			$apptstatus = '1';
-            break;
-           case ($appointment['pc_apptstatus']=='~'):    //  '~ Arrived late'
-            $statusverb = 'Arrived Late';
-			$apptstatus = '1';
-            break;	
-           case ($appointment['pc_apptstatus'] =='<'):   //  '< In exam room'
-            $statusverb = 'In Exam Room';
-			$apptstatus = '2';
-		   break;
-		   case ($appointment['pc_apptstatus'] =='>'):   //  '> Checked out'
-            $statusverb = 'Checked Out';
-			$apptstatus = '3';
-		   break;	
-           case ($appointment['pc_apptstatus'] =='x'):   //  'x Cancelled'
-            $statusverb = 'Cancelled';
-			$apptstatus = '4';
-		   break;
-           case ($appointment['pc_apptstatus'] =='%'):   //  '% Cancelled <  24h '
-            $statusverb = 'Cancelled <  24h';
-			$apptstatus = '4';
-		   break;
-           case ($appointment['pc_apptstatus'] =='!'):   //  '! Left w/o visit'
-            $statusverb = 'Left w/o visit';
-			$apptstatus = '5';
-		   break;
-           case ($appointment['pc_apptstatus'] =='?'):   //  '? No show'
-            $statusverb = 'No show';
-			$apptstatus = '6';
-		   break;
-           case ($appointment['pc_apptstatus'] =='N'):   //  'N With Nurse'
-            $statusverb = 'With Nurse';
-			$apptstatus = '7';
-		   break;
-           case ($appointment['pc_apptstatus'] =='D'):   //  'D With Physician'
-            $statusverb = 'With Physician';
-			$apptstatus = '8';
-		   break;		   
-           case ($appointment['pc_apptstatus']=='-'):    //  '- None'
-            $statusverb = ' ';
-			$apptstatus = '9';
-            break;		   
-            default:
-			$statusverb = ' ';
-          }  
-		 
-		 		echo $appointment['id'];  
+          $statusverb = getListItemTitle("apptstat",$appointment['pc_apptstatus']);
+		 if ($appointment['pc_apptstatus'] =='-') {    //  '- None'
+		      $statusverb = "  ";
+		 }
+		 		echo text($appointment['id']);  
 				?> ) "
-         ><?php echo $statusverb; ?></a>
+         ><?php echo text(substr($statusverb,1)); ?></a>
 		 </td>
          <td class="detail" align="center"> 
-<?php		 
+        <?php		 
 		 //time in status
 		 $to_time = strtotime(date("Y-m-d H:i:s"));
 		 $yestime = '0';
@@ -307,15 +251,15 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		}
 
         if ($yestime == '1') {        
-		  echo round(abs($to_time - $from_time) / 60,0). " minutes";
+		  echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minutes'));
 		}
 		$yestime = '0';
         ?>	
          <td class="detail" align="center">
-         <?php echo $appointment['pc_title'] ?>&nbsp;
+         <?php echo text($appointment['pc_title']) ?>
          </td>
          <td class="detail" align="center">
-         <?php echo $appointment['ulname'] . ', ' . $appointment['ufname'] . ' ' . $appointment['umname']; ?>&nbsp;
+         <?php echo text($appointment['ulname']) . ', ' . text($appointment['ufname']) . ' ' . text($appointment['umname']); ?>
          </td>
          <td class="detail" align="center"> 
          <?php		 
@@ -331,21 +275,20 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          $from_time = strtotime($appointment['arrivedatetime']);
 
   		if ($appointment['arrivedatetime'] != '' AND $appointment['pc_apptstatus']!='-' AND $appointment['pc_apptstatus']!='x' AND $appointment['pc_apptstatus'] !='%' AND $appointment['pc_apptstatus'] !='!' AND $appointment['pc_apptstatus'] !='?') {		
-		echo round(abs($to_time - $from_time) / 60,0). " minutes";
+		echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minutes'));
 		}
         ?>		 
-		<?php echo $appointment['pc_time']; ?>&nbsp;
+		<?php echo text($appointment['pc_time']); ?>
          </td>
         <td class="detail" align="center">
-         <?php echo substr($appointment['checkoutdatetime'],11) ?>
+         <?php echo text(substr($appointment['checkoutdatetime'],11)) ?>
          </td>
          <td class="detail" align="center">
-         <?php echo $appointment['user'] ?>
+         <?php echo text($appointment['user']) ?>
          </td>
         </tr>
         <?php
 	} //end for
-//} 
 ?>
 
 </table>

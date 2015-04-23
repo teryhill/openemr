@@ -414,6 +414,10 @@ function genFindBlock() {
  $(document).ready(function (){
    getReminderCount();//
    parent.loadedFrameCount += 1;
+   <?php if ($GLOBALS['drop_bottom'] ==1) { ?>   
+   $("input[name=cb_bot]").trigger('click');
+   toggleFrame(2);
+   <?php } ?>
  }) 
  // end of tajemo work dated reminders counter
  
@@ -1256,7 +1260,19 @@ if ($GLOBALS['athletic_team']) {
 
 <?php } else { // not athletic team ?>
 
-  <?php if (!$GLOBALS['disable_calendar'] && !$GLOBALS['ippf_specific']) genTreeLink('RTop','cal',xl('Calendar')); ?>
+ <?php 
+  if (!$GLOBALS['disable_calendar'] && !$GLOBALS['ippf_specific']) 
+  {
+  ?>
+  <li><a class="collapsed" id="cal0" ><span><?php echo xlt('Calendar') ?></span></a>
+    <ul>
+     <?php genTreeLink('RTop','cal',xl('Calendar')); ?>
+     <?php genMiscLink('RTop','pfb','0',xl('Patient Flow Board'),'../custom/patient_tracker.php?skip_timeout_reset=1'); ?>
+    </ul>
+  </li>
+  <?php  
+  } 
+  ?> 
   <?php genTreeLink('RBot','msg',xl('Messages')); ?> 
   <?php if ($GLOBALS['lab_exchange_enable']) genTreeLink('RTop', 'lab', xl('Check Lab Results'));?>
   <?php if($GLOBALS['portal_offsite_enable'] && $GLOBALS['portal_offsite_address'] && acl_check('patientportal','portal'))  genTreeLink('RTop','app',xl('Portal Activity')); ?>

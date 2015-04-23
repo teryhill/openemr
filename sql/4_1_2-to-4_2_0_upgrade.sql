@@ -2972,3 +2972,44 @@ ALTER TABLE `layout_options` ADD COLUMN `source` char(1) NOT NULL default 'F'
 ALTER TABLE `layout_options` ADD COLUMN
   `conditions` text NOT NULL DEFAULT '' COMMENT 'serialized array of skip conditions';
 #EndIf
+
+#IfNotTable patient_tracker
+CREATE TABLE `patient_tracker` (
+  `id`                 bigint(20)   NOT NULL auto_increment,
+  `date`               datetime     NOT NULL,
+  `pid`                bigint(20)   NOT NULL,
+  `user`               varchar(255) NOT NULL,
+  `groupname`          varchar(255) NOT NULL,
+  `authorized`         tinyint(4)   NOT NULL,
+  `activity`           tinyint(4)   NOT NULL,
+  `roomnumber`         varchar(15)  NOT NULL,
+  `status`             varchar(2)   NOT NULL,
+  `arrivedatetime`     datetime     NOT NULL,
+  `inroomdatetime`     datetime     NOT NULL,
+  `drseendatetime`     datetime     NOT NULL,
+  `nurseseendatetime`  datetime     NOT NULL,
+  `techseendatetime`   datetime     NOT NULL,
+  `checkoutdatetime`   datetime     NOT NULL,
+  `userdef1datetime`   datetime     NOT NULL,
+  `userdef1name`       varchar(20)  NOT NULL,
+  `userdef2datetime`   datetime     NOT NULL,
+  `userdef2name`       varchar(20)  NOT NULL,
+  `userdef3datetime`   datetime     NOT NULL,
+  `userdef3name`       varchar(20)  NOT NULL,
+  `userdef4datetime`   datetime     NOT NULL,
+  `userdef4name`       varchar(20)  NOT NULL,
+  `userdef5datetime`   datetime     NOT NULL,
+  `userdef5name`       varchar(20)  NOT NULL,
+  `userdef6datetime`   datetime     NOT NULL,
+  `userdef6name`       varchar(20)  NOT NULL,
+  `userdef7datetime`   datetime     NOT NULL,
+  `userdef7name`       varchar(20)  NOT NULL,
+  `userdef8datetime`   datetime     NOT NULL,
+  `userdef8name`       varchar(20)  NOT NULL,
+  `userdef9datetime`   datetime     NOT NULL,
+  `userdef9name`       varchar(20)  NOT NULL,
+  `userdef10datetime`  datetime     NOT NULL,
+  `userdef10name`      varchar(20)  NOT NULL,
+  PRIMARY KEY (`id`)
+);
+#EndIf

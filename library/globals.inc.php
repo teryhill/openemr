@@ -94,11 +94,15 @@ $USER_SPECIFIC_GLOBALS = array('default_top_pane',
                                'css_header',
                                'gbl_pt_list_page_size',
                                'gbl_pt_list_new_window',
+                               'drop_bottom',
                                'units_of_measurement',
                                'us_weight_format',
                                'date_display_format',
                                'time_display_format',
                                'event_color',
+                               'pat_trkr_timer',
+                               'pat_trak_top_color',
+                               'pat_trak_bot_color',							   
                                'erx_import_status_message');
 
 $GLOBALS_METADATA = array(
@@ -112,6 +116,7 @@ $GLOBALS_METADATA = array(
       array(
         'main_info.php' => xl('Calendar Screen'),
         '../new/new.php' => xl('Patient Search/Add Screen'),
+        '../../custom/patient_tracker.php?skip_timeout_reset=1' => xl('Patient Flow Board'),		
       ),
       'main_info.php',                  // default = calendar
       xl('Type of screen layout')
@@ -235,7 +240,14 @@ $GLOBALS_METADATA = array(
       'http://open-emr.org/',
       xl('URL for OpenEMR support.')
     ),
-      
+
+   'drop_bottom' => array(
+      xl('Remove Bottom Pane'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('Removes the bottom pane by default on start up.')
+    ),
+	
     'encounter_page_size' => array(
       xl('Encounter Page Size'),
       array(
@@ -929,11 +941,24 @@ $GLOBALS_METADATA = array(
        '0:30' => '30',
        '0:40' => '40',
        '0:50' => '50',
-	   '0:59' => '60',
+       '0:59' => '60',
       ),
-      '15',                              // default
+      '20',                              // default
       xl('The screen refresh time in Seconds for the main Patient Flow Board Screen.').' ('.xl('Select 0 seconds to allow screen to be updated manually').')'
-
+    ),
+	
+    'pat_trak_top_color' => array(
+      xl('Patient Flow Board Top Line Color'),
+      'text',                           // data type
+      'ccffff',                         // default
+      xl('This determines the color for the Top Line of the status screen in the Patient Flow Board.')
+    ),
+	
+    'pat_trak_bot_color' => array(
+      xl('Patient Flow Board Bottom Line Color'),
+      'text',                           // data type
+      'ffffcc',                         // default
+      xl('This determines the color for the Top Line of the status screen in the Patient Flow Board.')
     ),
 	
   ),
