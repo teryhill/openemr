@@ -85,9 +85,33 @@ else {
 // xl('Miscellaneous')
 
 // List of user specific tabs and globals
+if ($GLOBALS['claim_type'] =='1' || $GLOBALS['claim_type'] =='2') { 
 $USER_SPECIFIC_TABS = array('Appearance',
                             'Locale',
                             'Calendar',
+                                'Connectors',
+    							'Billing');
+    $USER_SPECIFIC_GLOBALS = array('default_top_pane',
+                                   'concurrent_layout',
+                                   'css_header',
+                                   'gbl_pt_list_page_size',
+                                   'gbl_pt_list_new_window',
+                                   'drop_bottom',
+                                   'units_of_measurement',
+                                   'us_weight_format',
+                                   'date_display_format',
+                                   'time_display_format',
+                                   'event_color',
+                                   'pat_trkr_timer',
+                                   'erx_import_status_message',
+    							   'ubtop_margin_default',
+    							   'ubleft_margin_default');
+}
+else
+{
+    $USER_SPECIFIC_TABS = array('Appearance',
+                                'Locale',
+                                'Calendar',
                             'Connectors');
 $USER_SPECIFIC_GLOBALS = array('default_top_pane',
                                'concurrent_layout',
@@ -101,9 +125,8 @@ $USER_SPECIFIC_GLOBALS = array('default_top_pane',
                                'time_display_format',
                                'event_color',
                                'pat_trkr_timer',
-                               'pat_trak_top_color',
-                               'pat_trak_bot_color',							   
                                'erx_import_status_message');
+}							   
 
 $GLOBALS_METADATA = array(
 
@@ -116,7 +139,8 @@ $GLOBALS_METADATA = array(
       array(
         'main_info.php' => xl('Calendar Screen'),
         '../new/new.php' => xl('Patient Search/Add Screen'),
-        '../../custom/patient_tracker.php?skip_timeout_reset=1' => xl('Patient Flow Board'),		
+        '../../custom/patient_tracker.php?skip_timeout_reset=1' => xl('Patient Flow Board'),
+        '../../custom/autocomplete.php' => xl('autocomplete'),
       ),
       'main_info.php',                  // default = calendar
       xl('Type of screen layout')
@@ -240,14 +264,14 @@ $GLOBALS_METADATA = array(
       'http://open-emr.org/',
       xl('URL for OpenEMR support.')
     ),
-
+      
    'drop_bottom' => array(
       xl('Remove Bottom Pane'),
       'bool',                           // data type
       '0',                              // default = false
       xl('Removes the bottom pane by default on start up.')
     ),
-	
+	  
     'encounter_page_size' => array(
       xl('Encounter Page Size'),
       array(
@@ -322,7 +346,7 @@ $GLOBALS_METADATA = array(
     'allow_debug_language' => array(
       xl('Allow Debugging Language'),
       'bool',                           // data type
-      '1',                              // default = true during development and false for production releases
+      '0',                              // default = true during development and false for production releases
       xl('This will allow selection of the debugging (\'dummy\') language.')
     ),
 
@@ -672,7 +696,7 @@ $GLOBALS_METADATA = array(
     'use_custom_immun_list' => array(
       xl('Use Custom Immunization List'),
       'bool',                           // data type
-      '0',                              // default = true
+      '0',                              // default = false
       xl('This will use the custom immunizations list rather than the standard CVX immunization list.')
     ),
     
@@ -715,6 +739,28 @@ $GLOBALS_METADATA = array(
 		'1',                              // default = true
 		xl('Enable amendments feature')
 	),
+
+    'cms_1500_left_margin' => array(
+	   xl('CMS 1500: Left Margin'),
+       'text',                           // data type
+       '14',                               // default	
+       xl('Specifies Left Margin, default = 14.')
+    ),	   
+	
+    'cms_1500_top_margin' => array(
+       xl('CMS 1500: Top Margin'),
+       'text',                           // data type
+       '28',                               // default	
+       xl('Specifies Top Margin, default = 28.')
+    ),	   
+	
+	'tx_caid' => array(
+       xl('Use Texas Medicaid'),
+	   'bool',                           // data type
+	   '1',                              // default = true
+	   xl('Enable Texas Medicaid')
+
+    ),	
 	
     'use_custom_daysheet' => array(
       xl('Use Custom End of Day Report'),
@@ -932,7 +978,21 @@ $GLOBALS_METADATA = array(
       xl('This determines which color schema used for appointment')
     ),
 
-    'pat_trkr_timer' => array(
+    'disable_pat_trkr' => array(
+      xl('Disable Patient Flow Board'),
+      'bool',                           // data type
+      '0',                              // default
+      xl('Do not display the patient flow board.')
+    ),
+
+    'discharge_code' => array(
+      xl('Patient Flow Board Discharge Code'),
+      'text',                  // data type
+      ':>?%!x',                     // default
+      xl('Code used to indicate the patient id discharged.')
+    ),
+	
+	    'pat_trkr_timer' => array(
       xl('Patient Flow Board Timer Interval'),
       array(
        '0' => '0',
@@ -943,22 +1003,8 @@ $GLOBALS_METADATA = array(
        '0:50' => '50',
        '0:59' => '60',
       ),
-      '20',                              // default
+      '15',                              // default
       xl('The screen refresh time in Seconds for the main Patient Flow Board Screen.').' ('.xl('Select 0 seconds to allow screen to be updated manually').')'
-    ),
-	
-    'pat_trak_top_color' => array(
-      xl('Patient Flow Board Top Line Color'),
-      'text',                           // data type
-      'ccffff',                         // default
-      xl('This determines the color for the Top Line of the status screen in the Patient Flow Board.')
-    ),
-	
-    'pat_trak_bot_color' => array(
-      xl('Patient Flow Board Bottom Line Color'),
-      'text',                           // data type
-      'ffffcc',                         // default
-      xl('This determines the color for the Top Line of the status screen in the Patient Flow Board.')
     ),
 	
   ),
@@ -1407,6 +1453,16 @@ $GLOBALS_METADATA = array(
       xl('Enable Audit Log Encryption')
     ),
 
+    'billing_log_option' => array(
+      xl('Billing Log Option'),
+      array(
+        '1' => xl('Billing Log Append'),
+        '2' => xl('Billing Log Overwrite')
+      ),
+      '1',                               // default
+      xl('Billing log setting to append or overwrite the log file.')
+    ),
+
   ),
 
   // Miscellaneous Tab
@@ -1466,6 +1522,13 @@ $GLOBALS_METADATA = array(
       xl('Show the custom state form for the add list widget (will ask for title and abbreviation).')
     ),
 
+	'postal_custom_addlist_widget' => array(
+      xl('Postal Code List Widget Custom Fields'),
+      'bool',                           // data type
+      '1',                              // default
+      xl('Show the custom postal code form for the add list widget (will ask for postal code , city and state abbreviation).')
+    ),
+
     'country_data_type' => array(
       xl('Country Data Type'),
       array(
@@ -1503,6 +1566,20 @@ $GLOBALS_METADATA = array(
       'text',                           // data type
       '',
       xl('To automatically open the specified form. Some sports teams use football_injury_audit here.')
+    ),
+
+    'patient_id_category_name' => array(
+      xl('Patient ID Category Name'),
+      'text',                           // data type
+      'Patient ID card',                // default
+      xl('Optional category name for an ID Card image that can be viewed from the patient summary page.')
+    ),
+
+    'patient_photo_category_name' => array(
+      xl('Patient Photo Category Name'),
+      'text',                  // data type
+      'Patient Photograph',    // default
+      xl('Optional category name for photo images that can be viewed from the patient summary page.')
     ),
 
     'MedicareReferrerIsRenderer' => array(
@@ -2258,33 +2335,33 @@ $GLOBALS_METADATA = array(
     ),
    	
     'chart_label_type' => array(
-        xl('Patient Label Type'),
+        xl('Patient Chart Label Type'),
         array(
             '0' => xl('None'),
-            '1' => '5160',
-            '2' => '5161',
-            '3' => '5162'
+	        '1' => xl('5160'),
+            '2' => xl('5161'),
+            '3' => xl('5162')
         ),
-        '1', // default	
-        xl('Avery Label type for printing patient labels from popups in left nav screen'),
+        '1',                              // default = 5160 ( 3 across and 10 down)	
+	    xl('Avery Label type for printing patient chart labels from popups in left nav screen.'),
     ),   
 
     'barcode_label_type' => array(
         xl('Barcode Label Type'),
        array(
             '0'  => xl('None'),
-            '1'  => 'std25',
-            '2'  => 'int25',
-            '3'  => 'ean8',
-            '4'  => 'ean13',
-            '5'  => 'upc',
-            '6'  => 'code11',
-            '7'  => 'code39',
-            '8'  => 'code93',
-            '9'  => 'code128',
-            '10' => 'codabar',
-            '11' => 'msi',
-            '12' => 'datamatrix'
+	        '1'  => xl('std25'),
+            '2'  => xl('int25'),
+            '3'  => xl('ean8'),
+            '4'  => xl('ean13'),
+	        '5'  => xl('upc'),
+            '6'  => xl('code11'),
+            '7'  => xl('code39'),
+		    '8'  => xl('code93'),
+	        '9'  => xl('code128'),
+            '10' => xl('codabar'),
+			'11' => xl('msi'),
+            '12' => xl('datamatrix')
 	    ),
         '9',                              // default = None
         xl('Barcode type for printing barcode labels from popups in left nav screen.')
@@ -2298,5 +2375,378 @@ $GLOBALS_METADATA = array(
     ),
 	
    ),
+ 
+  // Billing Tab
+  //
+ 'Billing' => array(
+ 
+    'claim_type' => array(
+     xl('Insurance Claim Type'),
+        array(
+            '0' => xl('CMS 1500'),
+            '1' => xl('UB-04'),
+            '2' => xl('Both')
+	    ),
+        '0',                              // default = CMS 1500	
+	    xl('Insurance Claim Type CMS 1500 , UB-04 or Both Displayed in the Billing Screen'),
+    ), 
+ 
+    'ubtop_margin_default' => array(
+      xl('Default top print margin for UB-04'),
+      'num', // data type
+      '07', // default
+      xl('This is the default top print margin for UB-04. It will adjust the final printed output up or down.')
+    ),
+	
+    'ubleft_margin_default' => array(
+      xl('Default left print margin for UB-04'),
+      'num', // data type 
+      '14', // default
+      xl('his is the default left print margin for UB-04. It will adjust the final printed output left or right.')
+    ),
+
+    'default_bill_type' => array(
+      xl('Default Bill Type Box 4'),
+      'text', // data type
+      '0111', // default
+      xl('This Default entry must start with a zero followed by three numbers. It will be used in Box 4 of the UB04')
+    ),
+	
+     'admit_default_type' => array(
+      xl('Admission Type Box 14'),
+      'text', // data type 
+      '', // default
+      xl('This entry is for the Admission Type it needs to be a single digit. It will be used in Box 14 of the UB04')
+    ),
+
+     'admit_default_source' => array(
+      xl('Admission Source Box 15'),
+      'text', // data type  
+      '', // default
+      xl('This entry is for the Admission Source it needs to be 2 digits (example 01, 12 etc). It will be used in Box 15 of the UB04')
+    ),
+
+     'discharge_status_default' => array(
+      xl('Discharge Status Box 17'),
+      'text', // data type  
+      '', // default
+      xl('This entry is for the Discharge Status it needs to be 2 digits (example 02, 11 etc). It will be used in Box 17 of the UB04')
+    ),
+
+     'attending_first_name' => array(
+      xl('Attending Physician First Name Box 76'),
+	  'text', // data type
+	  '',     // default
+      xl('Attending Physician First Name Box 76 of the UB04')
+    ),
+	
+     'attending_middle_name' => array(
+      xl('Attending Physician Middle Name Box 76'),
+	  'text', // data type
+	  '',     // default
+      xl('Attending Physician Middle Name Box 76 of the UB04')
+    ),
+	
+     'attending_last_name' => array(
+      xl('Attending Physician Last Name Box 76'),
+	  'text', // data type
+	  '',     // default
+      xl('Attending Physician Last Name Box 76 of the UB04')
+    ),
+	
+     'attending_upin_number' => array(
+      xl('Attending Physician UPIN Number Box 76'),
+	  'text', // data type
+	  '',     // default
+      xl('Attending Physician UPIN Number Box 76 of the UB04')
+    ),
+	
+     'attending_npi_number' => array(
+      xl('Attending Physician NPI Number Box 76'),
+	  'text', // data type
+	  '',     // default
+      xl('Attending Physician NPI Number Box 76 of the UB04')
+    ),
+	
+     'attending_qualifier_code' => array(
+      xl('Attending Physician Qualifier Code Box 76'),
+	  'text', // data type
+	  '',     // default
+      xl('Attending Physician Qualifier Code Box 76 of the UB04')
+    ),
+	
+	 'taxonomy_qualifier_a' => array(
+      xl('Attending Physician Taxonomy Qualifier Code Box 81CC A'),
+	  'text', // data type
+	  '',     // default
+      xl('Attending Physician Taxonomy Qualifier Code Box 81CC A of the UB04')
+    ),
+	
+      'attending_taxonomy_code' => array(
+      xl('Attending Physician Taxonomy Code Box 81CC A'),
+	  'text', // data type
+	  '',     // default
+      xl('Attending Physician Taxonomy Code Box 81CC A of the UB04')
+    ),
+
+     'operating_first_name' => array(
+      xl('Operating Physician First Name Box 77'),
+	  'text', // data type
+	  '',     // default
+      xl('Operating Physician First Name Box 77 of the UB04')
+    ),
+	
+     'operating_middle_name' => array(
+      xl('Operating Physician Middle Name Box 77'),
+	  'text', // data type
+	  '',     // default
+      xl('Operating Physician Middle Name Box 77 of the UB04')
+    ),
+	
+     'operating_last_name' => array(
+      xl('Operating Physician Last Name Box 77'),
+	  'text', // data type
+	  '',     // default
+      xl('Operating Physician Last Name Box 77 of the UB04')
+    ),
+	
+     'operating_upin_number' => array(
+      xl('Operating Physician UPIN Number Box 77'),
+	  'text', // data type
+	  '',     // default
+      xl('Operating Physician UPIN Number Box 77 of the UB04')
+    ),
+	
+     'operating_npi_number' => array(
+      xl('Operating Physician NPI Number Box 77'),
+	  'text', // data type
+	  '',     // default
+      xl('Operating Physician NPI Number Box 77 of the UB04')
+    ),
+	
+     'operating_qualifier_code' => array(
+      xl('Operating Physician Qualifier Code Box 77'),
+	  'text', // data type
+	  '',     // default
+      xl('Operating Physician Qualifier Code Box 77 of the UB04')
+    ),
+	
+	 'taxonomy_qualifier_b' => array(
+      xl('Operating Physician Taxonomy Qualifier Code Box 81CC B'),
+	  'text', // data type
+	  '',     // default
+      xl('Operating Physician Taxonomy Qualifier Code Box 81CC B of the UB04')
+    ),
+	
+      'operating_taxonomy_code' => array(
+      xl('Operating Physician Taxonomy Code Box 81CC B'),
+	  'text', // data type
+	  '',     // default
+      xl('Operating Physician Taxonomy Code Box 81CC B of the UB04')
+    ),
+
+     'other1_first_name' => array(
+      xl('Other Physician #1 First Name Box 78'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #1 First Name Box 78 of the UB04')
+    ),
+	
+     'other1_middle_name' => array(
+      xl('Other Physician #1 Middle Name Box 78'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #1 Middle Name Box 78 of the UB04')
+    ),
+	
+     'other1_last_name' => array(
+      xl('Other Physician #1 Last Name Box 78'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #1 Last Name Box 78 of the UB04')
+    ),
+	
+     'other1_upin_number' => array(
+      xl('Other Physician #1 UPIN Number Box 78'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #1 UPIN Number Box 78 of the UB04')
+    ),
+	
+     'other1_npi_number' => array(
+      xl('Other Physician #1 NPI Number Box 78'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #1 NPI Number Box 78 of the UB04')
+    ),
+	
+     'other1_qualifier_code' => array(
+      xl('Other Physician #1 Qualifier Code Box 78'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #1 Qualifier Code Box 78 of the UB04')
+    ),
+	
+	 'taxonomy_qualifier_c' => array(
+      xl('Other Physician #1 Taxonomy Qualifier Code Box 81CC C'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #1 Taxonomy Qualifier Code Box 81CC C of the UB04')
+    ),
+	
+      'other1_taxonomy_code' => array(
+      xl('Other Physician #1 Taxonomy Code Box 81CC C'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #1 Taxonomy Code Box 81CC C of the UB04')
+    ),
+
+     'other2_first_name' => array(
+      xl('Other Physician #2 First Name Box 79'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #2 First Name Box 79 of the UB04')
+    ),
+	
+     'other2_middle_name' => array(
+      xl('Other Physician #2 Middle Name Box 79'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #2 Middle Name Box 79 of the UB04')
+    ),
+	
+     'other2_last_name' => array(
+      xl('Other Physician #2 Last Name Box 79'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #2 Last Name Box 79 of the UB04')
+    ),
+	
+     'other2_upin_number' => array(
+      xl('Other Physician #2 UPIN Number Box 79'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #2 UPIN Number Box 79 of the UB04')
+    ),
+	
+     'other2_npi_number' => array(
+      xl('Other Physician #2 NPI Number Box 79'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #2 NPI Number Box 79 of the UB04')
+    ),
+	
+     'other2_qualifier_code' => array(
+      xl('Other Physician #2 Qualifier Code Box 79'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #2 Qualifier Code Box 79 of the UB04')
+    ),
+	
+	 'taxonomy_qualifier_d' => array(
+      xl('Other Physician #2 Taxonomy Qualifier Code Box 81CC D'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #2 Taxonomy Qualifier Code Box 81CC D of the UB04')
+    ),
+	
+     'other2_taxonomy_code' => array(
+      xl('Other Physician #2 Taxonomy Code Box 81CC D'),
+	  'text', // data type
+	  '',     // default
+      xl('Other Physician #2 Taxonomy Code Box 81CC D of the UB04')
+    ),
+  ), 
+
+  // Statment Tab
+  //
+  'Statement' => array(
+
+  	'use_custom_statement' => array(
+      xl('Use Custom Statement'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('This will use the custom Statment showing the description instead of the codes.')
+    ),
+
+  	'use_dunning_message' => array(
+      xl('Use Custom Dunning Messages'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('This will allow use of the custom Dunning Messages on the statements.')
+    ),
+	
+    'first_dun_msg_set' => array(
+      xl('Number of days before showing first account message'),
+      'num',                           // data type
+      '30',
+      xl('Number of days before showing first account message.')
+    ),
+
+    'first_dun_msg_text' => array(
+      xl('First account message'),
+      'text',                           // data type
+      '',
+      xl('Text for first account message.')
+    ),
+    
+    'second_dun_msg_set' => array(
+      xl('Number of days before showing second account message'),
+      'num',                           // data type
+      '60',
+      xl('Number of days before showing second account message.')
+    ),
+
+    'second_dun_msg_text' => array(
+      xl('Second account message'),
+      'text',                           // data type
+      '',
+      xl('Text for second account message.')
+    ),  
+
+    'third_dun_msg_set' => array(
+      xl('Number of days before showing third account message'),
+      'num',                           // data type
+      '90',
+      xl('Number of days before showing third account message.')
+    ),
+
+    'third_dun_msg_text' => array(
+      xl('Third account message'),
+      'text',                           // data type
+      '',
+      xl('Text for third account message.')
+    ),
+    
+    'fourth_dun_msg_set' => array(
+      xl('Number of days before showing fourth account message'),
+      'num',                           // data type
+      '120',
+      xl('Number of days before showing fourth account message.')
+    ),
+
+    'fourth_dun_msg_text' => array(
+      xl('Fourth account message'),
+      'text',                           // data type
+      '',
+      xl('Text for fourth account message.')
+    ),
+
+    'fifth_dun_msg_set' => array(
+      xl('Number of days before showing fifth account message'),
+      'num',                           // data type
+      '150',
+      xl('Number of days before showing fifth account message.')
+    ),
+
+    'fifth_dun_msg_text' => array(
+      xl('Fifth account message'),
+      'text',                           // data type
+      '',
+      xl('Text for fifth account message.')
+    ),
+  ),
+
+  
 );
 ?>

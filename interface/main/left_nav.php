@@ -103,6 +103,7 @@ use ESign\Api;
  $primary_docs = array(
   'ros' => array(xl('Roster')    , 0, 'reports/players_report.php?embed=1'),
   'cal' => array(xl('Calendar')  , 0, 'main/main_info.php'),
+  'pfb' => array(xl('Patient Flow Board')  , 0, '../custom/patient_tracker.php?skip_timeout_reset=1'),
   'app' => array(xl('Portal Activity')  , 0, '../myportal/index.php'),
   'msg' => array(xl('Messages')  , 0, 'main/messages/messages.php?form_active=1'),
   'pwd' => array(xl('Password')  , 0, 'usergroup/user_info.php'),
@@ -280,8 +281,9 @@ function genPopupsList($style='') {
 <?php if (is_dir($GLOBALS['OE_SITE_DIR'] . "/letter_templates")) { ?>
  <option value='../patient_file/letter.php'><?php xl('Letter','e'); ?></option>
 <?php } ?>
+<option value='../patient_file/face_sheet.php'><?php xl('Face Sheet','e'); ?></option>
 <?php if ($GLOBALS['chart_label_type'] != '0') { ?>
-<option value='../patient_file/label.php'><?php xl('Chart Label','e'); ?></option>
+<option value='../patient_file/chart_label.php'><?php xl('Chart Label','e'); ?></option>
 <?php } ?>
 <?php if ($GLOBALS['barcode_label_type'] != '0') { ?>
 <option value='../patient_file/barcode_label.php'><?php xl('Barcode Label','e'); ?></option>
@@ -289,6 +291,8 @@ function genPopupsList($style='') {
 <?php if ($GLOBALS['addr_label_type']) { ?>
 <option value='../patient_file/addr_label.php'><?php xl('Address Label','e'); ?></option>
 <?php } ?>
+<option value='../patient_file/wr_printed_fee_sheet.php?fill=1'><?php xl('WR Superbill','e'); ?></option>
+
 </select>
 <?php
 }
@@ -1009,6 +1013,7 @@ $(document).ready(function(){
       $(this).toggleClass("expanded_lv2").toggleClass("collapsed_lv2").parent().find('> ul').slideToggle("medium");
     });
     $("#navigation-slide > li  > a#cal0").prepend('<img src="../../images/calendar.png" class="nav-menu-img" />');
+    $("#navigation-slide > li  > a#pfb0").prepend('<img src="../../images/pfb.png" class="nav-menu-img" />');
     $("#navigation-slide > li  > a#msg0").prepend('<img src="../../images/messages.png" class="nav-menu-img" />');
     $("#navigation-slide > li  > a#patimg").prepend('<img src="../../images/patient.png" class="nav-menu-img" />');
     $("#navigation-slide > li  > a#app0").prepend('<img src="../../images/patient.png" class="nav-menu-img" />');
@@ -1259,20 +1264,8 @@ if ($GLOBALS['athletic_team']) {
   </li>
 
 <?php } else { // not athletic team ?>
-
- <?php 
-  if (!$GLOBALS['disable_calendar'] && !$GLOBALS['ippf_specific']) 
-  {
-  ?>
-  <li><a class="collapsed" id="cal0" ><span><?php echo xlt('Calendar') ?></span></a>
-    <ul>
-     <?php genTreeLink('RTop','cal',xl('Calendar')); ?>
-     <?php genMiscLink('RTop','pfb','0',xl('Patient Flow Board'),'../custom/patient_tracker.php?skip_timeout_reset=1'); ?>
-    </ul>
-  </li>
-  <?php  
-  } 
-  ?> 
+  <?php if (!$GLOBALS['disable_calendar'] && !$GLOBALS['ippf_specific']) genTreeLink('RTop','cal',xl('Calendar')); ?>
+  <?php if (!$GLOBALS['disable_pat_trkr'] && !$GLOBALS['disable_calendar']) genTreeLink('RTop','pfb',xl('Flow Board')); ?>
   <?php genTreeLink('RBot','msg',xl('Messages')); ?> 
   <?php if ($GLOBALS['lab_exchange_enable']) genTreeLink('RTop', 'lab', xl('Check Lab Results'));?>
   <?php if($GLOBALS['portal_offsite_enable'] && $GLOBALS['portal_offsite_address'] && acl_check('patientportal','portal'))  genTreeLink('RTop','app',xl('Portal Activity')); ?>
@@ -1537,6 +1530,7 @@ if (!empty($reg)) {
           <?php if (!$GLOBALS['disable_calendar']) genMiscLink('RTop','rep','0',xl('Appt-Enc'),'reports/appt_encounter_report.php'); ?>
 <?php if (empty($GLOBALS['code_types']['IPPF'])) { ?>
           <?php genMiscLink('RTop','rep','0',xl('Superbill'),'reports/custom_report_range.php'); ?>
+		  <?php genMiscLink('RTop','rep','0',xl('FaceSheets/Chart Labels'),'reports/facesheet_report_range.php'); ?>
 <?php } ?>
 	  <?php  genMiscLink('RTop','rep','0',xl('Eligibility'),'reports/edi_270.php'); ?>
 	  <?php  genMiscLink('RTop','rep','0',xl('Eligibility Response'),'reports/edi_271.php'); ?>
@@ -1556,6 +1550,7 @@ if (!empty($reg)) {
           <?php genMiscLink('RTop','rep','0',xl('Front Rec'), 'reports/front_receipts_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Pmt Method'), 'reports/receipts_by_method_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Collections'), 'reports/collections_report.php'); ?>
+		  <?php genMiscLink('RTop','rep','0',xl('Insurance Balance by Date'),'reports/ins_balance_financial_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Financial Summary by Service Code'),'reports/svc_code_financial_report.php'); ?>
         </ul>
       </li>

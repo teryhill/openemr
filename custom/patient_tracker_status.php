@@ -33,112 +33,71 @@ require_once("$srcdir/options.inc.php");
  <html>
   <head>
   <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-  <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery-1.7.2.min.js"></script>
-  <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/dialog.js"></script>
-  <script type="text/javascript" src="../library/textformat.js"></script>
-  <script src="../library/js/jquery-1.11.2.js"></script>
-  <script src="../library/js/jquery-ui-1.8.21.custom.min.js"></script>
-  <script type="text/javascript" src="../library/js/common.js"></script>
-  <script type="text/javascript" src="<?php echo $GLOBALS['webroot']; ?>/library/restoreSession.php"></script>
-  <script type="text/javascript" src="<?php echo $GLOBALS['webroot']; ?>/library/dialog.js"></script>
-  </head>
-  <body>
+  <link rel="stylesheet" href="../library/css/bootstrap-3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../library/css/bootstrap-3.3.4/css/bootstrap-theme.min.css">
+  <script src="../library/js/jquery-1.11.2.min.js"></script>
+  <script src="../library/css/bootstrap-3.3.4/js/bootstrap.min.js"></script>
 
+  <script type="text/javascript">
+	$(document).ready(function(){
+		$("#myModal").modal('show');
+	});
+</script>	
 <?php
  
     $record_id = $_GET['record_id'];
 
-    $trow = sqlQuery("select roomnumber , origappt , pid " .
+    $trow = sqlQuery("select apptdate, appttime ,lastroom , laststatus, pid " .
       "from patient_tracker where id =? LIMIT 1",array($_GET['record_id']));
   
     $patient_id = $trow['pid'];
-    $rmnum = $trow['roomnumber'];
-    $appttime = $trow['origappt'];
-  
+    $oldroom = $trow['lastroom'];
+	$oldstatus = $trow['laststatus'];
+    $appttime = $trow['appttime'];
+    $apptdate = $trow['apptdate'];
+
   if (! $patient_id) die(xlt("You cannot access this page directly."));
 
   if ($_POST['statustype'] !='') { 
     $tkpid = $patient_id;
     $status = $_POST['statustype'];
     $track_date = date("Y-m-d H:i:s");
-    $fill_dte   = "0000-00-00 00:00:00";
     $today   = date("Y-m-d");
     $theroom = $_POST['roomnum'];
- 	
+ 	$endtime = "00:00:00";
     $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
     $username = $tmprow['username'];
     $srow = sqlQuery("select pc_apptstatus as status, pc_startTime as start " .
-    "from openemr_postcalendar_events where pc_pid =? AND pc_eventdate =? AND pc_startTime =? limit 1" , array($patient_id,$today,$appttime));
-   
-    $oldstatus =  $srow['status'];
+    "from openemr_postcalendar_events where pc_pid =? AND pc_eventdate =? AND pc_startTime =? limit 1" , array($patient_id,$apptdate,$appttime));
+
+     if (strlen($status) != 0)
+     {
+		 if (strlen($theroom) == 0) {
+			$theroom = $oldroom; 
+		 }	 
 	
-     if ($_POST['statustype'] == 'x' || ($_POST['statustype'] == '%') || $_POST['statustype'] == '?' )
-     {
-        sqlStatement("INSERT INTO patient_tracker SET " .
-           "user = ?, " .
-           "date = ?, " .
-           "status = ?, " .
-           "checkoutuser = ?, " .
-           "pid = ?, " .
-           "checkoutdatetime = ? " ,
-    			array($username,$today,$status,$username,$tkpid,$track_date)
-    );
-     }
-	 
-     if ($_POST['statustype'] == '>' || $_POST['statustype'] == '!')
-     {
-        sqlStatement("UPDATE patient_tracker SET " .
-           "user =?, " .
-           "checkoutdatetime =? , " .
-           "checkoutuser =?, " .
-           "status	=? " .		   
-           "WHERE id =? AND date =?", array($username,$track_date,$username,$status,$record_id,$today));
-     }
-	 
-     if ($_POST['statustype'] == 'N' AND $$rmnum != ' ')
-     {
-        if (strlen($rmnum) != 0) {
-            sqlStatement("UPDATE patient_tracker SET " .
-               "user =?, " .
-               "status =?, " .
-               "nurseseendatetime =? ," .
-               "nurseseenuser =?, " . 			   
-               "drseendatetime =? " .
-               "WHERE id =? AND date =?", array($username,$status,$track_date,$username,$fill_dte,$record_id,$today));
-        }
-        else
-        {
-            $status = $oldstatus;
-            die(xlt("Patient must have a room assigned in order to proceed."));
-        }	 
-     }
-	 
-     if ($_POST['statustype'] == 'D' AND $$rmnum != ' ')
-     {
-        if (strlen($rmnum) != 0) {
-            sqlStatement("UPDATE patient_tracker SET " .
-               "user =?, " .
-               "status =?, " .
-               "drseenuser =?, " .   
-               "drseendatetime =? " . 
-               "WHERE id =? AND date =?", array($username,$status,$username,$track_date,$record_id,$today));
-        }
-         else
-         {
-            $status = $oldstatus;
-            die(xlt("Patient must have a room assigned in order to proceed."));
+             $tmptrk = sqlQuery("SELECT lastseq FROM patient_tracker WHERE id = ? ", array($record_id) );
+             $nextseq = 1 + $tmptrk['lastseq'];
+			 
+         if (strpos($GLOBALS['discharge_code'],$status) !=0) {
+            $endtime = substr($track_date,11);	 
          }	 
-     }	
-	
-     if ($_POST['statustype'] == '<')
-     {
-        sqlStatement("UPDATE patient_tracker SET " .
-           "user =?, " .
-           "roomnumber =? ," .
-           "status =?, " .
-           "inroomuser =?, " .
-           "inroomdatetime =? " .
-           "WHERE id =? AND date =?", array($username,$theroom,$status,$username,$track_date,$record_id,$today));
+            sqlStatement("UPDATE patient_tracker SET " .
+               "lastroom =? ," .
+               "lastseq =? ," .
+               "endtime =? ," .		   
+               "laststatus =? " .
+               "WHERE id =? AND apptdate =?", array($theroom,$nextseq,$endtime,$status,$record_id,$apptdate));
+
+		    sqlInsert("INSERT INTO patient_tracker_element SET " .
+			   "pt_traker_id = ?, " .
+			   "start_datetime = ?, " .
+			   "status = ?, " .
+			   "room =? ," .
+			   "seq =? ," .
+			   "user = ? ",
+    			array($record_id,$track_date,$status,$theroom,$nextseq,$username)
+             );
      }	
 	
      if (strlen($status) != 0) 
@@ -161,6 +120,8 @@ require_once("$srcdir/options.inc.php");
      "from openemr_postcalendar_events where pc_pid =? AND pc_eventdate =? limit 1" , array($patient_id,$today));	
 	
 ?>
+ </head>
+  <body class="body_top">
     <center>
     <form id="form_note" method="post" action="patient_tracker_status.php?record_id=<?php echo attr($record_id) ?>" enctype="multipart/form-data" >
     <table>
@@ -168,8 +129,7 @@ require_once("$srcdir/options.inc.php");
 
     <span class=text><?php  echo xlt('Status Type'); ?>: </span><br> 
 <?php
-
-    $res = sqlQuery("SELECT title FROM list_options WHERE list_id = ? AND option_id = ?", array($list_id,$currvalue));
+    $res = getListItemTitle("apptstat",$appointment['pc_apptstatus']);
     if ($obj{"statustype"} !=' ') 
     {
        $res['title'] = $obj{"statustype"};
@@ -183,14 +143,11 @@ require_once("$srcdir/options.inc.php");
      <td>
       <a href='javascript:;' class='css_button_small' style='color:gray' onclick='document.getElementById("form_note").submit();'><span><?php echo xla('Save')?></span></a>
       &nbsp;
-      <a href='javascript:;' class='css_button_small' style='color:gray' onclick="window.close().submit();"><span><?php  echo xla('Cancel'); ?></span></a>
+      <a href='javascript:;' class='css_button_small' style='color:gray' onclick="window.close().submit();" ><span><?php  echo xla('Cancel'); ?></span></a>
      </td>
     </tr>
-
     </table>
-
     </td>
-
     </form>
     </center>
   </body>
