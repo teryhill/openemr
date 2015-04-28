@@ -135,96 +135,59 @@ function DOBandEncounter()
      $appttime = "$tmph:$tmpm:00";
 	 $track_date = date("Y-m-d H:i:s");
 	 $tkpid = $_POST['form_pid'];
-	 $tkprovider = $_POST['form_provider'];
 	 $tkstatus = $_POST['form_apptstatus'];
-	 $fill_dte   = "0000-00-00 00:00:00";
-	 
+
+	 $pceid = $_GET['eid']; 
+
 	 if ($patient_dob && $_POST['form_pid']) {
 			 sqlStatement("UPDATE patient_data SET DOB = ? WHERE " .
 									 "pid = ?", array($patient_dob,$_POST['form_pid']) );
 	 }
      $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
      $username = $tmprow['username'];
+	 
+	 // check pat tracker and see if the rec is there if it is don' add it again
+	 
+      $tmptrk = sqlQuery("SELECT id FROM patient_tracker WHERE pid = ? AND apptdate = ? AND appttime = ? AND eid = ?", array($tkpid,$event_date,$appttime,$pceid) );
+      $checkid = $tmptrk['id'];
+	 
 	 // Auto-create a new encounter if appropriate.
-	 //
-	 if ($GLOBALS['auto_create_new_encounters'] && ($_POST['form_apptstatus'] == '@' || $_POST['form_apptstatus'] == '~') && $event_date == date('Y-m-d'))
+	 //	 
+	 
+	 if ($GLOBALS['auto_create_new_encounters'] && ($_POST['form_apptstatus'] == '@' || $_POST['form_apptstatus'] == '~') && $event_date == date('Y-m-d') && strlen($checkid)==0)
 	 {
 
 		 $encounter = todaysEncounterCheck($_POST['form_pid'], $event_date, $_POST['form_comments'], $_POST['facility'], $_POST['billing_facility'], $_POST['form_provider'], $_POST['form_category'], false);
 		 if($encounter){
 				 $info_msg .= xl("New encounter created with id"); 
 				 $info_msg .= " $encounter";
+
 		 }
 		     sqlInsert("INSERT INTO patient_tracker SET " .
-               "user = ?, " .
 			   "date = ?, " .
+			   "apptdate = ?, " .
+			   "appttime = ?, " .
+			   "eid = ?, " .
                "pid = ?, " .
-			   "origappt = ?, " .
-			   "provider = ?, " .
-               "status = ?, " .
-        	   "arrivedatetime = ?, " .
-			   "arriveuser = ?, " .
-               "encnum = ? ",
-    			array($username,$event_date,$tkpid,$appttime,$tkprovider,$tkstatus,$track_date,$username,$encounter)
+			   "user = ?, " .
+			   "laststatus = ?, " .
+			   "lastseq = ?, " .
+			   "enc_id = ? ",
+    			array($track_date,$event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,'1',$encounter)
+				
     );
-	 }
-	 
- 	 if (($_POST['form_apptstatus'] == 'x' || $_POST['form_apptstatus'] == '%' || $_POST['form_apptstatus'] == '?') && $event_date == date('Y-m-d'))
-	 {
-		     sqlStatement("INSERT INTO patient_tracker SET " .
-			   "user =?, " .
-			   "date =?, " .
-			   "pid =?, " .
-			   "origappt =? , " .
-			   "provider =?, " .
-			   "checkoutuser =?, " .
-               "status =?, " .
-        	   "checkoutdatetime =? ",
-			   array($username,$event_date,$tkpid,$appttime,$tkprovider,$username,$tkstatus,$track_date) ) ;
-	 }
-
-//	 if ($_POST['form_apptstatus'] == '!' && $event_date == date('Y-m-d'))
-//	 {
-//             sqlStatement("UPDATE patient_tracker SET " .
-//			   "user = '$username', " .
-//			   "checkoutuser = '$username', " .
-//               "status = '$tkstatus', " .
-//        	   "checkoutdatetime = '$track_date' " . 
-//				"WHERE pid = '$tkpid' AND date = '$event_date'");
-
-//	 }
-	 	 
- 	 if (($_POST['form_apptstatus'] == '>' || $_POST['form_apptstatus'] == '!') && $event_date == date('Y-m-d'))
-	 {
-		     sqlStatement("UPDATE patient_tracker SET " .
-               "user =?, " .
-               "checkoutdatetime =? , " .
-               "checkoutuser =?, " .
-               "status	=? " .		   
-               "WHERE id =? AND date =?", array($username,$track_date,$username,$status,$record_id,$track_date));			
-	 }
-	 
- 	 if ($_POST['form_apptstatus'] == 'N' && $event_date == date('Y-m-d'))
-	 {
-		     sqlStatement("UPDATE patient_tracker SET " .
-               "user =?, " .
-               "status =?, " .
-               "nurseseendatetime =? ," .
-               "nurseseenuser =?, " . 			   
-               "drseendatetime =? " .
-               "WHERE id =? AND date =?", array($username,$status,$track_date,$username,$fill_dte,$record_id,$track_date));
-
-	 }
-	 
- 	 if ($_POST['form_apptstatus'] == 'D' && $event_date == date('Y-m-d'))
-	 {
-		     sqlStatement("UPDATE patient_tracker SET " .
-               "user =?, " .
-               "status =?, " .
-               "drseenuser =?, " .   
-               "drseendatetime =? " . 
-               "WHERE id =? AND date =?", array($username,$status,$username,$track_date,$record_id,$track_date));
-
+	
+             $tmptrk = sqlQuery("SELECT id FROM patient_tracker WHERE pid = ? AND apptdate = ? AND appttime = ?", array($tkpid,$event_date,$appttime) );
+             $maintkid = $tmptrk['id'];
+			 
+		     sqlInsert("INSERT INTO patient_tracker_element SET " .
+			   "pt_traker_id = ?, " .
+			   "start_datetime = ?, " .
+			   "status = ?, " .
+			   "seq = ?, " .
+			   "user = ? ",
+    			array($maintkid,$track_date,$tkstatus,'1',$username)
+    );
 	 }
  }
 //================================================================================================================

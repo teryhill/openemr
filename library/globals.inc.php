@@ -100,9 +100,7 @@ $USER_SPECIFIC_GLOBALS = array('default_top_pane',
                                'date_display_format',
                                'time_display_format',
                                'event_color',
-                               'pat_trkr_timer',
-                               'pat_trak_top_color',
-                               'pat_trak_bot_color',							   
+                               'pat_trkr_timer',					   
                                'erx_import_status_message');
 
 $GLOBALS_METADATA = array(
@@ -932,6 +930,20 @@ $GLOBALS_METADATA = array(
       xl('This determines which color schema used for appointment')
     ),
 
+    'disable_pat_trkr' => array(
+      xl('Disable Patient Flow Board'),
+      'bool',                           // data type
+      '0',                              // default
+      xl('Do not display the patient flow board.')
+    ),
+
+    'discharge_code' => array(
+      xl('Patient Flow Board Discharge Code'),
+      'text',                  // data type
+      ':>?%!x',                     // default
+      xl('Code used to indicate the patient id discharged.')
+    ),
+	
     'pat_trkr_timer' => array(
       xl('Patient Flow Board Timer Interval'),
       array(
@@ -945,20 +957,6 @@ $GLOBALS_METADATA = array(
       ),
       '20',                              // default
       xl('The screen refresh time in Seconds for the main Patient Flow Board Screen.').' ('.xl('Select 0 seconds to allow screen to be updated manually').')'
-    ),
-	
-    'pat_trak_top_color' => array(
-      xl('Patient Flow Board Top Line Color'),
-      'text',                           // data type
-      'ccffff',                         // default
-      xl('This determines the color for the Top Line of the status screen in the Patient Flow Board.')
-    ),
-	
-    'pat_trak_bot_color' => array(
-      xl('Patient Flow Board Bottom Line Color'),
-      'text',                           // data type
-      'ffffcc',                         // default
-      xl('This determines the color for the Top Line of the status screen in the Patient Flow Board.')
     ),
 	
   ),
