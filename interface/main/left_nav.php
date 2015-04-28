@@ -103,6 +103,7 @@ use ESign\Api;
  $primary_docs = array(
   'ros' => array(xl('Roster')    , 0, 'reports/players_report.php?embed=1'),
   'cal' => array(xl('Calendar')  , 0, 'main/main_info.php'),
+  'pfb' => array(xl('Patient Flow Board')  , 0, '../custom/patient_tracker.php?skip_timeout_reset=1'),
   'app' => array(xl('Portal Activity')  , 0, '../myportal/index.php'),
   'msg' => array(xl('Messages')  , 0, 'main/messages/messages.php?form_active=1'),
   'pwd' => array(xl('Password')  , 0, 'usergroup/user_info.php'),
