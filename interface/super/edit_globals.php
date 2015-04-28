@@ -423,6 +423,13 @@ foreach ($GLOBALS_METADATA as $grpname => $grparr) {
       echo "  <input type='text' name='form_$i' id='form_$i' " .
         "size='50' maxlength='255' value='$fldvalue' />\n";
     }
+   else if ($fldtype == 'colortext') {
+      if ($_GET['mode'] == "user") {
+        $globalTitle = $globalValue;
+      }
+      echo "  <input class='color' type='text' name='form_$i' id='form_$i' " .
+        "size='10' maxlength='10' value='$fldvalue' />\n";
+    }	
     else if ($fldtype == 'pwd') {
 	  if ($_GET['mode'] == "user") {
         $globalTitle = $globalValue;

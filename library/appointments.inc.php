@@ -33,21 +33,18 @@ $ORDERHASH = array(
 
 function fetchtrkrEvents( $from_date, $to_date, $where_param = null, $orderby_param = null ) 
 {
-
+	
 if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
-	  $getprovid = $_SESSION[authUserID];
-	  $sqlBindingArray = array();
-	  $where =
-		"( (e.pc_endDate >=? AND e.pc_eventDate <=? AND e.pc_aid =? AND p.lname != '' AND e.pc_recurrtype = '1' ) OR " .
-  		  "(e.pc_eventDate >= ? AND e.pc_eventDate <=? AND  e.pc_aid =? AND p.lname != '' ) )";
-          array_push($sqlBindingArray,$from_date,$to_date,$getprovid,$from_date,$to_date,$getprovid);	 
+	$getprovid = $_SESSION[authUserID];
+	$where =
+		"( (e.pc_endDate >= '$from_date' AND e.pc_eventDate <= '$to_date' AND p.lname != ' ' AND e.pc_recurrtype = '1' AND e.pc_aid = '$getprovid') OR " .
+  		  "(e.pc_eventDate >= '$from_date' AND p.lname != ' ' AND e.pc_eventDate <= '$to_date' AND e.pc_aid = '$getprovid') )";
 	}
     else
     {
-	  $where =
-	  "( (e.pc_endDate >= ? AND e.pc_eventDate <=? AND p.lname != ' ' AND e.pc_recurrtype = '1') OR " .
-	  "(e.pc_eventDate >= ? AND e.pc_eventDate <=? AND p.lname != ' ' ) )";
-	  array_push($sqlBindingArray,$from_date,$to_date,$from_date,$to_date);
+	$where =
+		"( (e.pc_endDate >= '$from_date' AND e.pc_eventDate <= '$to_date' AND p.lname != ' ' AND e.pc_recurrtype = '1') OR " .
+  		  "(e.pc_eventDate >= '$from_date' AND p.lname != ' ' AND e.pc_eventDate <= '$to_date') )";
 	}
 	if ( $where_param ) $where .= $where_param;
 	
@@ -57,21 +54,22 @@ if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
 	}
 
 	$query = "SELECT " .
-  	"e.pc_eventDate, e.pc_startTime, e.pc_eid, e.pc_title, e.pc_apptstatus, " .
-	"t.id, t.date, t.apptdate, t.appttime, t.eid, t.pid, t.user, t.enc_id, t.endtime, t.laststatus, t.lastseq, t.lastroom, " .
-	"q.pt_traker_id, q.start_datetime, q.room, q.status,  q.seq, q.user, " .
-  	"p.fname, p.mname, p.lname, p.pid, " .
-  	"u.fname AS ufname, u.mname AS umname, u.lname AS ulname, u.id AS uprovider_id " .
+  	"e.pc_eventDate, e.pc_endDate, e.pc_startTime, e.pc_endTime, e.pc_duration, e.pc_recurrtype, e.pc_recurrspec, e.pc_recurrfreq, e.pc_catid, e.pc_eid, " .
+  	"e.pc_title, e.pc_hometext, e.pc_apptstatus, " .
+	"t.id, t.user, t.date, t.roomnumber, t.pid, t.encnum, t.status, t.origappt, t.provider, t.arrivedatetime, t.inroomdatetime, t.drseendatetime, t.nurseseendatetime, t.techseendatetime, t.checkoutdatetime, " .
+  	"p.fname, p.mname, p.lname, p.pid, p.pubpid, p.phone_home, p.phone_cell, " .
+  	"u.fname AS ufname, u.mname AS umname, u.lname AS ulname, u.id AS uprovider_id, " .
+  	"c.pc_catname, c.pc_catid " .
   	"FROM openemr_postcalendar_events AS e " .
-  	"LEFT OUTER JOIN patient_tracker AS t ON t.pid = e.pc_pid AND t.apptdate = e.pc_eventDate AND t.appttime = e.pc_starttime " .
-  	"LEFT OUTER JOIN patient_tracker_element AS q ON q.pt_traker_id = t.id AND q.status = t.laststatus AND q.room = t.lastroom AND q.seq = t.lastseq " .
+  	"LEFT OUTER JOIN patient_tracker AS t ON t.pid = e.pc_pid AND t.date = e.pc_eventDate AND e.pc_starttime = t.origappt " .
 	"LEFT OUTER JOIN patient_data AS p ON p.pid = e.pc_pid " .
   	"LEFT OUTER JOIN users AS u ON u.id = e.pc_aid " .
+	"LEFT OUTER JOIN openemr_postcalendar_categories AS c ON c.pc_catid = e.pc_catid " .
 	"WHERE $where " . 
 	"ORDER BY $order_by";
 
 	
-	$res = sqlStatement( $query, $sqlBindingArray );
+	$res = sqlStatement( $query );
 	$events = array();
 	if ( $res )
 	{
@@ -93,16 +91,15 @@ if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
 function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param = null ) 
 {
 	$where =
-		"( (e.pc_endDate >=? AND e.pc_eventDate <=? AND e.pc_recurrtype = '1') OR " .
-  		  "(e.pc_eventDate >=? AND e.pc_eventDate <=?) )";
-		  array_push($sqlBindingArray,$from_date,$to_date,$from_date,$to_date);
+		"( (e.pc_endDate >= '$from_date' AND e.pc_eventDate <= '$to_date' AND e.pc_recurrtype = '1') OR " .
+  		  "(e.pc_eventDate >= '$from_date' AND e.pc_eventDate <= '$to_date') )";
 	if ( $where_param ) $where .= $where_param;
 	
 	$order_by = "e.pc_eventDate, e.pc_startTime";
 	if ( $orderby_param ) {
 		$order_by = $orderby_param;
 	}
-
+	
 	$query = "SELECT " .
   	"e.pc_eventDate, e.pc_endDate, e.pc_startTime, e.pc_endTime, e.pc_duration, e.pc_recurrtype, e.pc_recurrspec, e.pc_recurrfreq, e.pc_catid, e.pc_eid, " .
   	"e.pc_title, e.pc_hometext, e.pc_apptstatus, " .
@@ -116,7 +113,7 @@ function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param 
 	"WHERE $where " . 
 	"ORDER BY $order_by";
 
-	$res = sqlStatement( $query, $sqlBindingArray );
+	$res = sqlStatement( $query );
 	$events = array();
 	if ( $res )
 	{
@@ -131,7 +128,7 @@ function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param 
 			}
 		}
 	}
-
+	
 	return $events;
 }
 
@@ -142,8 +139,8 @@ function fetchAllEvents( $from_date, $to_date, $provider_id = null, $facility_id
 
 	$facility_filter = '';
 	if ( $facility_id ) {
-		$event_facility_filter = " AND e.pc_facility = '" . add_escape_custom($facility_id) . "'"; //escape $facility_id
-		$provider_facility_filter = " AND u.facility_id = '" . add_escape_custom($facility_id) . "'"; //escape $facility_id 
+		$event_facility_filter = " AND e.pc_facility = '$facility_id'";
+		$provider_facility_filter = " AND u.facility_id = '$facility_id'";
 		$facility_filter = $event_facility_filter . $provider_facility_filter;
 	}
 	
@@ -164,8 +161,8 @@ function fetchAppointments( $from_date, $to_date, $patient_id = null, $provider_
 
 	$facility_filter = '';
 	if ( $facility_id ) {
-		$event_facility_filter = " AND e.pc_facility = '" . add_escape_custom($facility_id) . "'"; // escape $facility_id
-		$provider_facility_filter = " AND u.facility_id = '" . add_escape_custom($facility_id) . "'"; // escape $facility_id
+		$event_facility_filter = " AND e.pc_facility = '$facility_id'";
+		$provider_facility_filter = " AND u.facility_id = '$facility_id'";
 		$facility_filter = $event_facility_filter . $provider_facility_filter;
 	}
 	
@@ -391,7 +388,6 @@ function getComparisonOrder( $code ) {
 	global $ORDERHASH;
 	return $ORDERHASH[$code];
 }
-
 
 function sortAppointments( array $appointments, $orderBy = 'date' )
 {
