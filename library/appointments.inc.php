@@ -35,67 +35,67 @@ function fetchtrkrEvents( $from_date, $to_date, $where_param = null, $orderby_pa
 {
 
 if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
-	  $getprovid = $_SESSION[authUserID];
-	  $sqlBindingArray = array();
-	  $where =
-		"( (e.pc_endDate >=? AND e.pc_eventDate <=? AND e.pc_aid =? AND p.lname != '' AND e.pc_recurrtype = '1' ) OR " .
+      $getprovid = $_SESSION[authUserID];
+      $sqlBindingArray = array();
+      $where =
+          "( (e.pc_endDate >=? AND e.pc_eventDate <=? AND e.pc_aid =? AND p.lname != '' AND e.pc_recurrtype = '1' ) OR " .
   		  "(e.pc_eventDate >= ? AND e.pc_eventDate <=? AND  e.pc_aid =? AND p.lname != '' ) )";
           array_push($sqlBindingArray,$from_date,$to_date,$getprovid,$from_date,$to_date,$getprovid);	 
-	}
+    }
     else
     {
-	  $where =
-	  "( (e.pc_endDate >= ? AND e.pc_eventDate <=? AND p.lname != ' ' AND e.pc_recurrtype = '1') OR " .
-	  "(e.pc_eventDate >= ? AND e.pc_eventDate <=? AND p.lname != ' ' ) )";
-	  array_push($sqlBindingArray,$from_date,$to_date,$from_date,$to_date);
-	}
-	if ( $where_param ) $where .= $where_param;
+      $where =
+      "( (e.pc_endDate >= ? AND e.pc_eventDate <=? AND p.lname != ' ' AND e.pc_recurrtype = '1') OR " .
+      "(e.pc_eventDate >= ? AND e.pc_eventDate <=? AND p.lname != ' ' ) )";
+      array_push($sqlBindingArray,$from_date,$to_date,$from_date,$to_date);
+    }
+    if ( $where_param ) $where .= $where_param;
 	
-	$order_by = "e.pc_eventDate, e.pc_startTime";
-	if ( $orderby_param ) {
-		$order_by = $orderby_param;
-	}
+    $order_by = "e.pc_eventDate, e.pc_startTime";
+    if ( $orderby_param ) {
+      $order_by = $orderby_param;
+    }
 
-	$query = "SELECT " .
+    $query = "SELECT " .
   	"e.pc_eventDate, e.pc_startTime, e.pc_eid, e.pc_title, e.pc_apptstatus, " .
-	"t.id, t.date, t.apptdate, t.appttime, t.eid, t.pid, t.user, t.enc_id, t.endtime, t.laststatus, t.lastseq, t.lastroom, " .
-	"q.pt_traker_id, q.start_datetime, q.room, q.status,  q.seq, q.user, " .
-  	"p.fname, p.mname, p.lname, p.pid, " .
+    "t.id, t.date, t.apptdate, t.appttime, t.eid, t.pid, t.user, t.enc_id, t.endtime, t.laststatus, t.lastseq, t.lastroom, " .
+    "q.pt_traker_id, q.start_datetime, q.room, q.status,  q.seq, q.user, " .
+  	"p.fname, p.mname, p.lname, p.DOB, p.pubpid, p.pid, " .
   	"u.fname AS ufname, u.mname AS umname, u.lname AS ulname, u.id AS uprovider_id " .
   	"FROM openemr_postcalendar_events AS e " .
   	"LEFT OUTER JOIN patient_tracker AS t ON t.pid = e.pc_pid AND t.apptdate = e.pc_eventDate AND t.appttime = e.pc_starttime " .
   	"LEFT OUTER JOIN patient_tracker_element AS q ON q.pt_traker_id = t.id AND q.status = t.laststatus AND q.room = t.lastroom AND q.seq = t.lastseq " .
-	"LEFT OUTER JOIN patient_data AS p ON p.pid = e.pc_pid " .
+    "LEFT OUTER JOIN patient_data AS p ON p.pid = e.pc_pid " .
   	"LEFT OUTER JOIN users AS u ON u.id = e.pc_aid " .
-	"WHERE $where " . 
-	"ORDER BY $order_by";
+    "WHERE $where " . 
+    "ORDER BY $order_by";
 
 	
-	$res = sqlStatement( $query, $sqlBindingArray );
-	$events = array();
-	if ( $res )
-	{
-		while ( $row = sqlFetchArray($res) ) 
-		{
-			// if it's a repeating appointment, fetch all occurances in date range
-			if ( $row['pc_recurrtype'] ) {
-				$reccuringEvents = getRecurringEvents( $row, $from_date, $to_date );
-				$events = array_merge( $events, $reccuringEvents );
-			} else {
-				$events []= $row;
-			}
-		}
-	}
+    $res = sqlStatement( $query, $sqlBindingArray );
+    $events = array();
+    if ( $res )
+    {
+        while ( $row = sqlFetchArray($res) ) 
+        {
+            // if it's a repeating appointment, fetch all occurances in date range
+            if ( $row['pc_recurrtype'] ) {
+                $reccuringEvents = getRecurringEvents( $row, $from_date, $to_date );
+                $events = array_merge( $events, $reccuringEvents );
+            } else {
+                $events []= $row;
+           }
+        }
+    }
 
-	return $events;
+    return $events;
 }
 
 function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param = null ) 
 {
 	$where =
-		"( (e.pc_endDate >=? AND e.pc_eventDate <=? AND e.pc_recurrtype = '1') OR " .
-  		  "(e.pc_eventDate >=? AND e.pc_eventDate <=?) )";
-		  array_push($sqlBindingArray,$from_date,$to_date,$from_date,$to_date);
+		"( (e.pc_endDate >= '$from_date' AND e.pc_eventDate <= '$to_date' AND e.pc_recurrtype = '1') OR " .
+  		  "(e.pc_eventDate >= '$from_date' AND e.pc_eventDate <= '$to_date') )";
+		  //array_push($sqlBindingArray,$from_date,$to_date,$from_date,$to_date);
 	if ( $where_param ) $where .= $where_param;
 	
 	$order_by = "e.pc_eventDate, e.pc_startTime";
@@ -116,7 +116,7 @@ function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param 
 	"WHERE $where " . 
 	"ORDER BY $order_by";
 
-	$res = sqlStatement( $query, $sqlBindingArray );
+	$res = sqlStatement( $query );
 	$events = array();
 	if ( $res )
 	{

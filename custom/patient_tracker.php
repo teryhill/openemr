@@ -47,12 +47,6 @@ function bpopup(pid) {
  return false;
 }
 
-function npopup(pid) {
- //parent.left_nav.clearactive()
- //window.open('../interface/patient_file/summary/demographics.php?pid=' + pid,'_blank', 'width=1000,height=750,resizable=1');
- return false;
-}
-
 var reftime="<?php echo attr(($GLOBALS['pat_trkr_timer'])); ?>"
 
 if (document.images){
@@ -71,7 +65,37 @@ setTimeout("refreshbegin()",1050)
 }
 window.onload=refreshbegin
 </script>
-
+<script>
+// Taken from billing_report 
+// Process a click to go to an encounter.
+function toencounter(pid, pubpid, pname, enc, datestr, dobstr) {
+ top.restoreSession();
+<?php if ($GLOBALS['concurrent_layout']) { ?>
+ var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
+ parent.left_nav.setPatient(pname,pid,pubpid,'',dobstr);
+ parent.left_nav.setEncounter(datestr, enc, othername);
+ parent.left_nav.setRadio(othername, 'enc');
+ parent.frames[othername].location.href =
+  '../interface/patient_file/encounter/encounter_top.php?set_encounter='
+  + enc + '&pid=' + pid;
+<?php } else { ?>
+ location.href = '../interface/patient_file/encounter/patient_encounter.php?set_encounter='
+  + enc + '&pid=' + pid;
+<?php } ?>
+}
+// Process a click to go to an patient.
+function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
+ top.restoreSession();
+<?php if ($GLOBALS['concurrent_layout']) { ?>
+ var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
+ parent.left_nav.setPatient(pname,pid,pubpid,'',dobstr);
+ parent.frames[othername].location.href =
+  '../interface/patient_file/summary/demographics_full.php?pid=' + pid;
+<?php } else { ?>
+ location.href = '../interface/patient_file/summary/demographics_full.php?pid=' + pid;
+<?php } ?>
+}
+</script>
 </head>
 
 <body class="body_top" >
@@ -103,6 +127,9 @@ if ($GLOBALS['pat_trkr_timer'] =='0') {
   </td>
   <td class="dehead" align="center">
    <?php  echo xlt('Patient'); ?>
+  </td>
+  <td class="dehead" align="center">
+   <?php  echo xlt('Encounter'); ?>
   </td>
   <td class="dehead" align="center">
    <?php  echo xlt('Exam Room #'); ?>
@@ -153,7 +180,8 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		$patient_id = $appointment['pid'];
 		$record_id = $appointment['id'];
 		$docname  = $appointment['lname'] . ', ' . $appointment['fname'] . ' ' . $appointment['mname'];
-
+        $ptname = $appointment['fname'] . " " . $appointment['lname'];
+        $raw_encounter_date = date("Y-m-d", strtotime($appointment['date']));
 		if (strlen($docname)<= 3 ) continue;        
         $errmsg  = "";
 		$pc_apptstatus = $appointment['pc_apptstatus'];
@@ -164,8 +192,12 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         <?php echo text($appointment['pid']) ?>
          </td>
         <td class="detail" align="center">
-        <a href="" onclick="return npopup(<?php echo text($appointment['pid']);?> ) ">
+        <a href="" onclick="return topatient('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['enc_id']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
 		 <?php echo text($appointment['lname']) . ', ' . text($appointment['fname']) . ' ' . text($appointment['mname']); ?></a>
+         </td>
+        <td class="detail" align="center">
+         <a href="" onclick="return toencounter('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['enc_id']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
+		 <?php echo text($appointment['enc_id']); ?></a>
          </td>
          <td class="detail" align="center">
          <?php echo text($appointment['room']) ; ?>  

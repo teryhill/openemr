@@ -52,11 +52,11 @@ require_once("$srcdir/options.inc.php");
   
     $patient_id = $trow['pid'];
     $oldroom = $trow['lastroom'];
-	$oldstatus = $trow['laststatus'];
+    $oldstatus = $trow['laststatus'];
     $appttime = $trow['appttime'];
     $apptdate = $trow['apptdate'];
 
-  if (! $patient_id) die(xlt("You cannot access this page directly."));
+  if (! $patient_id) die(xlt("Patient must have a current status of Arrived or Arrived Late entered from the calendar."));
 
   if ($_POST['statustype'] !='') { 
     $tkpid = $patient_id;
@@ -64,7 +64,7 @@ require_once("$srcdir/options.inc.php");
     $track_date = date("Y-m-d H:i:s");
     $today   = date("Y-m-d");
     $theroom = $_POST['roomnum'];
- 	$endtime = "00:00:00";
+    $endtime = "00:00:00";
     $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
     $username = $tmprow['username'];
     $srow = sqlQuery("select pc_apptstatus as status, pc_startTime as start " .
