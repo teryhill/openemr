@@ -941,7 +941,7 @@ $GLOBALS_METADATA = array(
       xl('Patient Flow Board Discharge Code'),
       'text',                  // data type
       ':>?%!x',                     // default
-      xl('Code used to indicate the patient id discharged.')
+      xl('Code used to indicate a patient is discharged.')
     ),
 	
     'pat_trkr_timer' => array(

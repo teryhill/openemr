@@ -28,6 +28,7 @@ $sanitize_all_escapes=true;
   
 require_once("../interface/globals.php");
 require_once("$srcdir/options.inc.php");
+require_once("$srcdir/patient_tracker.inc.php");
 
 ?>
  <html>
@@ -50,25 +51,19 @@ require_once("$srcdir/options.inc.php");
     $trow = sqlQuery("select apptdate, appttime ,lastroom , laststatus, pid " .
       "from patient_tracker where id =? LIMIT 1",array($_GET['record_id']));
   
-    $patient_id = $trow['pid'];
+    $tkpid = $trow['pid'];
     $oldroom = $trow['lastroom'];
     $oldstatus = $trow['laststatus'];
     $appttime = $trow['appttime'];
     $apptdate = $trow['apptdate'];
 
-  if (! $patient_id) die(xlt("Patient must have a current status of Arrived or Arrived Late entered from the calendar."));
+  if (! $tkpid) die(xlt("Patient must have a current status of Arrived or Arrived Late entered from the calendar."));
 
   if ($_POST['statustype'] !='') { 
-    $tkpid = $patient_id;
     $status = $_POST['statustype'];
-    $track_date = date("Y-m-d H:i:s");
-    $today   = date("Y-m-d");
     $theroom = $_POST['roomnum'];
-    $endtime = "00:00:00";
     $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
     $username = $tmprow['username'];
-    $srow = sqlQuery("select pc_apptstatus as status, pc_startTime as start " .
-    "from openemr_postcalendar_events where pc_pid =? AND pc_eventdate =? AND pc_startTime =? limit 1" , array($patient_id,$apptdate,$appttime));
 
      if (strlen($status) != 0)
      {
@@ -76,35 +71,8 @@ require_once("$srcdir/options.inc.php");
 			$theroom = $oldroom; 
 		 }	 
 	
-             $tmptrk = sqlQuery("SELECT lastseq FROM patient_tracker WHERE id = ? ", array($record_id) );
-             $nextseq = 1 + $tmptrk['lastseq'];
-			 
-         if (strpos($GLOBALS['discharge_code'],$status) !=0) {
-            $endtime = substr($track_date,11);	 
-         }	 
-            sqlStatement("UPDATE patient_tracker SET " .
-               "lastroom =? ," .
-               "lastseq =? ," .
-               "endtime =? ," .		   
-               "laststatus =? " .
-               "WHERE id =? AND apptdate =?", array($theroom,$nextseq,$endtime,$status,$record_id,$apptdate));
+	     update_tracker_status($apptdate,$appttime,$tkpid,$username,$status,$theroom,$record_id);
 
-		    sqlInsert("INSERT INTO patient_tracker_element SET " .
-			   "pt_traker_id = ?, " .
-			   "start_datetime = ?, " .
-			   "status = ?, " .
-			   "room =? ," .
-			   "seq =? ," .
-			   "user = ? ",
-    			array($record_id,$track_date,$status,$theroom,$nextseq,$username)
-             );
-     }	
-	
-     if (strlen($status) != 0) 
-     {
-         sqlStatement("UPDATE openemr_postcalendar_events SET " .
-            "pc_apptstatus =? " .
-            "where pc_pid =? AND pc_eventdate =? AND pc_startTime =? ", array($status,$patient_id,$today,$appttime));
      } 
      echo "<html>\n<body>\n<script language='JavaScript'>\n";	
      echo "window.opener.location.reload();\n";
@@ -114,10 +82,10 @@ require_once("$srcdir/options.inc.php");
   }
 
      $row = sqlQuery("select fname, lname " .
-     "from patient_data where pid =? limit 1" , array($patient_id));
+     "from patient_data where pid =? limit 1" , array($tkpid));
 	
      $srow = sqlQuery("select pc_apptstatus as status, pc_startTime as start " .
-     "from openemr_postcalendar_events where pc_pid =? AND pc_eventdate =? limit 1" , array($patient_id,$today));	
+     "from openemr_postcalendar_events where pc_pid =? AND pc_eventdate =? limit 1" , array($tkpid,$today));	
 	
 ?>
  </head>
@@ -125,7 +93,7 @@ require_once("$srcdir/options.inc.php");
     <center>
     <form id="form_note" method="post" action="patient_tracker_status.php?record_id=<?php echo attr($record_id) ?>" enctype="multipart/form-data" >
     <table>
-    <h2><?php echo xlt('Change Status for'). " " . text($row['fname']) . " " . text($row['lname']) . " " . text($srow['start']); ?></h2>
+    <h2><?php echo xlt('Change Status for'). " " . text($row['fname']) . " " . text($row['lname']); ?></h2>
 
     <span class=text><?php  echo xlt('Status Type'); ?>: </span><br> 
 <?php

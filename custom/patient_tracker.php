@@ -192,12 +192,12 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         <?php echo text($appointment['pid']) ?>
          </td>
         <td class="detail" align="center">
-        <a href="" onclick="return topatient('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['enc_id']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
+        <a href="" onclick="return topatient('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['encounter']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
 		 <?php echo text($appointment['lname']) . ', ' . text($appointment['fname']) . ' ' . text($appointment['mname']); ?></a>
          </td>
         <td class="detail" align="center">
-         <a href="" onclick="return toencounter('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['enc_id']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
-		 <?php echo text($appointment['enc_id']); ?></a>
+         <a href="" onclick="return toencounter('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['encounter']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
+		 <?php echo text($appointment['encounter']); ?></a>
          </td>
          <td class="detail" align="center">
          <?php echo text($appointment['room']) ; ?>  
