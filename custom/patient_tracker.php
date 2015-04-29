@@ -186,8 +186,10 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         $errmsg  = "";
 		$pc_apptstatus = $appointment['pc_apptstatus'];
 
+        $bgcolor = (getListItemMapping("apptstat",$appointment['pc_apptstatus']));
+
 ?>
-        <tr>
+        <tr bgcolor='<?php echo $bgcolor ?>'>
         <td class="detail" align="center">
         <?php echo text($appointment['pid']) ?>
          </td>

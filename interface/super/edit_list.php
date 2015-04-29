@@ -362,18 +362,23 @@ function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping=''
         htmlspecialchars($mapping, ENT_QUOTES) . "' size='12' maxlength='15' class='optin' />";
     echo "</td>\n";
   }
-
+else if($list_id == 'apptstat') {
+	    echo "  <td align='center' class='optcell'>";
+    echo "<input type='text' class='color' name='opt[$opt_line_no][mapping]' value='" .
+        htmlspecialchars($mapping, ENT_QUOTES) . "' size='12' maxlength='15' class='optin' />";
+    echo "</td>\n";
+}
   echo "  <td align='center' class='optcell'>";
   echo "<input type='text' name='opt[$opt_line_no][notes]' value='" .
       htmlspecialchars($notes, ENT_QUOTES) . "' size='25' maxlength='255' class='optin' />";
   echo "</td>\n";
-
+if ($list_id != 'apptstat') {
   echo "  <td align='center' class='optcell'>";
   echo "<input type='text' name='opt[$opt_line_no][codes]' title='" .
       xla('Clinical Term Code(s)') ."' value='" .
       htmlspecialchars($codes, ENT_QUOTES) . "' onclick='select_clin_term_code(this)' size='25' maxlength='255' class='optin' />";
   echo "</td>\n";
-
+}
   echo " </tr>\n";
 }
 
@@ -574,6 +579,7 @@ a, a:visited, a:hover { color:#0000cc; }
 </style>
 
 <script type="text/javascript" src="../../library/dialog.js"></script>
+<script type="text/javascript" src="../../library/jscolor/jscolor.js"></script>
 
 <script language="JavaScript">
 
@@ -847,15 +853,17 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php echo xlt('Force Show'); ?></b></td>
 <?php } else { ?>
   <td title=<?php xl('Click to edit','e','\'','\''); ?>><b><?php  xl('ID','e'); ?></b></td>
-  <td><b><?php xl('Title'  ,'e'); ?></b></td>	
+  <td><b><?php xl('Title'  ,'e'); ?></b></td>   
   <?php //show translation column if not english and the translation lists flag is set 
   if ($GLOBALS['translate_lists'] && $_SESSION['language_choice'] > 1) {
     echo "<td><b>".xl('Translation')."</b><span class='help' title='".xl('The translated Title that will appear in current language')."'> (?)</span></td>";    
   } ?>  
   <td><b><?php xl('Order'  ,'e'); ?></b></td>
   <td><b><?php xl('Default','e'); ?></b></td>
-<?php if ($list_id == 'taxrate') { ?>
+ <?php if ($list_id == 'taxrate') { ?>
   <td><b><?php xl('Rate'   ,'e'); ?></b></td>
+ <?php } else if ($list_id == 'apptstat') { ?>
+  <td><b><?php xl('Color'  ,'e'); ?></b></td>  
 <?php } else if ($list_id == 'contrameth') { ?>
   <td><b><?php xl('Effectiveness','e'); ?></b></td>
 <?php } else if ($list_id == 'lbfnames') { ?>
@@ -876,7 +884,11 @@ while ($row = sqlFetchArray($res)) {
 		  	xl('Notes','e');
 		  } 
   ?></b></td>
-  <td><b><?php xl('Code(s)','e'); ?></b></td>
+  <td><b><?php 
+           if ($list_id != 'apptstat') {
+			   xl('Code(s)','e');
+           }
+  ?></b></td>
 <?php } // end not fee sheet ?>
  </tr>
 

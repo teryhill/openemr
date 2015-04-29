@@ -2966,6 +2966,12 @@ function getListItemTitle($list, $option) {
   if (empty($row['title'])) return $option;
   return xl_list_label($row['title']);
 }
+function getListItemMapping($list, $option) {
+  $row = sqlQuery("SELECT mapping FROM list_options WHERE " .
+    "list_id = ? AND option_id = ?", array($list, $option));
+  if (empty($row['mapping'])) return $option;
+  return xl_list_label($row['mapping']);
+}
 //Added on 5-jun-2k14 (regarding get the smoking code descriptions)
 function getSmokeCodes()
 {
