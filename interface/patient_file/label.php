@@ -34,11 +34,13 @@ require_once("$srcdir/formatting.inc.php");
 //Get the data to place on labels
 //
 
+$limit_number= 1 ;
+
 $patdata = sqlQuery("SELECT " .
   "p.fname, p.mname, p.lname, p.pubpid, p.DOB, " .
   "p.street, p.city, p.state, p.postal_code, p.pid " .
   "FROM patient_data AS p " .
-  "WHERE p.pid = ? LIMIT 1", array($pid));
+  "WHERE p.pid = '$pid' LIMIT ".escape_limit($limit_number)); 
 
 // re-order the dates
 //
@@ -49,15 +51,18 @@ $dob = oeFormatShortDate($patdata['DOB']);
 //get label type and number of labels on sheet
 //
 
+
 if ($GLOBALS['chart_label_type'] == '1') { 
 $pdf = new PDF_Label('5160');
 $last = 30;
 }
 
+
 if ($GLOBALS['chart_label_type'] == '2') { 
 $pdf = new PDF_Label('5161');
 $last = 20;
 }
+
 
 if ($GLOBALS['chart_label_type'] == '3') { 
 $pdf = new PDF_Label('5162');
@@ -66,8 +71,10 @@ $last = 14;
 
 $pdf->AddPage();
 
+
 // Added spaces to the sprintf for Fire Fox it was having a problem with alignment 
 $text = sprintf("  %s %s\n  %s\n  %s\n  %s", $patdata['fname'], $patdata['lname'], $dob, $today, $patdata['pid']);
+
 
 // For loop for printing the labels 
 // 
