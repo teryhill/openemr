@@ -184,10 +184,8 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         $raw_encounter_date = date("Y-m-d", strtotime($appointment['date']));
 		if (strlen($docname)<= 3 ) continue;        
         $errmsg  = "";
-		$pc_apptstatus = $appointment['pc_apptstatus'];
 
-        $bgcolor = (getListItemMapping("apptstat",$appointment['pc_apptstatus']));
-
+        $bgcolor = (getListItemNotes("apptstat",$appointment['status']));
 ?>
         <tr bgcolor='<?php echo $bgcolor ?>'>
         <td class="detail" align="center">
@@ -210,9 +208,13 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <td class="detail" align="center">
         <?php echo text(substr($appointment['date'],11)); ?>
          </td>
-         <td class="detail" align="center">     
+         <td class="detail" align="center">  
          <a href="" onclick="return bpopup(
-         <?php $statusverb = getListItemTitle("apptstat",$appointment['pc_apptstatus']); echo text($appointment['id']);  ?> ) " ><?php echo text(substr($statusverb,1)); ?></a>		 
+         <?php
+            if (strlen($appointment['pt_traker_id']) == 0){		 
+               $statusverb = getListItemTitle("apptstat",$appointment['status']); echo text($appointment['id']);  
+            }
+		 ?> ) " ><?php echo text(substr($statusverb,1)); ?></a>		 
 		 </td>
          <td class="detail" align="center"> 
         <?php		 
@@ -236,7 +238,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		$yestime = '0';
         ?>	
          <td class="detail" align="center">
-         <?php echo text($appointment['pc_title']) ?>
+         <?php echo text(xl_appt_category($appointment['pc_title'])) ?>
          </td>
          <td class="detail" align="center">
          <?php echo text($appointment['ulname']) . ', ' . text($appointment['ufname']) . ' ' . text($appointment['umname']); ?>
@@ -279,5 +281,9 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 
 </form>
 </center>
+<!-- form used to open a new top level window when a patient row is clicked -->
+<form name='fnew' method='post' target='_blank' action='../main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
+<input type='hidden' name='patientID'      value='0' />
+</form>
 </body>
 </html>

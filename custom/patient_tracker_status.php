@@ -57,13 +57,10 @@ require_once("$srcdir/patient_tracker.inc.php");
     $appttime = $trow['appttime'];
     $apptdate = $trow['apptdate'];
 
-  if (! $tkpid) die(xlt("Patient must have a current status of Arrived or Arrived Late entered from the calendar."));
-
   if ($_POST['statustype'] !='') { 
     $status = $_POST['statustype'];
     $theroom = $_POST['roomnum'];
-    $tmprow = sqlQuery("SELECT username, facility, facility_id FROM users WHERE id = ?", array($_SESSION["authUserID"]) );
-    $username = $tmprow['username'];
+    $username = $_SESSION["authUser"];
 
      if (strlen($status) != 0)
      {
@@ -98,15 +95,11 @@ require_once("$srcdir/patient_tracker.inc.php");
     <span class=text><?php  echo xlt('Status Type'); ?>: </span><br> 
 <?php
     $res = getListItemTitle("apptstat",$appointment['pc_apptstatus']);
-    if ($obj{"statustype"} !=' ') 
-    {
-       $res['title'] = $obj{"statustype"};
-    }
-	echo generate_select_list('statustype', 'apptstat',$res['title'], xl('Status Type'));
+	echo generate_select_list('statustype', 'apptstat',$res, xl('Status Type'));
 ?>
 	<br><br>   
 	<span class=text><?php  echo xlt('Exam Room Number'); ?>: </span><br>
-    <input type=entry name="roomnum" size=1 value="<?php echo $obj{"roomnum"};?>" ><br><br>
+    <input type=entry name="roomnum" size=1 value="<?php echo attr($obj{"roomnum"});?>" ><br><br>
     <tr>
      <td>
       <a href='javascript:;' class='css_button_small' style='color:gray' onclick='document.getElementById("form_note").submit();'><span><?php echo xla('Save')?></span></a>

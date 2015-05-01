@@ -363,15 +363,16 @@ function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping=''
     echo "</td>\n";
   }
 else if($list_id == 'apptstat') {
-	    echo "  <td align='center' class='optcell'>";
-    echo "<input type='text' class='color' name='opt[$opt_line_no][mapping]' value='" .
-        htmlspecialchars($mapping, ENT_QUOTES) . "' size='12' maxlength='15' class='optin' />";
+    echo "  <td align='center' class='optcell'>";
+    echo "<input type='text' class='color' name='opt[$opt_line_no][notes]' value='" .
+        htmlspecialchars($notes, ENT_QUOTES) . "' size='12' maxlength='15' class='optin' />";
     echo "</td>\n";
-}
+} else {
   echo "  <td align='center' class='optcell'>";
   echo "<input type='text' name='opt[$opt_line_no][notes]' value='" .
       htmlspecialchars($notes, ENT_QUOTES) . "' size='25' maxlength='255' class='optin' />";
   echo "</td>\n";
+}
 if ($list_id != 'apptstat') {
   echo "  <td align='center' class='optcell'>";
   echo "<input type='text' name='opt[$opt_line_no][codes]' title='" .
@@ -862,8 +863,6 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php xl('Default','e'); ?></b></td>
  <?php if ($list_id == 'taxrate') { ?>
   <td><b><?php xl('Rate'   ,'e'); ?></b></td>
- <?php } else if ($list_id == 'apptstat') { ?>
-  <td><b><?php xl('Color'  ,'e'); ?></b></td>  
 <?php } else if ($list_id == 'contrameth') { ?>
   <td><b><?php xl('Effectiveness','e'); ?></b></td>
 <?php } else if ($list_id == 'lbfnames') { ?>
@@ -880,15 +879,13 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php 
 		  if ($list_id == 'language') {
 		  	xl('ISO 639-2 Code','e');
+		  } else if ($list_id == 'apptstat') {
+			xl('Color','e');  
 		  } else {
 		  	xl('Notes','e');
 		  } 
   ?></b></td>
-  <td><b><?php 
-           if ($list_id != 'apptstat') {
-			   xl('Code(s)','e');
-           }
-  ?></b></td>
+  <td><b><?php xl('Code(s)','e');?></b></td>
 <?php } // end not fee sheet ?>
  </tr>
 
