@@ -48,14 +48,16 @@ require_once("$srcdir/patient_tracker.inc.php");
  
     $record_id = $_GET['record_id'];
 
-    $trow = sqlQuery("select apptdate, appttime ,lastroom , laststatus, pid " .
+    $trow = sqlQuery("select apptdate, appttime ,lastroom , laststatus, eid , encounter, pid " .
       "from patient_tracker where id =? LIMIT 1",array($_GET['record_id']));
   
     $tkpid = $trow['pid'];
     $oldroom = $trow['lastroom'];
     $oldstatus = $trow['laststatus'];
     $appttime = $trow['appttime'];
-    $apptdate = $trow['apptdate'];
+    $apptdate = $trow['apptdate']; 
+    $pceid = $trow['eid'];	
+    $encounter = $trow['encounter'];	
 
   if ($_POST['statustype'] !='') { 
     $status = $_POST['statustype'];
@@ -67,9 +69,7 @@ require_once("$srcdir/patient_tracker.inc.php");
 		 if (strlen($theroom) == 0) {
 			$theroom = $oldroom; 
 		 }	 
-	
-	     update_tracker_status($apptdate,$appttime,$tkpid,$username,$status,$theroom,$record_id);
-
+	     add_or_update_tracker_status($apptdate,$appttime,$tkpid,$username,$status,$pceid,$encounter,$theroom,$record_id);
      } 
      echo "<html>\n<body>\n<script language='JavaScript'>\n";	
      echo "window.opener.location.reload();\n";

@@ -57,7 +57,7 @@ if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
 
     $query = "SELECT " .
   	"e.pc_eventDate, e.pc_startTime, e.pc_eid, e.pc_title, e.pc_apptstatus, " .
-    "t.id, t.date, t.apptdate, t.appttime, t.eid, t.pid, t.user, t.encounter, t.endtime, t.laststatus, t.lastseq, t.lastroom, " .
+    "t.id, t.date, t.arrivetime, t.apptdate, t.appttime, t.eid, t.pid, t.user, t.encounter, t.endtime, t.laststatus, t.lastseq, t.lastroom, " .
     "q.pt_tracker_id, q.start_datetime, q.room, q.status,  q.seq, q.user, " .
   	"p.fname, p.mname, p.lname, p.DOB, p.pubpid, p.pid, " .
   	"u.fname AS ufname, u.mname AS umname, u.lname AS ulname, u.id AS uprovider_id " .

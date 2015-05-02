@@ -22,52 +22,24 @@
 * @author Terry Hill <terry@lillysystems.com>
 * @link http://www.open-emr.org 
 */
- 
- function  update_tracker_status($apptdate,$appttime,$pid,$user,$status,$room,$record_id)
-     {
-
-         $track_date = date("Y-m-d H:i:s");	
-         $endtime = "00:00:00";
-         $today   = date("Y-m-d");
-		 
-         $tmptrk = sqlQuery("SELECT lastseq FROM patient_tracker WHERE id = ? ", array($record_id) );
-         $nextseq = 1 + $tmptrk['lastseq'];
-		 
-         if (strpos($GLOBALS['discharge_code'],$status) !=0) {
-            $endtime = substr($track_date,11);	 
-         }	 
-            sqlStatement("UPDATE patient_tracker SET " .
-               "lastroom =? ," .
-               "lastseq =? ," .
-               "endtime =? ," .		   
-               "laststatus =? " .
-               "WHERE id =? AND apptdate =?", array($room,$nextseq,$endtime,$status,$record_id,$apptdate));
-
-		    sqlInsert("INSERT INTO patient_tracker_element SET " .
-			   "pt_tracker_id = ?, " .
-			   "start_datetime = ?, " .
-			   "status = ?, " .
-			   "room =? ," .
-			   "seq =? ," .
-			   "user = ? ",
-    			array($record_id,$track_date,$status,$room,$nextseq,$user)
-             );	
 	
-         sqlStatement("UPDATE openemr_postcalendar_events SET " .
-            "pc_apptstatus =? " .
-            "where pc_pid =? AND pc_eventdate =? AND pc_startTime =? ", array($status,$pid,$today,$appttime)); 
-    }	
-	
-function  add_tracker_status($apptdate,$appttime,$pid,$user,$status,$pceid,$encounter)
+function  add_or_update_tracker_status($apptdate,$appttime,$pid,$user,$status,$pceid='',$encounter='',$room='',$record_id='')
      {	
-      $tmptrk = sqlQuery("SELECT id FROM patient_tracker WHERE pid = ? AND apptdate = ? AND appttime = ? AND eid = ?", array($pid,$apptdate,$appttime,$pceid) );
+      $tmptrk = sqlQuery("SELECT id FROM patient_tracker WHERE pid = ? AND apptdate = ? AND appttime = ? ", array($pid,$apptdate,$appttime) );
       $checkid = $tmptrk['id'];
       $track_date = date("Y-m-d H:i:s");	
       $endtime = "00:00:00";
+	  $arrivetime = "00:00:00";
       $today   = date("Y-m-d");
         if(strlen($checkid) == 0) {  
+		
+          if (strpos($GLOBALS['arrival_code'],$status) !=0) {
+            $arrivetime = substr($track_date,11);	 
+          }	 
+		
              sqlInsert("INSERT INTO patient_tracker SET " .
 			   "date = ?, " .
+			   "arrivetime = ?, " .
 			   "apptdate = ?, " .
 			   "appttime = ?, " .
                "eid = ?, " .
@@ -76,7 +48,7 @@ function  add_tracker_status($apptdate,$appttime,$pid,$user,$status,$pceid,$enco
 			   "laststatus = ?, " .
 			   "lastseq = ?, " .
 			   "encounter = ? ",
-    			array($track_date,$apptdate,$appttime,$pceid,$pid,$user,$status,'1',$encounter)	
+    			array($track_date,$arrivetime,$apptdate,$appttime,$pceid,$pid,$user,$status,'1',$encounter)	
               );
 	
              $tmptrk = sqlQuery("SELECT id FROM patient_tracker WHERE pid = ? AND apptdate = ? AND appttime = ?", array($pid,$apptdate,$appttime) );
@@ -90,5 +62,43 @@ function  add_tracker_status($apptdate,$appttime,$pid,$user,$status,$pceid,$enco
 			   "user = ? ",
     			array($maintkid,$track_date,$status,'1',$user)
               );	
-	    }
+        }
+        else
+        {
+         $tmptrk = sqlQuery("SELECT lastseq , arrivetime FROM patient_tracker WHERE id = ? ", array($checkid) );
+         $nextseq = 1 + $tmptrk['lastseq'];
+		
+         if (strpos($GLOBALS['arrival_code'],$status) !=0 && $tmptrk['arrivetime'] == '00:00:00') {
+            $arrivetime = substr($track_date,11);	 
+          }
+          else
+          {
+           $arrivetime = $tmptrk['arrivetime'];
+		  }	  
+		
+         if (strpos($GLOBALS['discharge_code'],$status) !=0) {
+            $endtime = substr($track_date,11);	 
+         }	 
+            sqlStatement("UPDATE patient_tracker SET " .
+			   "arrivetime = ?, " . 
+               "lastroom =? ," .
+               "lastseq =? ," .
+               "endtime =? ," .		   
+               "laststatus =? " .
+               "WHERE id =? AND apptdate =?", array($arrivetime,$room,$nextseq,$endtime,$status,$checkid,$apptdate));
+
+            sqlInsert("INSERT INTO patient_tracker_element SET " .
+               "pt_tracker_id = ?, " .
+               "start_datetime = ?, " .
+               "status = ?, " .
+               "room =? ," .
+               "seq =? ," .
+               "user = ? ",
+    			array($checkid,$track_date,$status,$room,$nextseq,$user)
+             );	
+	
+         sqlStatement("UPDATE openemr_postcalendar_events SET " .
+            "pc_apptstatus =? " .
+            "where pc_pid =? AND pc_eventdate =? AND pc_startTime =? ", array($status,$pid,$today,$appttime)); 
+        }	
 	 }

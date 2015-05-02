@@ -206,7 +206,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <?php echo text($appointment['pc_startTime']) ?>
          </td>
          <td class="detail" align="center">
-        <?php echo text(substr($appointment['date'],11)); ?>
+        <?php echo text($appointment['arrivetime']); ?>
          </td>
          <td class="detail" align="center">  
          <a href="" onclick="return bpopup(
@@ -214,14 +214,13 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
             if (strlen($appointment['pt_traker_id']) == 0){		 
                $statusverb = getListItemTitle("apptstat",$appointment['status']); echo text($appointment['id']);  
             }
-		 ?> ) " ><?php echo text(substr($statusverb,1)); ?></a>		 
+		 ?> ) " ><?php echo text($statusverb); ?></a>		 
 		 </td>
          <td class="detail" align="center"> 
         <?php		 
 		 //time in status
 		 $to_time = strtotime(date("Y-m-d H:i:s"));
 		 $yestime = '0';
-
 		 if ($appointment['endtime'] != '00:00:00') {
  			$from_time = strtotime($appointment['date']);
 			$to_time = strtotime($appointment['endtime']);
@@ -232,7 +231,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 			$from_time = strtotime($appointment['start_datetime']);
 			$yestime = '1';
         }
-        if ($yestime == '1') {        
+        if ($yestime == '1' && $appointment['arrivetime'] != '00:00:00') {        
 		  echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minutes'));
 		}
 		$yestime = '0';
@@ -248,17 +247,19 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		 
 		 // total time in practice
 		 if ($appointment['endtime'] != '00:00:00') {
- 			$from_time = strtotime($appointment['date']);
+ 			$from_time = strtotime($appointment['arrivetime']);
 			$to_time = strtotime($appointment['endtime']);
 			$yestime = '0';
 		 }
          else
         {	
-			$from_time = strtotime($appointment['date']);
+			$from_time = strtotime($appointment['arrivetime']);
  		    $to_time = strtotime(date("Y-m-d H:i:s"));
 			$yestime = '1';
-        }		 
+        }	
+       if ($yestime == '1' && $appointment['arrivetime'] != '00:00:00') {  		
 		echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minutes'));
+	   }
         ?>		 
 		<?php echo text($appointment['pc_time']); ?>
          </td>

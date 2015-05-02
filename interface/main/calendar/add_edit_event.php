@@ -137,7 +137,7 @@ function DOBandEncounter()
 	 $track_date = date("Y-m-d H:i:s");
 	 $tkpid = $_POST['form_pid'];
 	 $tkstatus = $_POST['form_apptstatus'];
-
+     $encounter = 0;
 	 $pceid = $_GET['eid']; 
 
 	 if ($patient_dob && $_POST['form_pid']) {
@@ -158,11 +158,8 @@ function DOBandEncounter()
 				 $info_msg .= " $encounter";
 
 		 }
-		 
-	 		 add_tracker_status($event_date,$appttime,$tkpid,$username,$tkstatus,$pceid,$encounter);
-		 
 	 }
-	 
+        add_or_update_tracker_status($event_date,$appttime,$tkpid,$username,$tkstatus,$pceid,$encounter);
 
  }
 //================================================================================================================
