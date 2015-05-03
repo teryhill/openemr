@@ -6278,6 +6278,7 @@ CREATE TABLE `shared_attributes` (
 CREATE TABLE IF NOT EXISTS `patient_tracker` (
   `id`                 bigint(20)   NOT NULL auto_increment,
   `date`               datetime     NOT NULL,
+  `arrivetime`         time         NOT NULL,
   `apptdate`           date         NOT NULL,
   `appttime`           time         NOT NULL,
   `eid`                bigint(20)   NOT NULL,
