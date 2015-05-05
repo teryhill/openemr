@@ -181,7 +181,7 @@ if ($_POST['formaction']=='save' && $list_id) {
 
               // Insert the list item
               sqlInsert("INSERT INTO list_options ( " .
-                "list_id, option_id, title, seq, is_default, option_value, mapping, notes, codes " .
+                "list_id, option_id, title, seq, is_default, option_value, mapping, notes, codes, toggle_setting_1, toggle_setting_2 " .
                 ") VALUES ( " .
                 "'$list_id', "                       .
                 "'" . $id                        . "', " .
@@ -191,7 +191,9 @@ if ($_POST['formaction']=='save' && $list_id) {
                 "'" . $value                     . "', " .
                 "'" . formTrim($iter['mapping']) . "', " .
                 "'" . formTrim($iter['notes'])   . "', " .
-                "'" . formTrim($iter['codes'])   . "' " .
+                "'" . formTrim($iter['codes'])   . "', " .
+                "'" . formTrim($iter['toggle_setting_1'])   . "', " .
+                "'" . formTrim($iter['toggle_setting_2'])   . "' " .								
                 ")");
             }
         }
@@ -258,11 +260,13 @@ function getCodeDescriptions($codes) {
 
 // Write one option line to the form.
 //
-function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping='', $notes='', $codes='') {
+function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping='', $notes='', $codes='', $tog1, $tog2) {
   global $opt_line_no, $list_id;
   ++$opt_line_no;
   $bgcolor = "#" . (($opt_line_no & 1) ? "ddddff" : "ffdddd");
   $checked = $default ? " checked" : "";
+  $checked_tog1 = $tog1 ? " checked" : "";
+  $checked_tog2 = $tog2 ? " checked" : "";  
 
   echo " <tr bgcolor='$bgcolor'>\n";
 
@@ -380,7 +384,16 @@ if ($list_id != 'apptstat') {
       htmlspecialchars($codes, ENT_QUOTES) . "' onclick='select_clin_term_code(this)' size='25' maxlength='255' class='optin' />";
   echo "</td>\n";
 }
-  echo " </tr>\n";
+if($list_id == 'apptstat') {
+  echo "  <td align='center' class='optcell'>";
+  echo "<input type='checkbox' name='opt[$opt_line_no][toggle_setting_1]' value='1' " .
+    "onclick='defClicked($opt_line_no)' class='optin'$checked_tog1 />";
+  echo "</td>\n";
+  echo "  <td align='center' class='optcell'>";
+  echo "<input type='checkbox' name='opt[$opt_line_no][toggle_setting_2]' value='1' " .
+    "onclick='defClicked($opt_line_no)' class='optin'$checked_tog2 />";
+  echo "</td>\n";
+}
 }
 
 // Write a form line as above but for the special case of the Fee Sheet.
@@ -580,7 +593,7 @@ a, a:visited, a:hover { color:#0000cc; }
 </style>
 
 <script type="text/javascript" src="../../library/dialog.js"></script>
-<script type="text/javascript" src="../../library/jscolor/jscolor.js"></script>
+<script type="text/javascript" src="../../library/js/jscolor/jscolor.js"></script>
 
 <script language="JavaScript">
 
@@ -885,7 +898,14 @@ while ($row = sqlFetchArray($res)) {
 		  	xl('Notes','e');
 		  } 
   ?></b></td>
+   <?php if ($list_id != 'apptstat') { ?>
   <td><b><?php xl('Code(s)','e');?></b></td>
+   <?php } ?>
+    <?php if ($list_id == 'apptstat') {  ?>
+    <td><b><?php xl('Check In Code'  ,'e');?>&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+    <td><b><?php xl('Check Out Code' ,'e');
+  }
+  ?></b></td>
 <?php } // end not fee sheet ?>
  </tr>
 
@@ -928,7 +948,7 @@ if ($list_id) {
     while ($row = sqlFetchArray($res)) {
       writeOptionLine($row['option_id'], $row['title'], $row['seq'],
         $row['is_default'], $row['option_value'], $row['mapping'],
-        $row['notes'],$row['codes']);
+        $row['notes'],$row['codes'],$row['toggle_setting_1'],$row['toggle_setting_2']);
     }
     for ($i = 0; $i < 3; ++$i) {
       writeOptionLine('', '', '', '', 0);

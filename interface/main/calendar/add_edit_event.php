@@ -134,7 +134,6 @@ function DOBandEncounter()
      $tmpm = $_POST['form_minute'] + 0;
      if ($_POST['form_ampm'] == '2' && $tmph < 12) $tmph += 12;
      $appttime = "$tmph:$tmpm:00";
-	 $track_date = date("Y-m-d H:i:s");
 	 $tkpid = $_POST['form_pid'];
 	 $tkstatus = $_POST['form_apptstatus'];
      $encounter = 0;
@@ -149,17 +148,25 @@ function DOBandEncounter()
 	 // Auto-create a new encounter if appropriate.
 	 //	 
 	 
-	 if ($GLOBALS['auto_create_new_encounters'] && ($_POST['form_apptstatus'] == '@') && $event_date == date('Y-m-d'))
+	 //if ($GLOBALS['auto_create_new_encounters'] && ($_POST['form_apptstatus'] == '@') && $event_date == date('Y-m-d'))
+    if ($GLOBALS['auto_create_new_encounters'] && (is_checkin('apptstat',$_POST['form_apptstatus']) == '1') && $event_date == date('Y-m-d'))		 
 	 {
-
 		 $encounter = todaysEncounterCheck($_POST['form_pid'], $event_date, $_POST['form_comments'], $_POST['facility'], $_POST['billing_facility'], $_POST['form_provider'], $_POST['form_category'], false);
 		 if($encounter){
 				 $info_msg .= xl("New encounter created with id"); 
 				 $info_msg .= " $encounter";
-
 		 }
+                         # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
+		         # TODO Add a room field to this gui and place it in below function
+	 		 manage_tracker_status($event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,'',$encounter);
 	 }
-        add_or_update_tracker_status($event_date,$appttime,$tkpid,$username,$tkstatus,$pceid,$encounter);
+         else {
+                         # Capture the appt status and room number for patient tracker.
+                         # TODO Add a room field to this gui and place it in below function. 
+                         if (!empty($pceid)) {
+                             manage_tracker_status($event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,'');
+                         }
+         }
 
  }
 //================================================================================================================

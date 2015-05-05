@@ -26,9 +26,9 @@ $sanitize_all_escapes=true;
 
 require_once("../interface/globals.php");
 require_once("$srcdir/patient.inc");
-require_once "$srcdir/appointments.inc.php";
 require_once("$srcdir/formatting.inc.php");
 require_once("$srcdir/options.inc.php");
+require_once("$srcdir/patient_tracker.inc.php");
 
 ?>
 <html>
@@ -170,7 +170,10 @@ $appointments = array();
 $today_one = oeFormatShortDate($date='today');
 $from_date = date("Y-m-d");
 $to_date = date("Y-m-d");
-
+$endtime = "00:00:00";
+$arrivetime = "00:00:00"; 
+$datetime = date("Y-m-d H:i:s");
+  
 $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 
     $pid_list = array();
@@ -184,7 +187,21 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         $raw_encounter_date = date("Y-m-d", strtotime($appointment['date']));
 		if (strlen($docname)<= 3 ) continue;        
         $errmsg  = "";
-
+        $endtime = "00:00:00";
+        $arrivetime = "00:00:00"; 
+       if ((is_checkin('apptstat',$appointment['status']) == '1') && ($appointment['arrivetime'] == '00:00:00')) {
+         $arrivetime = substr($datetime,11);
+         $tracker1d = $appointment['pt_tracker_id'];	
+         manage_tracker_time($tracker1d,$arrivetime,$endtime);	
+         $appointment['arrivetime'] = $arrivetime;		 
+       }
+       if ((is_checkout('apptstat',$appointment['status']) == '1') && ($appointment['endtime'] == '00:00:00')) {
+         $endtime = substr($datetime,11);
+         $tracker1d = $appointment['pt_tracker_id'];
+         manage_tracker_time($tracker1d,$arrivetime,$endtime);
+         $appointment['endtime'] = $endtime;	 
+      }
+	   
         $bgcolor = (getListItemNotes("apptstat",$appointment['status']));
 ?>
         <tr bgcolor='<?php echo $bgcolor ?>'>
@@ -203,7 +220,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <?php echo text($appointment['room']) ; ?>  
          </td>
          <td class="detail" align="center">
-         <?php echo text($appointment['pc_startTime']) ?>
+         <?php echo text($appointment['appttime']) ?>
          </td>
          <td class="detail" align="center">
         <?php echo text($appointment['arrivetime']); ?>
@@ -222,7 +239,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		 $to_time = strtotime(date("Y-m-d H:i:s"));
 		 $yestime = '0';
 		 if ($appointment['endtime'] != '00:00:00') {
- 			$from_time = strtotime($appointment['date']);
+ 			$from_time = strtotime($appointment['arrivetime']);
 			$to_time = strtotime($appointment['endtime']);
 			$yestime = '0';
 		 }

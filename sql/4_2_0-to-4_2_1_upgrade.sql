@@ -92,3 +92,25 @@ CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
   KEY  (`pt_tracker_id`)
 ) ENGINE=MyISAM;
 #EndIf
+
+#IfMissingColumn list_options toggle_setting_1
+ALTER TABLE `list_options` ADD COLUMN `toggle_setting_1` tinyint(1) NOT NULL default '0';
+#EndIf
+
+#IfMissingColumn list_options toggle_setting_2
+ALTER TABLE `list_options` ADD COLUMN `toggle_setting_2` tinyint(1) NOT NULL DEFAULT '0';
+#EndIf
+
+UPDATE `list_options` SET `notes`='FF2414' , `toggle_setting_1`='1' WHERE `option_id`='@';
+UPDATE `list_options` SET `notes`='FF6619' , `toggle_setting_1`='1' WHERE `option_id`='~';
+UPDATE `list_options` SET `notes`='0BBA34' , `toggle_setting_2`='1' WHERE `option_id`='!';
+UPDATE `list_options` SET `notes`='FFFFFF' , `toggle_setting_2`='1' WHERE `option_id`='>';
+UPDATE `list_options` SET `notes`='FFFFFF' WHERE `option_id`='-';
+UPDATE `list_options` SET `notes`='FFC9F8' WHERE `option_id`='*';
+UPDATE `list_options` SET `notes`='87FF1F' WHERE `option_id`='+';
+UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='x';
+UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='?';
+UPDATE `list_options` SET `notes`='FFFF2B' WHERE `option_id`='#';
+UPDATE `list_options` SET `notes`='52D9DE' WHERE `option_id`='<';
+UPDATE `list_options` SET `notes`='C0FF96' WHERE `option_id`='$';
+UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='%';

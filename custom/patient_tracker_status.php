@@ -29,7 +29,6 @@ $sanitize_all_escapes=true;
 require_once("../interface/globals.php");
 require_once("$srcdir/options.inc.php");
 require_once("$srcdir/patient_tracker.inc.php");
-
 ?>
  <html>
   <head>
@@ -47,10 +46,9 @@ require_once("$srcdir/patient_tracker.inc.php");
 <?php
  
     $record_id = $_GET['record_id'];
-
     $trow = sqlQuery("select apptdate, appttime ,lastroom , laststatus, eid , encounter, pid " .
       "from patient_tracker where id =? LIMIT 1",array($_GET['record_id']));
-  
+ 
     $tkpid = $trow['pid'];
     $oldroom = $trow['lastroom'];
     $oldstatus = $trow['laststatus'];
@@ -58,26 +56,24 @@ require_once("$srcdir/patient_tracker.inc.php");
     $apptdate = $trow['apptdate']; 
     $pceid = $trow['eid'];	
     $encounter = $trow['encounter'];	
-
   if ($_POST['statustype'] !='') { 
     $status = $_POST['statustype'];
-    $theroom = $_POST['roomnum'];
+    if (strlen($_POST['roomnum']) != 0) {
+       $theroom = $_POST['roomnum'];
+    }
+    else
+    {
+	   $theroom = $oldroom;
+    }
     $username = $_SESSION["authUser"];
-
-     if (strlen($status) != 0)
-     {
-		 if (strlen($theroom) == 0) {
-			$theroom = $oldroom; 
-		 }	 
-	     add_or_update_tracker_status($apptdate,$appttime,$tkpid,$username,$status,$pceid,$encounter,$theroom,$record_id);
-     } 
+	
+    manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$username,$status,$theroom);
      echo "<html>\n<body>\n<script language='JavaScript'>\n";	
      echo "window.opener.location.reload();\n";
      echo " window.close();\n";    
      echo "</script></body></html>\n";
      exit();
   }
-
      $row = sqlQuery("select fname, lname " .
      "from patient_data where pid =? limit 1" , array($tkpid));
 	
@@ -99,7 +95,7 @@ require_once("$srcdir/patient_tracker.inc.php");
 ?>
 	<br><br>   
 	<span class=text><?php  echo xlt('Exam Room Number'); ?>: </span><br>
-    <input type=entry name="roomnum" size=1 value="<?php echo attr($obj{"roomnum"});?>" ><br><br>
+    <input type=entry name="roomnum" size=1 value="<?php echo attr($trow['lastroom']);?>" ><br><br>
     <tr>
      <td>
       <a href='javascript:;' class='css_button_small' style='color:gray' onclick='document.getElementById("form_note").submit();'><span><?php echo xla('Save')?></span></a>

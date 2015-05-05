@@ -24,6 +24,11 @@
 //           Paul Simon K <paul@zhservices.com> 
 //
 // +------------------------------------------------------------------------------+
+
+
+require_once(dirname(__FILE__) . '/patient_tracker.inc.php');
+
+
 //===============================================================================
 //This section handles the events of payment screen.
 //===============================================================================
@@ -313,7 +318,7 @@ function InsertEvent($args,$from = 'general') {
   $form_pid = empty($args['form_pid']) ? '' : $args['form_pid'];
 
 	if($from == 'general'){
-    return sqlInsert("INSERT INTO openemr_postcalendar_events ( " .
+    $pc_eid = sqlInsert("INSERT INTO openemr_postcalendar_events ( " .
 			"pc_catid, pc_multiple, pc_aid, pc_pid, pc_title, pc_time, pc_hometext, " .
 			"pc_informant, pc_eventDate, pc_endDate, pc_duration, pc_recurrtype, " .
 			"pc_recurrspec, pc_startTime, pc_endTime, pc_alldayevent, " .
@@ -325,6 +330,14 @@ function InsertEvent($args,$from = 'general') {
 			$args['starttime'],$args['endtime'],$args['form_allday'],$args['form_apptstatus'],$args['form_prefcat'],
 			$args['locationspec'],(int)$args['facility'],(int)$args['billing_facility'])
 		);
+		
+
+            # Capture the appt status and room number for patient tracker.
+            # TODO Add a room field to the add_edit gui and place it in below function
+            manage_tracker_status($args['event_date'],$args['starttime'],$pc_eid,$form_pid,$_SESSION['authUser'],$args['form_apptstatus'],'');        
+
+            return $pc_eid;
+
 	}elseif($from == 'payment'){
 		sqlStatement("INSERT INTO openemr_postcalendar_events ( " .
 			"pc_catid, pc_multiple, pc_aid, pc_pid, pc_title, pc_time, " .
