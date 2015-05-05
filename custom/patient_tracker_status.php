@@ -28,21 +28,19 @@ $sanitize_all_escapes=true;
   
 require_once("../interface/globals.php");
 require_once("$srcdir/options.inc.php");
+require_once("$srcdir/forms.inc");
+require_once("$srcdir/encounter_events.inc.php");
 require_once("$srcdir/patient_tracker.inc.php");
 ?>
  <html>
   <head>
   <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-  <link rel="stylesheet" href="../library/css/bootstrap-3.3.4/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../library/css/bootstrap-3.3.4/css/bootstrap-theme.min.css">
-  <script src="../library/js/jquery-1.11.2.min.js"></script>
-  <script src="../library/css/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
+  <link rel="stylesheet" type="text/css" href="../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
+  <script type="text/javascript" src="../library/js/jquery.1.3.2.js"></script>
+  <script type="text/javascript" src="../library/js/common.js"></script>
+  <script type="text/javascript" src="../library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
 
-  <script type="text/javascript">
-	$(document).ready(function(){
-		$("#myModal").modal('show');
-	});
-</script>	
 <?php
  
     $record_id = $_GET['record_id'];
@@ -66,8 +64,22 @@ require_once("$srcdir/patient_tracker.inc.php");
 	   $theroom = $oldroom;
     }
     $username = $_SESSION["authUser"];
-	
-    manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$username,$status,$theroom);
+	 
+	 if ($GLOBALS['auto_create_new_encounters'] && $apptdate == date('Y-m-d') && (is_checkin($status) == '1') && !is_tracker_encounter_exist($apptdate,$appttime,$tkpid,$pceid))		 
+	 {		
+		$encounter = todaysEncounterCheck($tkpid, $apptdate, '', '', '', '', '',false);
+
+             # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
+	 		 manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$username,$status,$theroom,$encounter);
+	 }
+     else 
+     {
+             # Capture the appt status and room number for patient tracker.
+             if (!empty($pceid)) {
+               manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$username,$status,$theroom);
+             }
+     }
+    
      echo "<html>\n<body>\n<script language='JavaScript'>\n";	
      echo "window.opener.location.reload();\n";
      echo " window.close();\n";    

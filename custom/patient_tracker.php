@@ -35,7 +35,12 @@ require_once("$srcdir/patient_tracker.inc.php");
 <head>
 
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
+<link rel="stylesheet" type="text/css" href="../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
+<script type="text/javascript" src="../library/dialog.js"></script>
+<script type="text/javascript" src="../library/js/jquery.1.3.2.js"></script>
 <script type="text/javascript" src="../library/js/common.js"></script>
+<script type="text/javascript" src="../library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
+<script type="text/javascript" src="../library/js/jquery-ui.js"></script>
 
 <script language="JavaScript">
 
@@ -95,6 +100,33 @@ function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
  location.href = '../interface/patient_file/summary/demographics_full.php?pid=' + pid;
 <?php } ?>
 }
+</script>
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+
+    // fancy box
+    enable_modals();
+
+    // special size for
+	$(".addfac_modal").fancybox( {
+		'overlayOpacity' : 0.0,
+		'showCloseButton' : true,
+		'frameHeight' : 460,
+		'frameWidth' : 650
+	});
+
+    // special size for
+	$(".medium_modal").fancybox( {
+		'overlayOpacity' : 0.0,
+		'showCloseButton' : true,
+		'frameHeight' : 460,
+		'frameWidth' : 650
+	});
+
+});
+
 </script>
 </head>
 
@@ -189,13 +221,18 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         $errmsg  = "";
         $endtime = "00:00:00";
         $arrivetime = "00:00:00"; 
-       if ((is_checkin('apptstat',$appointment['status']) == '1') && ($appointment['arrivetime'] == '00:00:00')) {
+       if ((is_checkin($appointment['status']) == '1') && ($appointment['arrivetime'] == '00:00:00')) {
          $arrivetime = substr($datetime,11);
-         $tracker1d = $appointment['pt_tracker_id'];	
-         manage_tracker_time($tracker1d,$arrivetime,$endtime);	
+         $tracker1d = $appointment['pt_tracker_id'];
+         $drugtest = 0;
+		 $testdrug = mt_rand(1,10);
+        if ($testdrug >5) { 
+            $drugtest = 1;
+         }
+         manage_tracker_time($tracker1d,$arrivetime,$endtime,$drugtest);	
          $appointment['arrivetime'] = $arrivetime;		 
        }
-       if ((is_checkout('apptstat',$appointment['status']) == '1') && ($appointment['endtime'] == '00:00:00')) {
+       if ((is_checkout($appointment['status']) == '1') && ($appointment['endtime'] == '00:00:00')) {
          $endtime = substr($datetime,11);
          $tracker1d = $appointment['pt_tracker_id'];
          manage_tracker_time($tracker1d,$arrivetime,$endtime);
@@ -226,7 +263,8 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         <?php echo text($appointment['arrivetime']); ?>
          </td>
          <td class="detail" align="center">  
-         <a href="" onclick="return bpopup(
+		<!-- <a href="../custom/patient_tracker_status.php?record_id='" class="iframe addfac_modal css_button"><?php //echo text($appointment['id']); ?></a>-->
+         <a href=""  onclick="return bpopup(
          <?php
             if (strlen($appointment['pt_traker_id']) == 0){		 
                $statusverb = getListItemTitle("apptstat",$appointment['status']); echo text($appointment['id']);  
@@ -238,6 +276,9 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		 //time in status
 		 $to_time = strtotime(date("Y-m-d H:i:s"));
 		 $yestime = '0';
+          if (strpos($GLOBALS['arrival_code'],$status) !=0) {
+            $arrivetime = substr($track_date,11);	 
+          }	 
 		 if ($appointment['endtime'] != '00:00:00') {
  			$from_time = strtotime($appointment['arrivetime']);
 			$to_time = strtotime($appointment['endtime']);

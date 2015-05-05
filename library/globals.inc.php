@@ -936,20 +936,6 @@ $GLOBALS_METADATA = array(
       '0',                              // default
       xl('Do not display the patient flow board.')
     ),
-
-    'discharge_code' => array(
-      xl('Patient Flow Board Generate Discharge Time'),
-      'text',                  // data type
-      ':>?%!x',                     // default
-      xl('Code used to generate a discharge time stamp.')
-    ),
-
-    'arrival_code' => array(
-      xl('Patient Flow Board Generate Arrival Time'),
-      'text',                  // data type
-      ':@~<',                   // default
-      xl('Code used to generate an arrival time stamp.')
-    ),
 	
     'pat_trkr_timer' => array(
       xl('Patient Flow Board Timer Interval'),

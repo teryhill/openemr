@@ -49,7 +49,7 @@ if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
 
     $query = "SELECT " .
   	"e.pc_eventDate, e.pc_startTime, e.pc_eid, e.pc_title, e.pc_apptstatus, " .
-    "t.id, t.date, t.arrivetime, t.apptdate, t.appttime, t.eid, t.pid, t.user, t.encounter, t.endtime, t.laststatus, t.lastseq, t.lastroom, " .
+    "t.id, t.date, t.arrivetime, t.apptdate, t.appttime, t.eid, t.pid, t.user, t.encounter, t.endtime, t.laststatus, t.lastseq, t.lastroom, t.random_drug_test, " .
     "q.pt_tracker_id, q.start_datetime, q.room, q.status,  q.seq, q.user, " .
     "s.toggle_setting_1, s.toggle_setting_2, s.option_id, " .
   	"p.fname, p.mname, p.lname, p.DOB, p.pubpid, p.pid, " .
@@ -83,19 +83,27 @@ if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
     return $events;
 }
 
-function  is_checkin($list, $option) {
+function  is_checkin($option) {
 // check to see if a status code exist as a check in
   $row = sqlQuery("SELECT toggle_setting_1 FROM list_options WHERE " .
-    "list_id = ? AND option_id = ?", array($list, $option));
+    "list_id = 'apptstat' AND option_id = ?", array($option));
   if (empty($row['toggle_setting_1'])) return(false);
   return(true);
 }
 
-function  is_checkout($list, $option) {
+function  is_checkout($option) {
 // check to see if a status code exist as a check out
   $row = sqlQuery("SELECT toggle_setting_2 FROM list_options WHERE " .
-    "list_id = ? AND option_id = ?", array($list, $option));
+    "list_id = 'apptstat' AND option_id = ?", array($option));
   if (empty($row['toggle_setting_2'])) return(false);
+  return(true);
+}
+
+function  is_tracker_encounter_exist($apptdate,$appttime,$pid,$eid) {
+  #Check to see if there is an encounter in the patient_tracker table.
+  $enc_yn = sqlQuery("SELECT encounter from patient_tracker WHERE `apptdate` = ? AND `appttime` = ? " .
+                      "AND `eid` = ? AND `pid` = ?", array($apptdate,$appttime,$eid,$pid));
+  if ($enc_yn['encounter'] == '0') return(false);
   return(true);
 }
 
@@ -149,10 +157,11 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
   #}
 }
 
-function manage_tracker_time($tracker1d,$arrivetime,$endtime) {
+function manage_tracker_time($tracker1d,$arrivetime,$endtime,$drugtest) {
 	
            sqlStatement("UPDATE patient_tracker SET " .
+			   "random_drug_test = ?, " .
 			   "arrivetime = ?, " . 
                "endtime =? " .		   
-               "WHERE id =? ", array($arrivetime,$endtime,$tracker1d));
+               "WHERE id =? ", array($drugtest,$arrivetime,$endtime,$tracker1d));
 }

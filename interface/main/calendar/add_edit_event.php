@@ -147,26 +147,24 @@ function DOBandEncounter()
 	 
 	 // Auto-create a new encounter if appropriate.
 	 //	 
-	 
-	 //if ($GLOBALS['auto_create_new_encounters'] && ($_POST['form_apptstatus'] == '@') && $event_date == date('Y-m-d'))
-    if ($GLOBALS['auto_create_new_encounters'] && (is_checkin('apptstat',$_POST['form_apptstatus']) == '1') && $event_date == date('Y-m-d'))		 
+
+    if ($GLOBALS['auto_create_new_encounters'] && $event_date == date('Y-m-d') && (is_checkin($_POST['form_apptstatus']) == '1') && !is_tracker_encounter_exist($event_date,$appttime,$tkpid,$pceid))		 
 	 {
 		 $encounter = todaysEncounterCheck($_POST['form_pid'], $event_date, $_POST['form_comments'], $_POST['facility'], $_POST['billing_facility'], $_POST['form_provider'], $_POST['form_category'], false);
 		 if($encounter){
 				 $info_msg .= xl("New encounter created with id"); 
 				 $info_msg .= " $encounter";
 		 }
-                         # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
-		         # TODO Add a room field to this gui and place it in below function
-	 		 manage_tracker_status($event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,'',$encounter);
+             # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
+	 		 manage_tracker_status($event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,$_POST['form_room'],$encounter);
 	 }
-         else {
-                         # Capture the appt status and room number for patient tracker.
-                         # TODO Add a room field to this gui and place it in below function. 
-                         if (!empty($pceid)) {
-                             manage_tracker_status($event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,'');
-                         }
-         }
+    else 
+     {
+             # Capture the appt status and room number for patient tracker. 
+             if (!empty($pceid)) {
+                manage_tracker_status($event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,$_POST['form_room']);
+             }
+     }
 
  }
 //================================================================================================================
@@ -453,6 +451,7 @@ if ($_POST['form_action'] == "save") {
                         "pc_title = '" . add_escape_custom($_POST['form_title']) . "', " .
                         "pc_time = NOW(), " .
                         "pc_hometext = '" . add_escape_custom($_POST['form_comments']) . "', " .
+                        "pc_room = '" . add_escape_custom($_POST['form_room']) . "', " .
                         "pc_informant = '" . add_escape_custom($_SESSION['authUserID']) . "', " .
                         "pc_eventDate = '" . add_escape_custom($event_date) . "', " .
                         "pc_endDate = '" . add_escape_custom(fixDate($_POST['form_enddate'])) . "', " .
@@ -544,6 +543,7 @@ if ($_POST['form_action'] == "save") {
                     "pc_title = '" . add_escape_custom($_POST['form_title']) . "', " .
                     "pc_time = NOW(), " .
                     "pc_hometext = '" . add_escape_custom($_POST['form_comments']) . "', " .
+                    "pc_room = '" . add_escape_custom($_POST['form_room']) . "', " .
                     "pc_informant = '" . add_escape_custom($_SESSION['authUserID']) . "', " .
                     "pc_eventDate = '" . add_escape_custom($event_date) . "', " .
                     "pc_endDate = '" . add_escape_custom(fixDate($_POST['form_enddate'])) . "', " .
@@ -754,7 +754,7 @@ if ($_POST['form_action'] == "save") {
       $repeattype = 6;
     }
   }
-
+  $pcroom = $row['pc_room'];
   $hometext = $row['pc_hometext'];
   if (substr($hometext, 0, 6) == ':text:') $hometext = substr($hometext, 6);
  }
@@ -1471,7 +1471,21 @@ if ($repeatexdate != "") {
    <input type='text' size='40' name='form_comments' style='width:100%' value='<?php echo attr($hometext); ?>' title='<?php echo xla('Optional information about this event');?>' />
   </td>
  </tr>
-
+ <?php
+ if($_GET['prov']!=true){
+ ?>
+ <?php if (!$GLOBALS['disable_pat_trkr'] && !$GLOBALS['disable_calendar']) {  ?>
+ <tr>
+  <td nowrap>
+   <b><?php echo xlt('Room Number'); ?>:</b>
+  </td>
+  <td colspan='4' nowrap>
+   <input type='text' size='5' name='form_room' value='<?php echo attr($pcroom); ?>' title='<?php echo xla('Room number for Patient Flow Board');?>' />
+  </td>
+ </tr>
+<?php } ?>
+<?php } ?>
+ 
 <?php
  // DOB is important for the clinic, so if it's missing give them a chance
  // to enter it right here.  We must display or hide this row dynamically

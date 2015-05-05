@@ -6290,6 +6290,7 @@ CREATE TABLE IF NOT EXISTS `patient_tracker` (
   `laststatus`         varchar(31)  NOT NULL,
   `lastroom`           varchar(20)  NOT NULL,
   `lastseq`            varchar(4)   NOT NULL,
+  `random_drug_test`   TINYINT(1)   NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY (`encounter`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1;
@@ -6311,6 +6312,10 @@ ALTER TABLE `list_options` ADD COLUMN `toggle_setting_1` tinyint(1) NOT NULL def
 
 #IfMissingColumn list_options toggle_setting_2
 ALTER TABLE `list_options` ADD COLUMN `toggle_setting_2` tinyint(1) NOT NULL DEFAULT '0';
+#EndIf
+
+#IfMissingColumn openemr_postcalendar_events pc_room
+ALTER TABLE `openemr_postcalendar_events` ADD `pc_room` VARCHAR(20) NOT NULL ;
 #EndIf
 
 UPDATE `list_options` SET `notes`='FF2414' , `toggle_setting_1`='1' WHERE `option_id`='@';
