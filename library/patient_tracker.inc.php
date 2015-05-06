@@ -145,16 +145,13 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
     }  
   }
   #Ensure the entry in calendar appt entry has been updated.
-  # TODO - also collect the `pc_room` field when it is there
-  # $pc_appt =  sqlQuery("SELECT `pc_apptstatus`, `pc_room` FROM `openemr_postcalendar_events` WHERE `pc_eid` = ?", array($eid))
-  $pc_appt =  sqlQuery("SELECT `pc_apptstatus` FROM `openemr_postcalendar_events` WHERE `pc_eid` = ?", array($eid));
+  $pc_appt =  sqlQuery("SELECT `pc_apptstatus`, `pc_room` FROM `openemr_postcalendar_events` WHERE `pc_eid` = ?", array($eid));
   if ($status != $pc_appt['pc_apptstatus']) {
     sqlStatement("UPDATE `openemr_postcalendar_events` SET `pc_apptstatus` = ? WHERE `pc_eid` = ?", array($status,$eid));
   }
-  # TODO - support for room number after this is added
-  #if ($room != $pc_appt['pc_room']) {
-  #  sqlStatement("UPDATE `openemr_postcalendar_events` SET `pc_room` = ? WHERE `pc_eid` = ?", array($room,$eid));
-  #}
+  if ($room != $pc_appt['pc_room']) {
+    sqlStatement("UPDATE `openemr_postcalendar_events` SET `pc_room` = ? WHERE `pc_eid` = ?", array($room,$eid));
+  }
 }
 
 function manage_tracker_time($tracker1d,$arrivetime,$endtime,$drugtest) {
