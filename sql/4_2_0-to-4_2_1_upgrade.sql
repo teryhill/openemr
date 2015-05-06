@@ -61,6 +61,38 @@
 --  #EndIf
 --    all blocks are terminated with a #EndIf statement.
 
+#IfNotIndex form_encounter encounter_date
+    CREATE INDEX encounter_date on form_encounter (`date`);
+#EndIf
+
+#IfNotColumnType prescriptions size varchar(16)
+ALTER TABLE `prescriptions` CHANGE `size` `size` varchar(16) DEFAULT NULL;
+#EndIf
+
+#IfNotRow globals gl_name erx_newcrop_path
+UPDATE `globals` SET `gl_name` = 'erx_newcrop_path' WHERE `gl_name` = 'erx_path_production';
+#EndIf
+
+#IfNotRow globals gl_name erx_newcrop_path_soap
+UPDATE `globals` SET `gl_name` = 'erx_newcrop_path_soap' WHERE `gl_name` = 'erx_path_soap_production';
+#EndIf
+
+#IfNotRow globals gl_name erx_account_partner_name
+UPDATE `globals` SET `gl_name` = 'erx_account_partner_name' WHERE `gl_name` = 'partner_name_production';
+#EndIf
+
+#IfNotRow globals gl_name erx_account_name
+UPDATE `globals` SET `gl_name` = 'erx_account_name' WHERE `gl_name` = 'erx_name_production';
+#EndIf
+
+#IfNotRow globals gl_name erx_account_password
+UPDATE `globals` SET `gl_name` = 'erx_account_password' WHERE `gl_name` = 'erx_password_production';
+#EndIf
+
+#IfNotColumnType lang_custom constant_name mediumtext
+ALTER TABLE `lang_custom` CHANGE `constant_name` `constant_name` mediumtext NOT NULL default '';
+#EndIf
+
 #IfNotTable patient_tracker
 CREATE TABLE IF NOT EXISTS `patient_tracker` (
   `id`                 bigint(20)   NOT NULL auto_increment,
@@ -95,19 +127,17 @@ CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
 #EndIf
 
 #IfMissingColumn openemr_postcalendar_events pc_room
-ALTER TABLE `openemr_postcalendar_events` ADD `pc_room` VARCHAR(20) NOT NULL ;
+ALTER TABLE `openemr_postcalendar_events` ADD `pc_room` VARCHAR(20) default NULL ;
 #EndIf
 
 #IfMissingColumn list_options toggle_setting_1
 ALTER TABLE `list_options` ADD COLUMN `toggle_setting_1` tinyint(1) NOT NULL default '0';
+UPDATE `list_options` SET `notes`='FF2414' , `toggle_setting_1`='1' WHERE `option_id`='@';
+UPDATE `list_options` SET `notes`='FF6619' , `toggle_setting_1`='1' WHERE `option_id`='~';
 #EndIf
 
 #IfMissingColumn list_options toggle_setting_2
 ALTER TABLE `list_options` ADD COLUMN `toggle_setting_2` tinyint(1) NOT NULL DEFAULT '0';
-#EndIf
-
-UPDATE `list_options` SET `notes`='FF2414' , `toggle_setting_1`='1' WHERE `option_id`='@';
-UPDATE `list_options` SET `notes`='FF6619' , `toggle_setting_1`='1' WHERE `option_id`='~';
 UPDATE `list_options` SET `notes`='0BBA34' , `toggle_setting_2`='1' WHERE `option_id`='!';
 UPDATE `list_options` SET `notes`='FFFFFF' , `toggle_setting_2`='1' WHERE `option_id`='>';
 UPDATE `list_options` SET `notes`='FFFFFF' WHERE `option_id`='-';
@@ -119,3 +149,4 @@ UPDATE `list_options` SET `notes`='FFFF2B' WHERE `option_id`='#';
 UPDATE `list_options` SET `notes`='52D9DE' WHERE `option_id`='<';
 UPDATE `list_options` SET `notes`='C0FF96' WHERE `option_id`='$';
 UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='%';
+#EndIf

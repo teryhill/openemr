@@ -1,6 +1,8 @@
 <?php
 /** 
- *  Patient Tracker 
+ *  Patient Tracker (Patient Flow Board)
+ *
+ *  This program displays the information entered in the Calendar program , allowing the user to change status and veiw those changed here and in the Calendar
  * 
  * Copyright (C) 2015 Terry Hill <terry@lillysystems.com> 
  * 
@@ -101,33 +103,7 @@ function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
 <?php } ?>
 }
 </script>
-<script type="text/javascript">
 
-
-$(document).ready(function(){
-
-    // fancy box
-    enable_modals();
-
-    // special size for
-	$(".addfac_modal").fancybox( {
-		'overlayOpacity' : 0.0,
-		'showCloseButton' : true,
-		'frameHeight' : 460,
-		'frameWidth' : 650
-	});
-
-    // special size for
-	$(".medium_modal").fancybox( {
-		'overlayOpacity' : 0.0,
-		'showCloseButton' : true,
-		'frameHeight' : 460,
-		'frameWidth' : 650
-	});
-
-});
-
-</script>
 </head>
 
 <body class="body_top" >
@@ -234,8 +210,10 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
        }
        if ((is_checkout($appointment['status']) == '1') && ($appointment['endtime'] == '00:00:00')) {
          $endtime = substr($datetime,11);
+		 $arrivetime = $appointment['arrivetime'];
+		 $drugtest = $appointment['random_drug_test'];
          $tracker1d = $appointment['pt_tracker_id'];
-         manage_tracker_time($tracker1d,$arrivetime,$endtime);
+         manage_tracker_time($tracker1d,$arrivetime,$endtime,$drugtest);
          $appointment['endtime'] = $endtime;	 
       }
 	   
@@ -263,7 +241,6 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         <?php echo text($appointment['arrivetime']); ?>
          </td>
          <td class="detail" align="center">  
-		<!-- <a href="../custom/patient_tracker_status.php?record_id='" class="iframe addfac_modal css_button"><?php //echo text($appointment['id']); ?></a>-->
          <a href=""  onclick="return bpopup(
          <?php
             if (strlen($appointment['pt_traker_id']) == 0){		 
@@ -340,9 +317,5 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 
 </form>
 </center>
-<!-- form used to open a new top level window when a patient row is clicked -->
-<form name='fnew' method='post' target='_blank' action='../main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
-<input type='hidden' name='patientID'      value='0' />
-</form>
 </body>
 </html>

@@ -2723,6 +2723,8 @@ CREATE TABLE `list_options` (
   `mapping` varchar(31) NOT NULL DEFAULT '',
   `notes` varchar(255) NOT NULL DEFAULT '',
   `codes` varchar(255) NOT NULL DEFAULT '',
+  `toggle_setting_1` tinyint(1) NOT NULL default '0',
+  `toggle_setting_2` tinyint(1) NOT NULL default '0',  
   PRIMARY KEY  (`list_id`,`option_id`)
 ) ENGINE=MyISAM;
 
@@ -3263,19 +3265,19 @@ INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES (
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('immunizations','35'           ,'Other'                   ,175,0);
 
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('lists'   ,'apptstat','Appointment Statuses', 1,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','-'       ,'- None'              , 5,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','*'       ,'* Reminder done'     ,10,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','+'       ,'+ Chart pulled'      ,15,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','x'       ,'x Canceled'          ,20,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','?'       ,'? No show'           ,25,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','@'       ,'@ Arrived'           ,30,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','~'       ,'~ Arrived late'      ,35,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','!'       ,'! Left w/o visit'    ,40,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','#'       ,'# Ins/fin issue'     ,45,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','<'       ,'< In exam room'      ,50,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','>'       ,'> Checked out'       ,55,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','$'       ,'$ Coding done'       ,60,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('apptstat','%'       ,'% Canceled < 24h'    ,65,0);
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','-'       ,'- None'              , 5,0,'FFFFFF');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','*'       ,'* Reminder done'     ,10,0,'FFC9F8');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','+'       ,'+ Chart pulled'      ,15,0,'87FF1F');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','x'       ,'x Canceled'          ,20,0,'BFBFBF');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','?'       ,'? No show'           ,25,0,'BFBFBF');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes, toggle_setting_1 ) VALUES ('apptstat','@'       ,'@ Arrived'           ,30,0,'FF2414','1');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes, toggle_setting_1 ) VALUES ('apptstat','~'       ,'~ Arrived late'      ,35,0,'FF6619','1');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes, toggle_setting_2 ) VALUES ('apptstat','!'       ,'! Left w/o visit'    ,40,0,'0BBA34','1');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','#'       ,'# Ins/fin issue'     ,45,0,'FFFF2B');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','<'       ,'< In exam room'      ,50,0,'52D9DE');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes, toggle_setting_2 ) VALUES ('apptstat','>'       ,'> Checked out'       ,55,0,'FFFFFF','1');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','$'       ,'$ Coding done'       ,60,0,'C0FF96');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('apptstat','%'       ,'% Canceled < 24h'    ,65,0,'BFBFBF');
 
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('lists'    ,'warehouse','Warehouses',21,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('warehouse','onsite'   ,'On Site'   , 5,0);
@@ -4299,6 +4301,7 @@ CREATE TABLE `openemr_postcalendar_events` (
   `pc_sendalertsms` VARCHAR(3) NOT NULL DEFAULT 'NO',
   `pc_sendalertemail` VARCHAR( 3 ) NOT NULL DEFAULT 'NO',
   `pc_billing_location` SMALLINT (6) NOT NULL DEFAULT '0',
+  `pc_room` varchar(20) default NULL,
   PRIMARY KEY  (`pc_eid`),
   KEY `basic_event` (`pc_catid`,`pc_aid`,`pc_eventDate`,`pc_endDate`,`pc_eventstatus`,`pc_sharing`,`pc_topic`),
   KEY `pc_eventDate` (`pc_eventDate`)
@@ -4526,6 +4529,45 @@ CREATE TABLE  `patient_access_offsite` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `pid` (`pid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1;
+
+-- 
+-- Table structure for table `patient_tracker`
+-- 
+
+DROP TABLE IF EXISTS `patient_tracker`;
+CREATE TABLE IF NOT EXISTS `patient_tracker` (
+  `id`                 bigint(20)   NOT NULL auto_increment,
+  `date`               datetime     NOT NULL,
+  `arrivetime`         time         NOT NULL,
+  `apptdate`           date         NOT NULL,
+  `appttime`           time         NOT NULL,
+  `eid`                bigint(20)   NOT NULL,
+  `pid`                bigint(20)   NOT NULL,
+  `user`               varchar(255) NOT NULL,
+  `encounter`          bigint(20)   NOT NULL,
+  `endtime`            time         NOT NULL,
+  `laststatus`         varchar(31)  NOT NULL,
+  `lastroom`           varchar(20)  NOT NULL,
+  `lastseq`            varchar(4)   NOT NULL,
+  `random_drug_test`   TINYINT(1)   NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY (`encounter`)
+) ENGINE=MyISAM AUTO_INCREMENT=1;
+
+-- 
+-- Table structure for table `patient_tracker_element`
+-- 
+
+DROP TABLE IF EXISTS `patient_tracker_element`;
+CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
+  `pt_tracker_id`      bigint(20)   NOT NULL,
+  `start_datetime`     datetime     NOT NULL,
+  `room`               varchar(20)  NOT NULL,
+  `status`             varchar(31)  NOT NULL,
+  `seq`                varchar(4)   NOT NULL,
+  `user`               varchar(255) NOT NULL,
+  KEY  (`pt_tracker_id`)
+) ENGINE=MyISAM;
 
 -- 
 -- Table structure for table `payments`
@@ -6274,60 +6316,3 @@ CREATE TABLE `shared_attributes` (
   `field_value`  TEXT         NOT NULL,
   PRIMARY KEY (`pid`, `encounter`, `field_id`)
 );
-
-DROP TABLE IF EXISTS `patient_tracker`;
-CREATE TABLE IF NOT EXISTS `patient_tracker` (
-  `id`                 bigint(20)   NOT NULL auto_increment,
-  `date`               datetime     NOT NULL,
-  `arrivetime`         time         NOT NULL,
-  `apptdate`           date         NOT NULL,
-  `appttime`           time         NOT NULL,
-  `eid`                bigint(20)   NOT NULL,
-  `pid`                bigint(20)   NOT NULL,
-  `user`               varchar(255) NOT NULL,
-  `encounter`          bigint(20)   NOT NULL,
-  `endtime`            time         NOT NULL,
-  `laststatus`         varchar(31)  NOT NULL,
-  `lastroom`           varchar(20)  NOT NULL,
-  `lastseq`            varchar(4)   NOT NULL,
-  `random_drug_test`   TINYINT(1)   NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY (`encounter`)
-) ENGINE=MyISAM AUTO_INCREMENT=1;
-
-DROP TABLE IF EXISTS `patient_tracker_element`;
-CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
-  `pt_tracker_id`      bigint(20)   NOT NULL,
-  `start_datetime`     datetime     NOT NULL,
-  `room`               varchar(20)  NOT NULL,
-  `status`             varchar(31)  NOT NULL,
-  `seq`                varchar(4)   NOT NULL,
-  `user`               varchar(255) NOT NULL,
-  KEY  (`pt_tracker_id`)
-) ENGINE=MyISAM;
-
-#IfMissingColumn list_options toggle_setting_1
-ALTER TABLE `list_options` ADD COLUMN `toggle_setting_1` tinyint(1) NOT NULL default '0';
-#EndIf
-
-#IfMissingColumn list_options toggle_setting_2
-ALTER TABLE `list_options` ADD COLUMN `toggle_setting_2` tinyint(1) NOT NULL DEFAULT '0';
-#EndIf
-
-#IfMissingColumn openemr_postcalendar_events pc_room
-ALTER TABLE `openemr_postcalendar_events` ADD `pc_room` VARCHAR(20) NOT NULL ;
-#EndIf
-
-UPDATE `list_options` SET `notes`='FF2414' , `toggle_setting_1`='1' WHERE `option_id`='@';
-UPDATE `list_options` SET `notes`='FF6619' , `toggle_setting_1`='1' WHERE `option_id`='~';
-UPDATE `list_options` SET `notes`='0BBA34' , `toggle_setting_2`='1' WHERE `option_id`='!';
-UPDATE `list_options` SET `notes`='FFFFFF' , `toggle_setting_2`='1' WHERE `option_id`='>';
-UPDATE `list_options` SET `notes`='FFFFFF' WHERE `option_id`='-';
-UPDATE `list_options` SET `notes`='FFC9F8' WHERE `option_id`='*';
-UPDATE `list_options` SET `notes`='87FF1F' WHERE `option_id`='+';
-UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='x';
-UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='?';
-UPDATE `list_options` SET `notes`='FFFF2B' WHERE `option_id`='#';
-UPDATE `list_options` SET `notes`='52D9DE' WHERE `option_id`='<';
-UPDATE `list_options` SET `notes`='C0FF96' WHERE `option_id`='$';
-UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='%';
