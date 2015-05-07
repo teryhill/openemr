@@ -97,32 +97,28 @@ ALTER TABLE `lang_custom` CHANGE `constant_name` `constant_name` mediumtext NOT 
 CREATE TABLE IF NOT EXISTS `patient_tracker` (
   `id`                 bigint(20)   NOT NULL auto_increment,
   `date`               datetime     NOT NULL,
-  `arrivetime`         time         NOT NULL,
   `apptdate`           date         NOT NULL,
   `appttime`           time         NOT NULL,
-  `eid`                bigint(20)   NOT NULL,
-  `pid`                bigint(20)   NOT NULL,
-  `user`               varchar(255) NOT NULL,
-  `encounter`          bigint(20)   NOT NULL,
-  `endtime`            time         NOT NULL,
-  `laststatus`         varchar(31)  NOT NULL,
-  `lastroom`           varchar(20)  NOT NULL,
-  `lastseq`            varchar(4)   NOT NULL,
+  `eid`                bigint(20)   NOT NULL default '0',
+  `pid`                bigint(20)   NOT NULL default '0',
+  `original_user`      varchar(255) NOT NULL default '',
+  `encounter`          bigint(20)   NOT NULL default '0',
+  `lastseq`            varchar(4)   NOT NULL default '',
   `random_drug_test`   TINYINT(1)   NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY (`encounter`)
+  KEY (`eid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1;
 #EndIf
 
 #IfNotTable patient_tracker_element
 CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
-  `pt_tracker_id`      bigint(20)   NOT NULL,
+  `pt_tracker_id`      bigint(20)   NOT NULL default '0',
   `start_datetime`     datetime     NOT NULL,
-  `room`               varchar(20)  NOT NULL,
-  `status`             varchar(31)  NOT NULL,
-  `seq`                varchar(4)   NOT NULL,
-  `user`               varchar(255) NOT NULL,
-  KEY  (`pt_tracker_id`)
+  `room`               varchar(20)  default NULL,
+  `status`             varchar(31)  NOT NULL default '',
+  `seq`                varchar(4)   NOT NULL default ''
+  `user`               varchar(255) NOT NULL default '',
+  KEY  (`pt_tracker_id`,`seq`)
 ) ENGINE=MyISAM;
 #EndIf
 

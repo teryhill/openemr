@@ -377,13 +377,6 @@ else if($list_id == 'apptstat') {
       htmlspecialchars($notes, ENT_QUOTES) . "' size='25' maxlength='255' class='optin' />";
   echo "</td>\n";
 }
-if ($list_id != 'apptstat') {
-  echo "  <td align='center' class='optcell'>";
-  echo "<input type='text' name='opt[$opt_line_no][codes]' title='" .
-      xla('Clinical Term Code(s)') ."' value='" .
-      htmlspecialchars($codes, ENT_QUOTES) . "' onclick='select_clin_term_code(this)' size='25' maxlength='255' class='optin' />";
-  echo "</td>\n";
-}
 if($list_id == 'apptstat') {
   echo "  <td align='center' class='optcell'>";
   echo "<input type='checkbox' name='opt[$opt_line_no][toggle_setting_1]' value='1' " .
@@ -394,6 +387,11 @@ if($list_id == 'apptstat') {
     "onclick='defClicked($opt_line_no)' class='optin'$checked_tog2 />";
   echo "</td>\n";
 }
+  echo "  <td align='center' class='optcell'>";
+  echo "<input type='text' name='opt[$opt_line_no][codes]' title='" .
+      xla('Clinical Term Code(s)') ."' value='" .
+      htmlspecialchars($codes, ENT_QUOTES) . "' onclick='select_clin_term_code(this)' size='25' maxlength='255' class='optin' />";
+  echo "</td>\n";
 }
 
 // Write a form line as above but for the special case of the Fee Sheet.
@@ -898,14 +896,15 @@ while ($row = sqlFetchArray($res)) {
 		  	xl('Notes','e');
 		  } 
   ?></b></td>
-   <?php if ($list_id != 'apptstat') { ?>
-  <td><b><?php xl('Code(s)','e');?></b></td>
-   <?php } ?>
-    <?php if ($list_id == 'apptstat') {  ?>
-    <td><b><?php xl('Check In Code'  ,'e');?>&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-    <td><b><?php xl('Check Out Code' ,'e');
+  <?php if ($list_id == 'apptstat') {  ?>
+    <td><b><?php xl('Check In'  ,'e');?>&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+    <td><b><?php xl('Check Out' ,'e');
   }
   ?></b></td>
+   <?php //if ($list_id != 'apptstat') { ?>
+  <td><b><?php xl('Code(s)','e');?></b></td>
+   <?php //} ?>
+
 <?php } // end not fee sheet ?>
  </tr>
 

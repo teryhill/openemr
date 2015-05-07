@@ -2,7 +2,8 @@
 /** 
  *  Patient Tracker (Patient Flow Board)
  *
- *  This program displays the information entered in the Calendar program , allowing the user to change status and veiw those changed here and in the Calendar
+ *  This program displays the information entered in the Calendar program , 
+ *  allowing the user to change status and veiw those changed here and in the Calendar
  * 
  * Copyright (C) 2015 Terry Hill <terry@lillysystems.com> 
  * 
@@ -43,18 +44,25 @@ require_once("$srcdir/patient_tracker.inc.php");
 <script type="text/javascript" src="../library/js/common.js"></script>
 <script type="text/javascript" src="../library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
 <script type="text/javascript" src="../library/js/jquery-ui.js"></script>
+<script src="../library/js/jquery-1.9.1.min.js"></script>
+<script src="../library/js/blink/jquery.modern-blink.js"></script>
 
+<script>
+jQuery(function($) {
+    $('.js-blink-infinite').modernBlink();
+});
+</script>
 <script language="JavaScript">
 
 var mypcc = '1';
   
-function bpopup(pid) {
+function bpopup(tkid) {
  top.restoreSession()	
- window.open('../custom/patient_tracker_status.php?record_id=' + pid ,'_blank', 'width=500,height=250,resizable=1');
+ window.open('../custom/patient_tracker_status.php?record_id=' + tkid ,'_blank', 'width=500,height=250,resizable=1');
  return false;
 }
 
-var reftime="<?php echo attr(($GLOBALS['pat_trkr_timer'])); ?>"
+var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>"
 
 if (document.images){
 var parsetime=reftime.split(":")
@@ -74,22 +82,6 @@ window.onload=refreshbegin
 </script>
 <script>
 // Taken from billing_report 
-// Process a click to go to an encounter.
-function toencounter(pid, pubpid, pname, enc, datestr, dobstr) {
- top.restoreSession();
-<?php if ($GLOBALS['concurrent_layout']) { ?>
- var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
- parent.left_nav.setPatient(pname,pid,pubpid,'',dobstr);
- parent.left_nav.setEncounter(datestr, enc, othername);
- parent.left_nav.setRadio(othername, 'enc');
- parent.frames[othername].location.href =
-  '../interface/patient_file/encounter/encounter_top.php?set_encounter='
-  + enc + '&pid=' + pid;
-<?php } else { ?>
- location.href = '../interface/patient_file/encounter/patient_encounter.php?set_encounter='
-  + enc + '&pid=' + pid;
-<?php } ?>
-}
 // Process a click to go to an patient.
 function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
  top.restoreSession();
@@ -172,14 +164,11 @@ if ($GLOBALS['pat_trkr_timer'] =='0') {
  </tr>
 
 <?php
-  $orow = -1;
 
 $appointments = array();
 $today_one = oeFormatShortDate($date='today');
 $from_date = date("Y-m-d");
 $to_date = date("Y-m-d");
-$endtime = "00:00:00";
-$arrivetime = "00:00:00"; 
 $datetime = date("Y-m-d H:i:s");
   
 $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
@@ -195,29 +184,20 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
         $raw_encounter_date = date("Y-m-d", strtotime($appointment['date']));
 		if (strlen($docname)<= 3 ) continue;        
         $errmsg  = "";
-        $endtime = "00:00:00";
-        $arrivetime = "00:00:00"; 
-       if ((is_checkin($appointment['status']) == '1') && ($appointment['arrivetime'] == '00:00:00')) {
-         $arrivetime = substr($datetime,11);
+		$newarrive = collect_checkin($appointment['id']);
+        $newend = collect_checkout($appointment['id']);			
+       if ((strtotime($newarrive) == '')) {
          $tracker1d = $appointment['pt_tracker_id'];
          $drugtest = 0;
 		 $testdrug = mt_rand(1,10);
         if ($testdrug >5) { 
             $drugtest = 1;
          }
-         manage_tracker_time($tracker1d,$arrivetime,$endtime,$drugtest);	
-         $appointment['arrivetime'] = $arrivetime;		 
+         manage_tracker_time($tracker1d,$drugtest);	
+		 
        }
-       if ((is_checkout($appointment['status']) == '1') && ($appointment['endtime'] == '00:00:00')) {
-         $endtime = substr($datetime,11);
-		 $arrivetime = $appointment['arrivetime'];
-		 $drugtest = $appointment['random_drug_test'];
-         $tracker1d = $appointment['pt_tracker_id'];
-         manage_tracker_time($tracker1d,$arrivetime,$endtime,$drugtest);
-         $appointment['endtime'] = $endtime;	 
-      }
 	   
-        $bgcolor = (getListItemNotes("apptstat",$appointment['status']));
+        $bgcolor = (getApptStatusColor($appointment['status']));
 ?>
         <tr bgcolor='<?php echo $bgcolor ?>'>
         <td class="detail" align="center">
@@ -228,7 +208,6 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		 <?php echo text($appointment['lname']) . ', ' . text($appointment['fname']) . ' ' . text($appointment['mname']); ?></a>
          </td>
         <td class="detail" align="center">
-         <a href="" onclick="return toencounter('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['encounter']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
 		 <?php echo text($appointment['encounter']); ?></a>
          </td>
          <td class="detail" align="center">
@@ -238,7 +217,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <?php echo text($appointment['appttime']) ?>
          </td>
          <td class="detail" align="center">
-        <?php echo text($appointment['arrivetime']); ?>
+        <?php echo text(substr($newarrive,11)); ?>
          </td>
          <td class="detail" align="center">  
          <a href=""  onclick="return bpopup(
@@ -248,17 +227,13 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
             }
 		 ?> ) " ><?php echo text($statusverb); ?></a>		 
 		 </td>
-         <td class="detail" align="center"> 
         <?php		 
 		 //time in status
 		 $to_time = strtotime(date("Y-m-d H:i:s"));
-		 $yestime = '0';
-          if (strpos($GLOBALS['arrival_code'],$status) !=0) {
-            $arrivetime = substr($track_date,11);	 
-          }	 
-		 if ($appointment['endtime'] != '00:00:00') {
- 			$from_time = strtotime($appointment['arrivetime']);
-			$to_time = strtotime($appointment['endtime']);
+		 $yestime = '0'; 
+		 if (strtotime($newend) != '') {
+ 			$from_time = strtotime($newarrive);
+			$to_time = strtotime($newend);
 			$yestime = '0';
 		 }
          else
@@ -266,11 +241,18 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 			$from_time = strtotime($appointment['start_datetime']);
 			$yestime = '1';
         }
-        if ($yestime == '1' && $appointment['arrivetime'] != '00:00:00') {        
-		  echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minutes'));
+          if (round(abs($to_time - $from_time) / 60,0) >= $GLOBALS['over_time_warning']) { 
+            echo "<td align='center' class='js-blink-infinite'>	";
+         }
+        else
+         {
+			 echo "<td align='center' class='detail'> ";
+         }
+        if (($yestime == '1') && (strtotime($newarrive)!= '')) { 
+		   echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minutes')); 
 		}
-		$yestime = '0';
         ?>	
+		 </td>
          <td class="detail" align="center">
          <?php echo text(xl_appt_category($appointment['pc_title'])) ?>
          </td>
@@ -281,18 +263,16 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <?php		 
 		 
 		 // total time in practice
-		 if ($appointment['endtime'] != '00:00:00') {
- 			$from_time = strtotime($appointment['arrivetime']);
-			$to_time = strtotime($appointment['endtime']);
-			$yestime = '0';
+		 if (strtotime($newend) != '') {
+ 			$from_time = strtotime($newarrive);
+			$to_time = strtotime($newend);
 		 }
          else
         {	
-			$from_time = strtotime($appointment['arrivetime']);
+			$from_time = strtotime($newarrive);
  		    $to_time = strtotime(date("Y-m-d H:i:s"));
-			$yestime = '1';
         }	
-       if ($yestime == '1' && $appointment['arrivetime'] != '00:00:00') {  		
+       if (strtotime($newarrive) != '') {  		
 		echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minutes'));
 	   }
         ?>		 
@@ -300,8 +280,8 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          </td>
         <td class="detail" align="center">
          <?php 
-		 if ($appointment['endtime'] != '00:00:00') {
-		    echo text($appointment['endtime']) ;
+		 if (strtotime($newend) != '') {
+		    echo text(substr($newend,11)) ;
 		 }
 		 ?>
          </td>

@@ -134,21 +134,16 @@ function DOBandEncounter()
      $tmpm = $_POST['form_minute'] + 0;
      if ($_POST['form_ampm'] == '2' && $tmph < 12) $tmph += 12;
      $appttime = "$tmph:$tmpm:00";
-	 $tkpid = $_POST['form_pid'];
-	 $tkstatus = $_POST['form_apptstatus'];
-     $encounter = 0;
-	 $pceid = $_GET['eid']; 
 
 	 if ($patient_dob && $_POST['form_pid']) {
 			 sqlStatement("UPDATE patient_data SET DOB = ? WHERE " .
 									 "pid = ?", array($patient_dob,$_POST['form_pid']) );
 	 }
-     $username = $_SESSION["authUser"];
 	 
 	 // Auto-create a new encounter if appropriate.
 	 //	 
 
-    if ($GLOBALS['auto_create_new_encounters'] && $event_date == date('Y-m-d') && (is_checkin($_POST['form_apptstatus']) == '1') && !is_tracker_encounter_exist($event_date,$appttime,$tkpid,$pceid))		 
+    if ($GLOBALS['auto_create_new_encounters'] && $event_date == date('Y-m-d') && (is_checkin($_POST['form_apptstatus']) == '1') && !is_tracker_encounter_exist($event_date,$appttime,$_POST['form_pid'],$_GET['eid']))		 
 	 {
 		 $encounter = todaysEncounterCheck($_POST['form_pid'], $event_date, $_POST['form_comments'], $_POST['facility'], $_POST['billing_facility'], $_POST['form_provider'], $_POST['form_category'], false);
 		 if($encounter){
@@ -156,13 +151,13 @@ function DOBandEncounter()
 				 $info_msg .= " $encounter";
 		 }
              # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
-	 		 manage_tracker_status($event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,$_POST['form_room'],$encounter);
+	 		 manage_tracker_status($event_date,$appttime,$_GET['eid'],$_POST['form_pid'],$_SESSION["authUser"],$_POST['form_apptstatus'],$_POST['form_room'],$encounter);
 	 }
     else 
      {
              # Capture the appt status and room number for patient tracker. 
-             if (!empty($pceid)) {
-                manage_tracker_status($event_date,$appttime,$pceid,$tkpid,$username,$tkstatus,$_POST['form_room']);
+             if (!empty($_GET['eid'])) {
+                manage_tracker_status($event_date,$appttime,$_GET['eid'],$_POST['form_pid'],$_SESSION["authUser"],$_POST['form_apptstatus'],$_POST['form_room']);
              }
      }
 
@@ -1462,7 +1457,18 @@ if ($repeatexdate != "") {
 ?>
   </td>
  </tr>
-
+ <?php
+ if($_GET['prov']!=true){
+ ?>
+ <tr>
+  <td nowrap>
+   <b><?php echo xlt('Room Number'); ?>:</b>
+  </td>
+  <td colspan='4' nowrap>
+   <input type='text' size='5' name='form_room' value='<?php echo attr($pcroom); ?>' title='<?php echo xla('Room number');?>' />
+  </td>
+ </tr>
+<?php } ?>
  <tr>
   <td nowrap>
    <b><?php echo xlt('Comments'); ?>:</b>
@@ -1471,20 +1477,7 @@ if ($repeatexdate != "") {
    <input type='text' size='40' name='form_comments' style='width:100%' value='<?php echo attr($hometext); ?>' title='<?php echo xla('Optional information about this event');?>' />
   </td>
  </tr>
- <?php
- if($_GET['prov']!=true){
- ?>
- <?php if (!$GLOBALS['disable_pat_trkr'] && !$GLOBALS['disable_calendar']) {  ?>
- <tr>
-  <td nowrap>
-   <b><?php echo xlt('Room Number'); ?>:</b>
-  </td>
-  <td colspan='4' nowrap>
-   <input type='text' size='5' name='form_room' value='<?php echo attr($pcroom); ?>' title='<?php echo xla('Room number for Patient Flow Board');?>' />
-  </td>
- </tr>
-<?php } ?>
-<?php } ?>
+
  
 <?php
  // DOB is important for the clinic, so if it's missing give them a chance

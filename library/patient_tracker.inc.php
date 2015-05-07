@@ -49,20 +49,19 @@ if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
 
     $query = "SELECT " .
   	"e.pc_eventDate, e.pc_startTime, e.pc_eid, e.pc_title, e.pc_apptstatus, " .
-    "t.id, t.date, t.arrivetime, t.apptdate, t.appttime, t.eid, t.pid, t.user, t.encounter, t.endtime, t.laststatus, t.lastseq, t.lastroom, t.random_drug_test, " .
-    "q.pt_tracker_id, q.start_datetime, q.room, q.status,  q.seq, q.user, " .
+    "t.id, t.date, t.apptdate, t.appttime, t.eid, t.pid, t.original_user, t.encounter, t.lastseq, t.random_drug_test, " .
+    "q.pt_tracker_id, q.start_datetime, q.room, q.status, q.seq, q.user, " .
     "s.toggle_setting_1, s.toggle_setting_2, s.option_id, " .
   	"p.fname, p.mname, p.lname, p.DOB, p.pubpid, p.pid, " .
   	"u.fname AS ufname, u.mname AS umname, u.lname AS ulname, u.id AS uprovider_id " .
   	"FROM openemr_postcalendar_events AS e " .
   	"LEFT OUTER JOIN patient_tracker AS t ON t.pid = e.pc_pid AND t.apptdate = e.pc_eventDate AND t.appttime = e.pc_starttime " .
-  	"LEFT OUTER JOIN patient_tracker_element AS q ON q.pt_tracker_id = t.id AND q.status = t.laststatus AND q.room = t.lastroom AND q.seq = t.lastseq " .
-    "LEFT OUTER JOIN list_options AS s ON s.list_id = 'apptstat' AND s.option_id = t.laststatus " .
+  	"LEFT OUTER JOIN patient_tracker_element AS q ON q.pt_tracker_id = t.id AND q.seq = t.lastseq " .
+    "LEFT OUTER JOIN list_options AS s ON s.list_id = 'apptstat' AND s.option_id = q.status " .
 	"LEFT OUTER JOIN patient_data AS p ON p.pid = e.pc_pid " .
   	"LEFT OUTER JOIN users AS u ON u.id = e.pc_aid " .
     "WHERE $where " . 
     "ORDER BY $order_by";
-
 	
     $res = sqlStatement( $query, $sqlBindingArray );
     $events = array();
@@ -110,14 +109,21 @@ function  is_tracker_encounter_exist($apptdate,$appttime,$pid,$eid) {
 function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$room='',$enc_id='') {
   $datetime = date("Y-m-d H:i:s");
   #Check to see if there is an entry in the patient_tracker table.
-  $tracker = sqlQuery("SELECT * from `patient_tracker` WHERE `apptdate` = ? AND `appttime` = ? " .
-                      "AND `eid` = ? AND `pid` = ?", array($apptdate,$appttime,$eid,$pid));
+  $tracker = sqlQuery("SELECT id, apptdate, appttime, eid, pid, original_user, encounter, lastseq,".
+                       "patient_tracker_element.room AS lastroom,patient_tracker_element.status AS laststatus ".
+					   "from `patient_tracker`".
+					   "LEFT JOIN patient_tracker_element " .
+                       "ON patient_tracker.id = patient_tracker_element.pt_tracker_id " .
+                       "AND patient_tracker.lastseq = patient_tracker_element.seq " .
+					   "WHERE `apptdate` = ? AND `appttime` = ? " .
+                       "AND `eid` = ? AND `pid` = ?", array($apptdate,$appttime,$eid,$pid));
+
   if (empty($tracker)) {
     #Add a new tracker.
     $tracker_id = sqlInsert("INSERT INTO `patient_tracker` " .
-                            "(`date`, `apptdate`, `appttime`, `eid`, `pid`, `user`, `laststatus`, `lastroom`, `encounter`, `lastseq`) " .
-                            "VALUES (?,?,?,?,?,?,?,?,?,'1')",
-                            array($datetime,$apptdate,$appttime,$eid,$pid,$user,$status,$room,$enc_id));
+                            "(`date`, `apptdate`, `appttime`, `eid`, `pid`, `original_user`, `encounter`, `lastseq`) " .
+                            "VALUES (?,?,?,?,?,?,?,'1')",
+                            array($datetime,$apptdate,$appttime,$eid,$pid,$user,$enc_id));
     #If there is a status or a room, then add a tracker item.
     if (!empty($status) || !empty($room)) {
     sqlInsert("INSERT INTO `patient_tracker_element` " .
@@ -131,8 +137,8 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
     if (($status != $tracker['laststatus']) || ($room != $tracker['lastroom'])) {
       #Status or room has changed, so need to update tracker.
       #Update laststatus and lastroom in tracker.	  
-	   sqlStatement("UPDATE `patient_tracker` SET  `laststatus` = ?, `lastroom` = ?, `lastseq` = ? WHERE `id` = ?",
-                   array($status,$room,($tracker['lastseq']+1),$tracker['id']));
+	   sqlStatement("UPDATE `patient_tracker` SET  `lastseq` = ? WHERE `id` = ?",
+                   array(($tracker['lastseq']+1),$tracker['id']));
       #Add a tracker item.
       sqlInsert("INSERT INTO `patient_tracker_element` " .
                 "(`pt_tracker_id`, `start_datetime`, `user`, `status`, `room`, `seq`) " .
@@ -154,11 +160,50 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
   }
 }
 
-function manage_tracker_time($tracker1d,$arrivetime,$endtime,$drugtest) {
+function getApptStatusColor($option) {
+  $row = sqlQuery("SELECT notes FROM list_options WHERE " .
+    "list_id = 'apptstat' AND option_id = ?", array($option));
+  if (empty($row['notes'])) return $option;
+  return $row['notes'];
+}
+
+function collect_checkin($trackerid) {
+  $tracker = sqlQuery("SELECT patient_tracker_element.start_datetime " .
+                                   "FROM patient_tracker_element " .
+                                   "INNER JOIN list_options " .
+                                   "ON patient_tracker_element.status = list_options.option_id " .
+                                   "WHERE  list_options.list_id = 'apptstat' " .
+                                   "AND list_options.toggle_setting_1 = '1' " .
+                                   "AND patient_tracker_element.pt_tracker_id = ?",
+                                   array($trackerid));
+  if (empty($tracker['start_datetime'])) {
+    return false;
+  }
+  else {
+    return $tracker['start_datetime'];
+  }
+}
+
+function collect_checkout($trackerid) {
+  $tracker = sqlQuery("SELECT patient_tracker_element.start_datetime " .
+                                   "FROM patient_tracker_element " .
+                                   "INNER JOIN list_options " .
+                                   "ON patient_tracker_element.status = list_options.option_id " .
+                                   "WHERE  list_options.list_id = 'apptstat' " .
+                                   "AND list_options.toggle_setting_2 = '1' " .
+                                   "AND patient_tracker_element.pt_tracker_id = ?",
+                                   array($trackerid));
+  if (empty($tracker['start_datetime'])) {
+    return false;
+  }
+  else {
+    return $tracker['start_datetime'];
+  }
+}
+
+function manage_tracker_time($tracker1d,$drugtest) {
 	
            sqlStatement("UPDATE patient_tracker SET " .
-			   "random_drug_test = ?, " .
-			   "arrivetime = ?, " . 
-               "endtime =? " .		   
-               "WHERE id =? ", array($drugtest,$arrivetime,$endtime,$tracker1d));
+			   "random_drug_test = ? " .
+               "WHERE id =? ", array($drugtest,$tracker1d));
 }

@@ -2966,12 +2966,6 @@ function getListItemTitle($list, $option) {
   if (empty($row['title'])) return $option;
   return xl_list_label($row['title']);
 }
-function getListItemNotes($list, $option) {
-  $row = sqlQuery("SELECT notes FROM list_options WHERE " .
-    "list_id = ? AND option_id = ?", array($list, $option));
-  if (empty($row['notes'])) return $option;
-  return xl_list_label($row['notes']);
-}
 //Added on 5-jun-2k14 (regarding get the smoking code descriptions)
 function getSmokeCodes()
 {

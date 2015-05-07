@@ -35,7 +35,6 @@ require_once("$srcdir/patient_tracker.inc.php");
  <html>
   <head>
   <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-  <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
   <link rel="stylesheet" type="text/css" href="../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
   <script type="text/javascript" src="../library/js/jquery.1.3.2.js"></script>
   <script type="text/javascript" src="../library/js/common.js"></script>
@@ -44,12 +43,15 @@ require_once("$srcdir/patient_tracker.inc.php");
 <?php
  
     $record_id = $_GET['record_id'];
-    $trow = sqlQuery("select apptdate, appttime ,lastroom , laststatus, eid , encounter, pid " .
-      "from patient_tracker where id =? LIMIT 1",array($_GET['record_id']));
+    $trow = sqlQuery("SELECT apptdate, appttime, patient_tracker_element.room AS lastroom, " .
+                            "patient_tracker_element.status AS laststatus, eid, encounter, pid " .
+                            "FROM patient_tracker " .
+                            "LEFT JOIN patient_tracker_element " .
+                            "ON patient_tracker.id = patient_tracker_element.pt_tracker_id " .
+                            "AND patient_tracker.lastseq = patient_tracker_element.seq " .
+                            "WHERE patient_tracker.id =?",array($_GET['record_id']));
  
     $tkpid = $trow['pid'];
-    $oldroom = $trow['lastroom'];
-    $oldstatus = $trow['laststatus'];
     $appttime = $trow['appttime'];
     $apptdate = $trow['apptdate']; 
     $pceid = $trow['eid'];	
@@ -59,24 +61,18 @@ require_once("$srcdir/patient_tracker.inc.php");
     if (strlen($_POST['roomnum']) != 0) {
        $theroom = $_POST['roomnum'];
     }
-    else
-    {
-	   $theroom = $oldroom;
-    }
-    $username = $_SESSION["authUser"];
 	 
 	 if ($GLOBALS['auto_create_new_encounters'] && $apptdate == date('Y-m-d') && (is_checkin($status) == '1') && !is_tracker_encounter_exist($apptdate,$appttime,$tkpid,$pceid))		 
 	 {		
 		$encounter = todaysEncounterCheck($tkpid, $apptdate, '', '', '', '', '',false);
-
              # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
-	 		 manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$username,$status,$theroom,$encounter);
+	 		 manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$_SESSION["authUser"],$status,$theroom,$encounter);
 	 }
      else 
      {
              # Capture the appt status and room number for patient tracker.
              if (!empty($pceid)) {
-               manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$username,$status,$theroom);
+               manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$_SESSION["authUser"],$status,$theroom);
              }
      }
     
@@ -88,10 +84,7 @@ require_once("$srcdir/patient_tracker.inc.php");
   }
      $row = sqlQuery("select fname, lname " .
      "from patient_data where pid =? limit 1" , array($tkpid));
-	
-     $srow = sqlQuery("select pc_apptstatus as status, pc_startTime as start " .
-     "from openemr_postcalendar_events where pc_pid =? AND pc_eventdate =? limit 1" , array($tkpid,$today));	
-	
+
 ?>
  </head>
   <body class="body_top">
@@ -101,13 +94,13 @@ require_once("$srcdir/patient_tracker.inc.php");
     <h2><?php echo xlt('Change Status for'). " " . text($row['fname']) . " " . text($row['lname']); ?></h2>
 
     <span class=text><?php  echo xlt('Status Type'); ?>: </span><br> 
-<?php
-    $res = getListItemTitle("apptstat",$appointment['pc_apptstatus']);
-	echo generate_select_list('statustype', 'apptstat',$res, xl('Status Type'));
-?>
+    <?php
+      $res = getListItemTitle("apptstat",$appointment['pc_apptstatus']);
+      echo generate_select_list('statustype', 'apptstat',$res, xl('Status Type'));
+    ?>
 	<br><br>   
 	<span class=text><?php  echo xlt('Exam Room Number'); ?>: </span><br>
-    <input type=entry name="roomnum" size=1 value="<?php echo attr($trow['lastroom']);?>" ><br><br>
+    <input type='text' name="roomnum" size=5 value="<?php echo attr($trow['lastroom']);?>" ><br><br>
     <tr>
      <td>
       <a href='javascript:;' class='css_button_small' style='color:gray' onclick='document.getElementById("form_note").submit();'><span><?php echo xla('Save')?></span></a>

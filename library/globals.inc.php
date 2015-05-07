@@ -100,6 +100,7 @@ $USER_SPECIFIC_GLOBALS = array('default_top_pane',
                                'date_display_format',
                                'time_display_format',
                                'event_color',
+                               'over_time_warning',
                                'pat_trkr_timer',					   
                                'erx_import_status_message');
 
@@ -937,10 +938,17 @@ $GLOBALS_METADATA = array(
       xl('Do not display the patient flow board.')
     ),
 	
+    'over_time_warning' => array(
+      xl('Excessive Time in Current Status Warning'),
+      'num',
+      '15',                       // default
+      xl('Number of minutes to wait before alerting user Patient is too long in current status.')
+    ),
+	
     'pat_trkr_timer' => array(
       xl('Patient Flow Board Timer Interval'),
       array(
-       '0' => '0',
+       '0' => 'No automatic refresh',
        '0:10' => '10',
        '0:20' => '20',
        '0:30' => '30',
@@ -949,7 +957,28 @@ $GLOBALS_METADATA = array(
        '0:59' => '60',
       ),
       '20',                              // default
-      xl('The screen refresh time in Seconds for the main Patient Flow Board Screen.').' ('.xl('Select 0 seconds to allow screen to be updated manually').')'
+      xl('The screen refresh time in Seconds for the main Patient Flow Board Screen.')
+    ),
+	
+    'drug_screen' => array(
+      xl('Enable Random Drug Testing'),
+     'bool',                           // data type
+      '0',                              // default
+      xl('Allow Patient Flow Board to Select Patients for Drug Testing.')
+    ),
+	
+    'drug_screen_perday' => array(
+      xl('Number of Patients to select per day'),
+      'num',
+      '8',                       // default
+      xl('Number of Patients to select per day for Random Drug Testing.')
+    ),
+	
+    'drug_screen_peryear' => array(
+      xl('Maximum Number of Times Per Year A Patient can be tested'),
+      'num',
+      '3',                       // default
+      xl('Maximum Number of Times Per Year A Patient can be tested.')
     ),
 	
   ),
