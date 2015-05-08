@@ -945,6 +945,13 @@ $GLOBALS_METADATA = array(
       xl('Number of minutes to wait before alerting user Patient is too long in current status.')
     ),
 	
+    'ptkr_pt_list_new_window' => array(
+      xl('Open Demographics in New Window from Patient Flow Board'),
+      'bool',                           // data type
+      '1',                              // default = false
+      xl('When Checked Demographics Will Open in New Window from Patient Flow Board.')
+    ),
+	
     'pat_trkr_timer' => array(
       xl('Patient Flow Board Timer Interval'),
       array(

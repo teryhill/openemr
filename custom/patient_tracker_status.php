@@ -54,17 +54,20 @@ require_once("$srcdir/patient_tracker.inc.php");
     $tkpid = $trow['pid'];
     $appttime = $trow['appttime'];
     $apptdate = $trow['apptdate']; 
-    $pceid = $trow['eid'];	
-    $encounter = $trow['encounter'];	
+    $pceid = $trow['eid'];
+	 
   if ($_POST['statustype'] !='') { 
     $status = $_POST['statustype'];
     if (strlen($_POST['roomnum']) != 0) {
        $theroom = $_POST['roomnum'];
     }
-	 
+
 	 if ($GLOBALS['auto_create_new_encounters'] && $apptdate == date('Y-m-d') && (is_checkin($status) == '1') && !is_tracker_encounter_exist($apptdate,$appttime,$tkpid,$pceid))		 
 	 {		
-		$encounter = todaysEncounterCheck($tkpid, $apptdate, '', '', '', '', '',false);
+        # Gather information for encounter fields
+        $genenc = sqlQuery("select pc_catid as category, pc_hometext as reason, pc_aid as provider, pc_facility as facility, pc_billing_location as billing_facility " .
+                           "from openemr_postcalendar_events where pc_eid =? " , array($pceid));
+		$encounter = todaysEncounterCheck($tkpid, $apptdate, $genenc['reason'],$genenc['facility'],$genenc['billing_facility'],$genenc['provider'], $genenc['category'],false);
              # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
 	 		 manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$_SESSION["authUser"],$status,$theroom,$encounter);
 	 }
@@ -94,10 +97,9 @@ require_once("$srcdir/patient_tracker.inc.php");
     <h2><?php echo xlt('Change Status for'). " " . text($row['fname']) . " " . text($row['lname']); ?></h2>
 
     <span class=text><?php  echo xlt('Status Type'); ?>: </span><br> 
-    <?php
-      $res = getListItemTitle("apptstat",$appointment['pc_apptstatus']);
-      echo generate_select_list('statustype', 'apptstat',$res, xl('Status Type'));
-    ?>
+<?php
+	echo generate_select_list('statustype', 'apptstat',$trow['laststatus'], xl('Status Type'));
+?>
 	<br><br>   
 	<span class=text><?php  echo xlt('Exam Room Number'); ?>: </span><br>
     <input type='text' name="roomnum" size=5 value="<?php echo attr($trow['lastroom']);?>" ><br><br>
