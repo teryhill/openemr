@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
   `start_datetime`     datetime     NOT NULL,
   `room`               varchar(20)  default NULL,
   `status`             varchar(31)  NOT NULL default '',
-  `seq`                varchar(4)   NOT NULL default ''
+  `seq`                varchar(4)   NOT NULL default '',
   `user`               varchar(255) NOT NULL default '',
   KEY  (`pt_tracker_id`,`seq`)
 ) ENGINE=MyISAM;
