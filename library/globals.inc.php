@@ -100,7 +100,6 @@ $USER_SPECIFIC_GLOBALS = array('default_top_pane',
                                'date_display_format',
                                'time_display_format',
                                'event_color',
-                               'over_time_warning',
                                'pat_trkr_timer',					   
                                'erx_import_status_message');
 
@@ -936,13 +935,6 @@ $GLOBALS_METADATA = array(
       'bool',                           // data type
       '0',                              // default
       xl('Do not display the patient flow board.')
-    ),
-	
-    'over_time_warning' => array(
-      xl('Excessive Time in Current Status Warning'),
-      'num',
-      '15',                       // default
-      xl('Number of minutes to wait before alerting user Patient is too long in current status.')
     ),
 	
     'ptkr_pt_list_new_window' => array(

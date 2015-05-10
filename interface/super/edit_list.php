@@ -179,6 +179,13 @@ if ($_POST['formaction']=='save' && $list_id) {
               if ($list_id == 'lbfnames' && substr($id,0,3) != 'LBF')
                 $id = "LBF$id";
 
+             if ($list_id == 'apptstat') {
+                $appstnote = formTrim($iter['notesnew']) .'|'. formTrim($iter['statalert']);
+             }
+			 else
+             {
+				$appstnote = formTrim($iter['notes']); 
+             }
               // Insert the list item
               sqlInsert("INSERT INTO list_options ( " .
                 "list_id, option_id, title, seq, is_default, option_value, mapping, notes, codes, toggle_setting_1, toggle_setting_2 " .
@@ -190,7 +197,7 @@ if ($_POST['formaction']=='save' && $list_id) {
                 "'" . formTrim($iter['default']) . "', " .
                 "'" . $value                     . "', " .
                 "'" . formTrim($iter['mapping']) . "', " .
-                "'" . formTrim($iter['notes'])   . "', " .
+                "'" . $appstnote                 . "', " .
                 "'" . formTrim($iter['codes'])   . "', " .
                 "'" . formTrim($iter['toggle_setting_1'])   . "', " .
                 "'" . formTrim($iter['toggle_setting_2'])   . "' " .								
@@ -260,7 +267,7 @@ function getCodeDescriptions($codes) {
 
 // Write one option line to the form.
 //
-function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping='', $notes='', $codes='', $tog1, $tog2) {
+function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping='', $notes='', $codes='', $tog1='', $tog2='') {
   global $opt_line_no, $list_id;
   ++$opt_line_no;
   $bgcolor = "#" . (($opt_line_no & 1) ? "ddddff" : "ffdddd");
@@ -367,9 +374,14 @@ function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping=''
     echo "</td>\n";
   }
 else if($list_id == 'apptstat') {
+    list($notesnew, $statalert) = explode("|", $notes);
     echo "  <td align='center' class='optcell'>";
-    echo "<input type='text' class='color' name='opt[$opt_line_no][notes]' value='" .
-        htmlspecialchars($notes, ENT_QUOTES) . "' size='12' maxlength='15' class='optin' />";
+    echo "<input type='text' class='color' name='opt[$opt_line_no][notesnew]' value='" .
+        htmlspecialchars($notesnew, ENT_QUOTES) . "' size='6' maxlength='6' class='optin' />";
+    echo "</td>\n";
+    echo "  <td align='center' class='optcell'>";
+    echo "<input type='text' name='opt[$opt_line_no][statalert]' value='" .
+        htmlspecialchars($statalert, ENT_QUOTES) . "' size='2' maxlength='2' class='optin' />";
     echo "</td>\n";
 } else {
   echo "  <td align='center' class='optcell'>";
@@ -841,6 +853,16 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php xl('Medical Problem','e'); ?></b></td>
   <td><b><?php xl('Drug'        ,'e'); ?></b></td>
   <td><b><?php xl('External'    ,'e'); ?></b></td>
+<?php } else if ($list_id == 'apptstat') { ?> 
+  <td><b><?php  xl('ID'       ,'e'); ?></b></td>
+  <td><b><?php xl('Title'     ,'e'); ?></b></td>   
+  <td><b><?php xl('Order'     ,'e'); ?></b></td>
+  <td><b><?php xl('Default'   ,'e'); ?></b></td>
+  <td><b><?php xl('Color'     ,'e'); ?></b></td> 
+  <td><b><?php xl('Alert Time','e'); ?></b></td> 
+  <td><b><?php xl('Check In'  ,'e');?>&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+  <td><b><?php xl('Check Out' ,'e'); ?></b></td>
+  <td><b><?php xl('Code(s)'   ,'e');?></b></td>
 <?php } else if ($list_id == 'issue_types') { ?>
   <td><b><?php echo xlt('OpenEMR Application Category'); ?></b></td>
   <td><b><?php echo xlt('Active'); ?></b></td>
@@ -890,20 +912,11 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php 
 		  if ($list_id == 'language') {
 		  	xl('ISO 639-2 Code','e');
-		  } else if ($list_id == 'apptstat') {
-			xl('Color','e');  
 		  } else {
 		  	xl('Notes','e');
 		  } 
   ?></b></td>
-  <?php if ($list_id == 'apptstat') {  ?>
-    <td><b><?php xl('Check In'  ,'e');?>&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-    <td><b><?php xl('Check Out' ,'e');
-  }
-  ?></b></td>
-   <?php //if ($list_id != 'apptstat') { ?>
   <td><b><?php xl('Code(s)','e');?></b></td>
-   <?php //} ?>
 
 <?php } // end not fee sheet ?>
  </tr>

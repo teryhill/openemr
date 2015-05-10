@@ -82,38 +82,9 @@ window.onload=refreshbegin
 </script>
 <script>
 // Taken from billing_report 
-// Process a click to go to an encounter.
-function toencounter(pid, pubpid, pname, enc, datestr, dobstr) {
- top.restoreSession();
-<?php if ($GLOBALS['concurrent_layout']) { ?>
- var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
- parent.left_nav.setPatient(pname,pid,pubpid,'',dobstr);
- parent.left_nav.setEncounter(datestr, enc, othername);
- parent.left_nav.setRadio(othername, 'enc');
- parent.frames[othername].location.href =
-  '../patient_file/encounter/encounter_top.php?set_encounter='
-  + enc + '&pid=' + pid;
-<?php } else { ?>
- location.href = '../patient_file/encounter/patient_encounter.php?set_encounter='
-  + enc + '&pid=' + pid;
-<?php } ?>
-}
 // Process a click to go to an patient.
 function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
  top.restoreSession();
- <?php if ($GLOBALS['concurrent_layout']) { ?>
- var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
- parent.left_nav.setPatient(pname,pid,pubpid,'',dobstr);
- parent.left_nav.setEncounter(datestr, enc, othername);
- parent.left_nav.setRadio(othername, 'enc');
- parent.frames[othername].location.href =
-  '../interface/patient_file/encounter/encounter_top.php?set_encounter='
-  + enc + '&pid=' + pid;
-<?php } else { ?>
- location.href = '../interface/patient_file/encounter/patient_encounter.php?set_encounter='
-  + enc + '&pid=' + pid;
-<?php } ?>
-
 <?php if ($GLOBALS['concurrent_layout']) { ?>
  var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
  parent.left_nav.setPatient(pname,pid,pubpid,'',dobstr);
@@ -122,24 +93,14 @@ function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
 <?php } else { ?>
  location.href = '../interface/patient_file/summary/demographics_full.php?pid=' + pid;
 <?php } ?>
-
 }
 
-function openNewTopWindow(pid) {
- document.fnew.patientID.value = pid;
- top.restoreSession();
- document.fnew.submit();
-}
- 
 </script>
 
 </head>
 
 <body class="body_top" >
 <center>
-<form name='myform'><input type='checkbox' name='form_new_window' value='1'<?php
-  if (!empty($GLOBALS['ptkr_pt_list_new_window'])) echo ' checked'; ?> /><?php
-  echo xlt('Open Demographics in New Window'); ?></form>
 <form id='pattrk' method='post' action='patient_tracker.php' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
 
 <table border='0' cellpadding='5' cellspacing='0'>
@@ -202,7 +163,12 @@ if ($GLOBALS['pat_trkr_timer'] =='0') {
   </td>
  <?php if ($GLOBALS['drug_screen']) { ?> 
   <td class="dehead" align="center">
-   <?php  echo xlt('DS'); ?>
+   <?php  echo xlt('Random Drug Screen'); ?>
+  </td>
+ <?php } ?>
+  <?php if ($GLOBALS['drug_screen']) { ?> 
+  <td class="dehead" align="center">
+   <?php  echo xlt('Drug Screen Completed'); ?>
   </td>
  <?php } ?>
  </tr>
@@ -240,8 +206,8 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          manage_tracker_time($tracker1d,$drugtest);	
 		 
        }
-	   
-        $bgcolor = (getApptStatusColor($appointment['status']));
+        $colorevents = (collectApptStatusSettings($appointment['status']));
+        list($bgcolor, $statalert) = explode("|", $colorevents);
 ?>
         <tr bgcolor='<?php echo $bgcolor ?>'>
         <td class="detail" align="center">
@@ -286,16 +252,15 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 			$yestime = '1';
         }
           $timecheck = round(abs($to_time - $from_time) / 60,0);
-		  if ($timecheck >= $GLOBALS['over_time_warning']) { 
-            echo "<td align='center' class='js-blink-infinite'>	";
-         }
+        if ($timecheck >= $statalert && ($statalert != '0')) { 
+           echo "<td align='center' class='js-blink-infinite'>	";
+        }
         else
-         {
-			 echo "<td align='center' class='detail'> ";
-         }
-        if (($yestime == '1') && (strtotime($newarrive)!= '')) { 
-		   echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minute').($timecheck >=2 ?'s':'')); 
-		   //echo 'Your cart contains '.$num_items.' item'.($num_items != 1 ? 's' : '').'.';
+        {
+           echo "<td align='center' class='detail'> ";
+        }
+        if (($yestime == '1') && ($timecheck >=1) && (strtotime($newarrive)!= '')) { 
+		   echo text($timecheck . ' ' .($timecheck >=2 ? xl('minutes'): xl('minute'))); 
 		}
         ?>	
 		 </td>
@@ -337,9 +302,14 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          </td>
          <?php if ($GLOBALS['drug_screen'] && strtotime($newarrive) != '') { ?> 
          <td class="detail" align="center">
-         <?php if (text($appointment['random_drug_test']) == '1') {  echo 'Y'; }  else { echo 'N'; }?>
+         <?php if (text($appointment['random_drug_test']) == '1') {  echo xl('Yes'); }  else { echo xl('No'); }?>
          </td>
-         <?php } ?>
+         <?php } else {  echo "  <td>"; }?>
+		 <?php if ($GLOBALS['drug_screen'] && strtotime($newarrive) != '' && $appointment['random_drug_test'] == '1') { ?> 
+         <td class="detail" align="center">
+         <?php  echo "<input type='checkbox' name='drug_screen_completed' value='1' " ;?>
+         </td>
+         <?php } else {  echo "  <td>"; }?>
         </tr>
         <?php
 	} //end for
@@ -349,5 +319,9 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 
 </form>
 </center>
+<!-- form used to open a new top level window when a patient row is clicked -->
+<form name='fnew' method='post' target='_blank' action='../main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
+<input type='hidden' name='patientID'      value='0' />
+</form>
 </body>
 </html>

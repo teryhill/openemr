@@ -49,7 +49,7 @@ if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
 
     $query = "SELECT " .
   	"e.pc_eventDate, e.pc_startTime, e.pc_eid, e.pc_title, e.pc_apptstatus, " .
-    "t.id, t.date, t.apptdate, t.appttime, t.eid, t.pid, t.original_user, t.encounter, t.lastseq, t.random_drug_test, " .
+    "t.id, t.date, t.apptdate, t.appttime, t.eid, t.pid, t.original_user, t.encounter, t.lastseq, t.random_drug_test, t.drug_screen_completed, " .
     "q.pt_tracker_id, q.start_datetime, q.room, q.status, q.seq, q.user, " .
     "s.toggle_setting_1, s.toggle_setting_2, s.option_id, " .
   	"p.fname, p.mname, p.lname, p.DOB, p.pubpid, p.pid, " .
@@ -98,6 +98,10 @@ function  is_checkout($option) {
   return(true);
 }
 
+
+# This function will return false for both below scenarios:
+#   1. The tracker item does not exist
+#   2. If the tracker item does exist, but the encounter has not been set
 function  is_tracker_encounter_exist($apptdate,$appttime,$pid,$eid) {
   #Check to see if there is an encounter in the patient_tracker table.
   $enc_yn = sqlQuery("SELECT encounter from patient_tracker WHERE `apptdate` = ? AND `appttime` = ? " .
@@ -160,7 +164,7 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
   }
 }
 
-function getApptStatusColor($option) {
+function collectApptStatusSettings($option) {
   $row = sqlQuery("SELECT notes FROM list_options WHERE " .
     "list_id = 'apptstat' AND option_id = ?", array($option));
   if (empty($row['notes'])) return $option;

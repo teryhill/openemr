@@ -95,16 +95,17 @@ ALTER TABLE `lang_custom` CHANGE `constant_name` `constant_name` mediumtext NOT 
 
 #IfNotTable patient_tracker
 CREATE TABLE IF NOT EXISTS `patient_tracker` (
-  `id`                 bigint(20)   NOT NULL auto_increment,
-  `date`               datetime     NOT NULL,
-  `apptdate`           date         NOT NULL,
-  `appttime`           time         NOT NULL,
-  `eid`                bigint(20)   NOT NULL default '0',
-  `pid`                bigint(20)   NOT NULL default '0',
-  `original_user`      varchar(255) NOT NULL default '',
-  `encounter`          bigint(20)   NOT NULL default '0',
-  `lastseq`            varchar(4)   NOT NULL default '',
-  `random_drug_test`   TINYINT(1)   NOT NULL DEFAULT '0',
+  `id`                     bigint(20)   NOT NULL auto_increment,
+  `date`                   datetime     NOT NULL,
+  `apptdate`               date         NOT NULL,
+  `appttime`               time         NOT NULL,
+  `eid`                    bigint(20)   NOT NULL default '0',
+  `pid`                    bigint(20)   NOT NULL default '0',
+  `original_user`          varchar(255) NOT NULL default '',
+  `encounter`              bigint(20)   NOT NULL default '0',
+  `lastseq`                varchar(4)   NOT NULL default '',
+  `drug_screen_completed`  TINYINT(1)   NOT NULL DEFAULT '0',
+  `random_drug_test`       TINYINT(1)   NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY (`eid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1;
@@ -128,21 +129,21 @@ ALTER TABLE `openemr_postcalendar_events` ADD `pc_room` VARCHAR(20) default NULL
 
 #IfMissingColumn list_options toggle_setting_1
 ALTER TABLE `list_options` ADD COLUMN `toggle_setting_1` tinyint(1) NOT NULL default '0';
-UPDATE `list_options` SET `notes`='FF2414' , `toggle_setting_1`='1' WHERE `option_id`='@';
-UPDATE `list_options` SET `notes`='FF6619' , `toggle_setting_1`='1' WHERE `option_id`='~';
+UPDATE `list_options` SET `notes`='FF2414|10' , `toggle_setting_1`='1' WHERE `option_id`='@';
+UPDATE `list_options` SET `notes`='FF6619|10' , `toggle_setting_1`='1' WHERE `option_id`='~';
 #EndIf
 
 #IfMissingColumn list_options toggle_setting_2
 ALTER TABLE `list_options` ADD COLUMN `toggle_setting_2` tinyint(1) NOT NULL DEFAULT '0';
-UPDATE `list_options` SET `notes`='0BBA34' , `toggle_setting_2`='1' WHERE `option_id`='!';
-UPDATE `list_options` SET `notes`='FFFFFF' , `toggle_setting_2`='1' WHERE `option_id`='>';
-UPDATE `list_options` SET `notes`='FFFFFF' WHERE `option_id`='-';
-UPDATE `list_options` SET `notes`='FFC9F8' WHERE `option_id`='*';
-UPDATE `list_options` SET `notes`='87FF1F' WHERE `option_id`='+';
-UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='x';
-UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='?';
-UPDATE `list_options` SET `notes`='FFFF2B' WHERE `option_id`='#';
-UPDATE `list_options` SET `notes`='52D9DE' WHERE `option_id`='<';
-UPDATE `list_options` SET `notes`='C0FF96' WHERE `option_id`='$';
-UPDATE `list_options` SET `notes`='BFBFBF' WHERE `option_id`='%';
+UPDATE `list_options` SET `notes`='0BBA34|0' , `toggle_setting_2`='1' WHERE `option_id`='!';
+UPDATE `list_options` SET `notes`='FEFDCF|0' , `toggle_setting_2`='1' WHERE `option_id`='>';
+UPDATE `list_options` SET `notes`='FEFDCF|0' WHERE `option_id`='-';
+UPDATE `list_options` SET `notes`='FFC9F8|0' WHERE `option_id`='*';
+UPDATE `list_options` SET `notes`='87FF1F|0' WHERE `option_id`='+';
+UPDATE `list_options` SET `notes`='BFBFBF|0' WHERE `option_id`='x';
+UPDATE `list_options` SET `notes`='BFBFBF|0' WHERE `option_id`='?';
+UPDATE `list_options` SET `notes`='FFFF2B|0' WHERE `option_id`='#';
+UPDATE `list_options` SET `notes`='52D9DE|10' WHERE `option_id`='<';
+UPDATE `list_options` SET `notes`='C0FF96|0' WHERE `option_id`='$';
+UPDATE `list_options` SET `notes`='BFBFBF|0' WHERE `option_id`='%';
 #EndIf
