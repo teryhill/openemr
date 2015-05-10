@@ -300,16 +300,22 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <td class="detail" align="center">
          <?php echo text($appointment['user']) ?>
          </td>
-         <?php if ($GLOBALS['drug_screen'] && strtotime($newarrive) != '') { ?> 
+         <?php if ($GLOBALS['drug_screen']) { ?> 
+         <?php if (strtotime($newarrive) != '') { ?> 
          <td class="detail" align="center">
          <?php if (text($appointment['random_drug_test']) == '1') {  echo xl('Yes'); }  else { echo xl('No'); }?>
          </td>
          <?php } else {  echo "  <td>"; }?>
-		 <?php if ($GLOBALS['drug_screen'] && strtotime($newarrive) != '' && $appointment['random_drug_test'] == '1') { ?> 
+         <?php if (strtotime($newarrive) != '' && $appointment['random_drug_test'] == '1') { ?> 
          <td class="detail" align="center">
-         <?php  echo "<input type='checkbox' name='drug_screen_completed' value='1' " ;?>
-         </td>
+		 <?php if (is_checkout($appointment['status'])) { ?>
+		     <input type=checkbox disabled="disabled" name="drug_screen_completed" value="1" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
+		 <?php } else { ?>
+		     <input type=checkbox  name="drug_screen_completed" value="1" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
+         <?php } ?>
+		 </td>
          <?php } else {  echo "  <td>"; }?>
+		 <?php } ?>
         </tr>
         <?php
 	} //end for
