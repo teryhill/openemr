@@ -81,6 +81,7 @@ setTimeout("refreshbegin()",1050)
 window.onload=refreshbegin
 </script>
 <script>
+
 // Taken from billing_report 
 // Process a click to go to an patient.
 function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
@@ -165,8 +166,6 @@ if ($GLOBALS['pat_trkr_timer'] =='0') {
   <td class="dehead" align="center">
    <?php  echo xlt('Random Drug Screen'); ?>
   </td>
- <?php } ?>
-  <?php if ($GLOBALS['drug_screen']) { ?> 
   <td class="dehead" align="center">
    <?php  echo xlt('Drug Screen Completed'); ?>
   </td>
@@ -187,7 +186,6 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
     $totalAppontments = count($appointments);   
 
 	foreach ( $appointments as $appointment ) {
-		$patient_id = $appointment['pid'];
 		$record_id = $appointment['id'];
 		$docname  = $appointment['lname'] . ', ' . $appointment['fname'] . ' ' . $appointment['mname'];
         $ptname = $appointment['fname'] . " " . $appointment['lname'];
@@ -195,12 +193,12 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 		if (strlen($docname)<= 3 ) continue;        
         $errmsg  = "";
 		$newarrive = collect_checkin($appointment['id']);
-        $newend = collect_checkout($appointment['id']);			
+        $newend = collect_checkout($appointment['id']);	
        if ((strtotime($newarrive) == '')) {
          $tracker1d = $appointment['pt_tracker_id'];
          $drugtest = 0;
-		 $testdrug = mt_rand(1,10);
-        if ($testdrug >5) { 
+         $testdrug = mt_rand(0,100);
+         if ($testdrug <= $GLOBALS['drug_testing_percentage']) {
             $drugtest = 1;
          }
          manage_tracker_time($tracker1d,$drugtest);	
@@ -283,9 +281,9 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 			$from_time = strtotime($newarrive);
  		    $to_time = strtotime(date("Y-m-d H:i:s"));
          }	
-       if (strtotime($newarrive) != '') {  		
-		echo text(round(abs($to_time - $from_time) / 60,0). ' ' . xl('minutes'));
-		
+       $timecheck2 = round(abs($to_time - $from_time) / 60,0);	 
+       if (strtotime($newarrive) != '' && ($timecheck2 >=1)) {  		
+		echo text($timecheck2 . ' ' .($timecheck2 >=2 ? xl('minutes'): xl('minute')));
 	   }
         ?>		 
 		<?php echo text($appointment['pc_time']); ?>
@@ -309,14 +307,14 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <?php if (strtotime($newarrive) != '' && $appointment['random_drug_test'] == '1') { ?> 
          <td class="detail" align="center">
 		 <?php if (is_checkout($appointment['status'])) { ?>
-		     <input type=checkbox disabled="disabled" name="drug_screen_completed" value="1" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
+		     <input type=checkbox  disabled='disable' class="drug_screen_completed" id='<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>' name="drugup" value="1" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
 		 <?php } else { ?>
-		     <input type=checkbox  name="drug_screen_completed" value="1" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
+		     <input type=checkbox  class="drug_screen_completed" id='<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>' name="drugup" value="1" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
          <?php } ?>
 		 </td>
          <?php } else {  echo "  <td>"; }?>
 		 <?php } ?>
-        </tr>
+		 </tr>
         <?php
 	} //end for
 ?>
@@ -325,9 +323,18 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 
 </form>
 </center>
-<!-- form used to open a new top level window when a patient row is clicked -->
-<form name='fnew' method='post' target='_blank' action='../main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
-<input type='hidden' name='patientID'      value='0' />
-</form>
+<script type="text/javascript">
+  $(document).ready(function() { 
+ $(".drug_screen_completed").change(function() {
+      top.restoreSession();
+      $.post( "../library/ajax/drug_screen_completed.php", {
+        plan: this.id,
+        type: $('.drug_screen_completed:checked').val() ,
+        setting: this.name
+
+      });
+    });
+  });	
+  </script>
 </body>
 </html>

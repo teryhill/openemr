@@ -937,13 +937,6 @@ $GLOBALS_METADATA = array(
       xl('Do not display the patient flow board.')
     ),
 	
-    'ptkr_pt_list_new_window' => array(
-      xl('Open Demographics in New Window from Patient Flow Board'),
-      'bool',                           // data type
-      '1',                              // default = false
-      xl('When Checked Demographics Will Open in New Window from Patient Flow Board.')
-    ),
-	
     'pat_trkr_timer' => array(
       xl('Patient Flow Board Timer Interval'),
       array(
@@ -966,18 +959,11 @@ $GLOBALS_METADATA = array(
       xl('Allow Patient Flow Board to Select Patients for Drug Testing.')
     ),
 	
-    'drug_screen_perday' => array(
-      xl('Number of Patients to select per day'),
+    'drug_testing_percentage' => array(
+      xl('Percentage of Patients to Drug Test'),
       'num',
-      '8',                       // default
-      xl('Number of Patients to select per day for Random Drug Testing.')
-    ),
-	
-    'drug_screen_peryear' => array(
-      xl('Maximum Number of Times Per Year A Patient can be tested'),
-      'num',
-      '3',                       // default
-      xl('Maximum Number of Times Per Year A Patient can be tested.')
+      '33',                       // default
+      xl('Percentage of Patients to select per day for Random Drug Testing.')
     ),
 	
   ),
