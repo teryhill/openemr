@@ -3,8 +3,6 @@
  *
  * Drug Screen Complete Update Database
  *
- * Copyright (C) 2015 Terry Hill <terry@lillysystems.com> 
- *
  * LICENSE: This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 3
@@ -17,6 +15,7 @@
  * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
  *
  * @package OpenEMR
+ * 
  * @author  Terry Hill <terry@lillysystems.com>
  * @link    http://www.open-emr.org
  */
@@ -25,12 +24,13 @@ $sanitize_all_escapes = true;
 $fake_register_globals = false;
 
 require_once("../../interface/globals.php");
-
+//include_once("{$GLOBALS['srcdir']}/sql.inc");
 $drugval = '0';
-if ($_POST['type']) {
+if ($_POST['testcomplete'] =='true') {
 	$drugval = '1';
-}	
-$tracker_id = $_POST['plan'];
+}
+
+$tracker_id = $_POST['trackerid'];
 
            sqlStatement("UPDATE patient_tracker SET " .
 			   "drug_screen_completed = ? " .

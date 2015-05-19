@@ -100,7 +100,8 @@ $USER_SPECIFIC_GLOBALS = array('default_top_pane',
                                'date_display_format',
                                'time_display_format',
                                'event_color',
-                               'pat_trkr_timer',					   
+                               'pat_trkr_timer',
+                               'ptkr_pt_list_new_window',                               
                                'erx_import_status_message');
 
 $GLOBALS_METADATA = array(
@@ -917,7 +918,7 @@ $GLOBALS_METADATA = array(
       xl('Auto-Create New Encounters'),
       'bool',                           // data type
       '1',                              // default
-      xl('Automatically create a new encounter when appointment status is set to "@" (arrived).')
+      xl('Automatically create a new encounter when an appointment check in status is selected.')
     ),
     
     'event_color' => array(
@@ -936,6 +937,13 @@ $GLOBALS_METADATA = array(
       '0',                              // default
       xl('Do not display the patient flow board.')
     ),
+
+    'ptkr_pt_list_new_window' => array(
+      xl('Open Demographics in New Window from Patient Flow Board'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('When Checked Demographics Will Open in New Window from Patient Flow Board.')
+    ),
 	
     'pat_trkr_timer' => array(
       xl('Patient Flow Board Timer Interval'),
@@ -948,7 +956,7 @@ $GLOBALS_METADATA = array(
        '0:50' => '50',
        '0:59' => '60',
       ),
-      '20',                              // default
+      '0:20',                              // default
       xl('The screen refresh time in Seconds for the main Patient Flow Board Screen.')
     ),
 	
@@ -966,6 +974,13 @@ $GLOBALS_METADATA = array(
       xl('Percentage of Patients to select per day for Random Drug Testing.')
     ),
 	
+    'maximum_drug_test_yearly' => array(
+      xl('Maximum number of times a Patient can be tested in a year'),
+      'num',
+      '0',                       // default
+      xl('Maximum number of times a Patient can be tested in a year Zero is no limit.')
+    ),
+    
   ),
 
   // Security Tab

@@ -333,7 +333,6 @@ function InsertEvent($args,$from = 'general') {
 		
 
             # Capture the appt status and room number for patient tracker.
-            # TODO Add a room field to the add_edit gui and place it in below function
             manage_tracker_status($args['event_date'],$args['starttime'],$pc_eid,$form_pid,$_SESSION['authUser'],$args['form_apptstatus'],$args['form_room']);        
 
             return $pc_eid;

@@ -180,11 +180,11 @@ if ($_POST['formaction']=='save' && $list_id) {
                 $id = "LBF$id";
 
              if ($list_id == 'apptstat') {
-                $appstnote = formTrim($iter['notesnew']) .'|'. formTrim($iter['statalert']);
+                $notes = formTrim($iter['apptstat_color']) .'|'. formTrim($iter['apptstat_timealert']);
              }
 			 else
              {
-				$appstnote = formTrim($iter['notes']); 
+				$notes = formTrim($iter['notes']); 
              }
               // Insert the list item
               sqlInsert("INSERT INTO list_options ( " .
@@ -197,7 +197,7 @@ if ($_POST['formaction']=='save' && $list_id) {
                 "'" . formTrim($iter['default']) . "', " .
                 "'" . $value                     . "', " .
                 "'" . formTrim($iter['mapping']) . "', " .
-                "'" . $appstnote                 . "', " .
+                "'" . $notes                 . "', " .
                 "'" . formTrim($iter['codes'])   . "', " .
                 "'" . formTrim($iter['toggle_setting_1'])   . "', " .
                 "'" . formTrim($iter['toggle_setting_2'])   . "' " .								
@@ -374,14 +374,14 @@ function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping=''
     echo "</td>\n";
   }
 else if($list_id == 'apptstat') {
-    list($notesnew, $statalert) = explode("|", $notes);
+    list($apptstat_color, $apptstat_timealert) = explode("|", $notes);
     echo "  <td align='center' class='optcell'>";
-    echo "<input type='text' class='color' name='opt[$opt_line_no][notesnew]' value='" .
-        htmlspecialchars($notesnew, ENT_QUOTES) . "' size='6' maxlength='6' class='optin' />";
+    echo "<input type='text' class='color' name='opt[$opt_line_no][apptstat_color]' value='" .
+        htmlspecialchars($apptstat_color, ENT_QUOTES) . "' size='6' maxlength='6' class='optin' />";
     echo "</td>\n";
     echo "  <td align='center' class='optcell'>";
-    echo "<input type='text' name='opt[$opt_line_no][statalert]' value='" .
-        htmlspecialchars($statalert, ENT_QUOTES) . "' size='2' maxlength='2' class='optin' />";
+    echo "<input type='text' name='opt[$opt_line_no][apptstat_timealert]' value='" .
+        htmlspecialchars($apptstat_timealert, ENT_QUOTES) . "' size='2' maxlength='2' class='optin' />";
     echo "</td>\n";
 } else {
   echo "  <td align='center' class='optcell'>";
@@ -404,6 +404,7 @@ if($list_id == 'apptstat') {
       xla('Clinical Term Code(s)') ."' value='" .
       htmlspecialchars($codes, ENT_QUOTES) . "' onclick='select_clin_term_code(this)' size='25' maxlength='255' class='optin' />";
   echo "</td>\n";
+  echo " </tr>\n";
 }
 
 // Write a form line as above but for the special case of the Fee Sheet.
@@ -916,6 +917,7 @@ while ($row = sqlFetchArray($res)) {
 		  	xl('Notes','e');
 		  } 
   ?></b></td>
+
   <td><b><?php xl('Code(s)','e');?></b></td>
 
 <?php } // end not fee sheet ?>

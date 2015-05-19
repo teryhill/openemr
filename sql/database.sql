@@ -4301,7 +4301,7 @@ CREATE TABLE `openemr_postcalendar_events` (
   `pc_sendalertsms` VARCHAR(3) NOT NULL DEFAULT 'NO',
   `pc_sendalertemail` VARCHAR( 3 ) NOT NULL DEFAULT 'NO',
   `pc_billing_location` SMALLINT (6) NOT NULL DEFAULT '0',
-  `pc_room` varchar(20) default NULL,
+  `pc_room` varchar(20) NOT NULL DEFAULT '',
   PRIMARY KEY  (`pc_eid`),
   KEY `basic_event` (`pc_catid`,`pc_aid`,`pc_eventDate`,`pc_endDate`,`pc_eventstatus`,`pc_sharing`,`pc_topic`),
   KEY `pc_eventDate` (`pc_eventDate`)
@@ -4537,18 +4537,18 @@ CREATE TABLE  `patient_access_offsite` (
 DROP TABLE IF EXISTS `patient_tracker`;
 CREATE TABLE IF NOT EXISTS `patient_tracker` (
   `id`                     bigint(20)   NOT NULL auto_increment,
-  `date`                   datetime     NOT NULL,
-  `apptdate`               date         NOT NULL,
-  `appttime`               time         NOT NULL,
+  `date`                   datetime     DEFAULT NULL,
+  `apptdate`               date         DEFAULT NULL,
+  `appttime`               time         DEFAULT NULL,
   `eid`                    bigint(20)   NOT NULL default '0',
   `pid`                    bigint(20)   NOT NULL default '0',
   `original_user`          varchar(255) NOT NULL default '',
   `encounter`              bigint(20)   NOT NULL default '0',
   `lastseq`                varchar(4)   NOT NULL default '',
+  `random_drug_test`       TINYINT(1)   DEFAULT NULL,
   `drug_screen_completed`  TINYINT(1)   NOT NULL DEFAULT '0',
-  `random_drug_test`       TINYINT(1)   NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY (`eid`)
+  KEY (`eid`,`pid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1;
 
 -- 
@@ -4558,8 +4558,8 @@ CREATE TABLE IF NOT EXISTS `patient_tracker` (
 DROP TABLE IF EXISTS `patient_tracker_element`;
 CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
   `pt_tracker_id`      bigint(20)   NOT NULL default '0',
-  `start_datetime`     datetime     NOT NULL,
-  `room`               varchar(20)  default NULL,
+  `start_datetime`     datetime     DEFAULT NULL,
+  `room`               varchar(20)  NOT NULL default '',
   `status`             varchar(31)  NOT NULL default '',
   `seq`                varchar(4)   NOT NULL default '',
   `user`               varchar(255) NOT NULL default '',

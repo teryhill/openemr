@@ -40,12 +40,9 @@ require_once("$srcdir/patient_tracker.inc.php");
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
 <link rel="stylesheet" type="text/css" href="../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
 <script type="text/javascript" src="../library/dialog.js"></script>
-<script type="text/javascript" src="../library/js/jquery.1.3.2.js"></script>
 <script type="text/javascript" src="../library/js/common.js"></script>
-<script type="text/javascript" src="../library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
-<script type="text/javascript" src="../library/js/jquery-ui.js"></script>
-<script src="../library/js/jquery-1.9.1.min.js"></script>
-<script src="../library/js/blink/jquery.modern-blink.js"></script>
+<script type="text/javascript" src="../library/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="../library/js/blink/jquery.modern-blink.js"></script>
 
 <script>
 jQuery(function($) {
@@ -53,12 +50,10 @@ jQuery(function($) {
 });
 </script>
 <script language="JavaScript">
-
-var mypcc = '1';
   
 function bpopup(tkid) {
  top.restoreSession()	
- window.open('../custom/patient_tracker_status.php?record_id=' + tkid ,'_blank', 'width=500,height=250,resizable=1');
+ window.open('../custom/patient_tracker_status.php?tracker_id=' + tkid ,'_blank', 'width=500,height=250,resizable=1');
  return false;
 }
 
@@ -79,46 +74,43 @@ setTimeout("refreshbegin()",1050)
   }
 }
 window.onload=refreshbegin
-</script>
-<script>
 
-// Taken from billing_report 
-// Process a click to go to an patient.
-function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
- top.restoreSession();
-<?php if ($GLOBALS['concurrent_layout']) { ?>
- var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
- parent.left_nav.setPatient(pname,pid,pubpid,'',dobstr);
- parent.frames[othername].location.href =
-  '../interface/patient_file/summary/demographics.php?set_pid=' + pid;
+
+function topatient(newpid, pubpid, pname, enc, datestr, dobstr) {
+top.restoreSession();
+<?php if ($GLOBALS['ptkr_pt_list_new_window']) { ?>    
+   openNewTopWindow(newpid);
 <?php } else { ?>
- location.href = '../interface/patient_file/summary/demographics_full.php?pid=' + pid;
+ var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
+ parent.left_nav.setPatient(pname,newpid,pubpid,'',dobstr);
+ parent.frames[othername].location.href = '../interface/patient_file/summary/demographics.php?set_pid=' + newpid;
 <?php } ?>
-}
+ }
+
+
+function openNewTopWindow(pid) {
+ document.fnew.patientID.value = pid;
+ top.restoreSession();
+ document.fnew.submit();
+ }
+ 
 
 </script>
 
 </head>
 
 <body class="body_top" >
-<center>
-<form id='pattrk' method='post' action='patient_tracker.php' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
 
+<form id='pattrk' method='post' action='patient_tracker.php' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
+<?php if ($GLOBALS['pat_trkr_timer'] =='0') { ?>
 <table border='0' cellpadding='5' cellspacing='0'>
  <tr>
   <td  align='center'><br>
-
-<?php
-if ($GLOBALS['pat_trkr_timer'] =='0') {
-?>	
    <a href='javascript:;' class='css_button_small' align='center' style='color:gray' onclick="document.getElementById('pattrk').submit();"><span><?php echo xlt('Refresh Screen'); ?></span></a>
    </td>
  </tr>
 </table>
-<?php
-}
-  $where = "";
-?>
+<?php } ?>
 
 <table border='0' cellpadding='1' cellspacing='2' width='100%'>
 
@@ -175,37 +167,24 @@ if ($GLOBALS['pat_trkr_timer'] =='0') {
 <?php
 
 $appointments = array();
-$today_one = oeFormatShortDate($date='today');
 $from_date = date("Y-m-d");
 $to_date = date("Y-m-d");
 $datetime = date("Y-m-d H:i:s");
+$tracker_board ='true';
 
-$appointments = fetchtrkrEvents( $from_date, $to_date , $where);
-
-    $pid_list = array();
-    $totalAppontments = count($appointments);   
+$appointments = fetchtrkrEvents( $from_date, $to_date , $where, '', $tracker_board);
 
 	foreach ( $appointments as $appointment ) {
-		$record_id = $appointment['id'];
+		$tracker_id = $appointment['pt_tracker_id'];
 		$docname  = $appointment['lname'] . ', ' . $appointment['fname'] . ' ' . $appointment['mname'];
         $ptname = $appointment['fname'] . " " . $appointment['lname'];
         $raw_encounter_date = date("Y-m-d", strtotime($appointment['date']));
-		if (strlen($docname)<= 3 ) continue;        
-        $errmsg  = "";
+		if (strlen($docname)<= 3 ) continue;
 		$newarrive = collect_checkin($appointment['id']);
-        $newend = collect_checkout($appointment['id']);	
-       if ((strtotime($newarrive) == '')) {
-         $tracker1d = $appointment['pt_tracker_id'];
-         $drugtest = 0;
-         $testdrug = mt_rand(0,100);
-         if ($testdrug <= $GLOBALS['drug_testing_percentage']) {
-            $drugtest = 1;
-         }
-         manage_tracker_time($tracker1d,$drugtest);	
-		 
-       }
+        $newend = collect_checkout($appointment['id']);
         $colorevents = (collectApptStatusSettings($appointment['status']));
-        list($bgcolor, $statalert) = explode("|", $colorevents);
+        $bgcolor = $colorevents['color'];
+        $statalert = $colorevents['time_alert'];
 ?>
         <tr bgcolor='<?php echo $bgcolor ?>'>
         <td class="detail" align="center">
@@ -213,10 +192,10 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          </td>
         <td class="detail" align="center">
         <a href="" onclick="return topatient('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['encounter']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
-		 <?php echo text($appointment['lname']) . ', ' . text($appointment['fname']) . ' ' . text($appointment['mname']); ?></a>
+        <?php echo text($appointment['lname']) . ', ' . text($appointment['fname']) . ' ' . text($appointment['mname']); ?></a>
          </td>
         <td class="detail" align="center">
-		 <?php echo text($appointment['encounter']); ?></a>
+		 <?php if($appointment['encounter'] != 0) echo text($appointment['encounter']); ?></a>
          </td>
          <td class="detail" align="center">
          <?php echo text($appointment['room']) ; ?>  
@@ -307,9 +286,9 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
          <?php if (strtotime($newarrive) != '' && $appointment['random_drug_test'] == '1') { ?> 
          <td class="detail" align="center">
 		 <?php if (is_checkout($appointment['status'])) { ?>
-		     <input type=checkbox  disabled='disable' class="drug_screen_completed" id='<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>' name="drugup" value="1" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
+		     <input type=checkbox  disabled='disable' class="drug_screen_completed" id="<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>"  <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
 		 <?php } else { ?>
-		     <input type=checkbox  class="drug_screen_completed" id='<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>' name="drugup" value="1" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
+		     <input type=checkbox  class="drug_screen_completed" id='<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>' name="drug_screen_completed" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
          <?php } ?>
 		 </td>
          <?php } else {  echo "  <td>"; }?>
@@ -322,19 +301,25 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where);
 </table>
 
 </form>
-</center>
 <script type="text/javascript">
   $(document).ready(function() { 
  $(".drug_screen_completed").change(function() {
       top.restoreSession();
+    if (this.checked) {
+      testcomplete_toggle="true";
+    } else {
+      testcomplete_toggle="false";
+    }
       $.post( "../library/ajax/drug_screen_completed.php", {
-        plan: this.id,
-        type: $('.drug_screen_completed:checked').val() ,
-        setting: this.name
-
+        trackerid: this.id,
+        testcomplete: testcomplete_toggle
       });
     });
   });	
-  </script>
+</script>
+<!-- form used to open a new top level window when a patient row is clicked -->
+<form name='fnew' method='post' target='_blank' action='../interface/main/main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
+<input type='hidden' name='patientID'      value='0' />
+</form>
 </body>
 </html>
