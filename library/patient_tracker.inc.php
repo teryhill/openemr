@@ -22,7 +22,7 @@
 * @author Terry Hill <terry@lillysystems.com>
 * @link http://www.open-emr.org 
 */
-require_once "$srcdir/appointments.inc.php";
+require_once($GLOBALS['srcdir'] . '/appointments.inc.php');
 
 function fetchtrkrEvents( $from_date, $to_date, $where_param = null, $orderby_param = null , $tracker_board ) 
 {
