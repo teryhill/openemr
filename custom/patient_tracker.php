@@ -74,8 +74,8 @@ setTimeout("refreshbegin()",1050)
   }
 }
 window.onload=refreshbegin
-
-
+</script>
+<script>
 function topatient(newpid, pubpid, pname, enc, datestr, dobstr) {
 top.restoreSession();
 <?php if ($GLOBALS['ptkr_pt_list_new_window']) { ?>    
@@ -88,8 +88,8 @@ top.restoreSession();
  }
 
 
-function openNewTopWindow(pid) {
- document.fnew.patientID.value = pid;
+function openNewTopWindow(newpid) {
+ document.fnew.patientID.value = newpid;
  top.restoreSession();
  document.fnew.submit();
  }
