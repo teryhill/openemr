@@ -26,6 +26,7 @@ require_once($GLOBALS['srcdir'] . '/appointments.inc.php');
 
 function fetchtrkrEvents( $from_date, $to_date, $where_param = null, $orderby_param = null , $tracker_board ) 
 {
+    # used to determine which providers to display in the Patient Tracker
     $provider_id = '';
     if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
       $provider_id = $_SESSION[authUserID];
@@ -35,7 +36,7 @@ function fetchtrkrEvents( $from_date, $to_date, $where_param = null, $orderby_pa
 }
 
 function  is_checkin($option) {
-// check to see if a status code exist as a check in
+  #check to see if a status code exist as a check in
   $row = sqlQuery("SELECT toggle_setting_1 FROM list_options WHERE " .
     "list_id = 'apptstat' AND option_id = ?", array($option));
   if (empty($row['toggle_setting_1'])) return(false);
@@ -43,7 +44,7 @@ function  is_checkin($option) {
 }
 
 function  is_checkout($option) {
-// check to see if a status code exist as a check out
+  #check to see if a status code exist as a check out
   $row = sqlQuery("SELECT toggle_setting_2 FROM list_options WHERE " .
     "list_id = 'apptstat' AND option_id = ?", array($option));
   if (empty($row['toggle_setting_2'])) return(false);
@@ -97,7 +98,7 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
     $tracker_id = $tracker['id'];
     if (($status != $tracker['laststatus']) || ($room != $tracker['lastroom'])) {
       #Status or room has changed, so need to update tracker.
-      #Update laststatus and lastroom in tracker.	  
+      #Update lastseq in tracker.	  
 	   sqlStatement("UPDATE `patient_tracker` SET  `lastseq` = ? WHERE `id` = ?",
                    array(($tracker['lastseq']+1),$tracker_id));
       #Add a tracker item.
@@ -107,7 +108,7 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
                 array($tracker_id,$datetime,$user,$status,$room,($tracker['lastseq']+1)));
     }
     if (!empty($enc_id)) {
-      #enc_id is not blank, so update this in tracker.
+      #enc_id (encounter number) is not blank, so update this in tracker.
       sqlStatement("UPDATE `patient_tracker` SET `encounter` = ? WHERE `id` = ?", array($enc_id,$tracker_id));
     }  
   }
@@ -126,6 +127,8 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
 return $tracker_id;
 }
 
+# This is used to break apart the information contained in the notes field of
+#list_options. Currently the color and alert time are the only items stored
 function collectApptStatusSettings($option) {
   $color_settings = array();
   $row = sqlQuery("SELECT notes FROM list_options WHERE " .
@@ -135,6 +138,7 @@ function collectApptStatusSettings($option) {
   return $color_settings;
 }
 
+#used to determine check in time 
 function collect_checkin($trackerid) {
   $tracker = sqlQuery("SELECT patient_tracker_element.start_datetime " .
                                    "FROM patient_tracker_element " .
@@ -152,6 +156,7 @@ function collect_checkin($trackerid) {
   }
 }
 
+#used to determine check out time
 function collect_checkout($trackerid) {
   $tracker = sqlQuery("SELECT patient_tracker_element.start_datetime " .
                                    "FROM patient_tracker_element " .
@@ -177,19 +182,21 @@ function random_drug_test($tracker_id,$percentage,$yearly_limit) {
       $Patient_id = $drug_test_done['pid'];
 
   If (is_null($drug_test_done['random_drug_test'])) {
-
+    # get a count of the number of times the patient has been screened.
     if ($yearly_limit >0) {
+      # check to see if screens are within the current year.
+      $lastyear = date("Y-m-d",strtotime("-1 year", strtotime(date("Y-m-d H:i:s"))));
       $drug_test_count = sqlQuery("SELECT COUNT(*) from patient_tracker " .
-                                 "WHERE drug_screen_completed = '1' AND pid =? ", array($Patient_id));
+                                 "WHERE drug_screen_completed = '1' AND apptdate >= ? AND pid =? ", array($lastyear,$Patient_id));
     }
-    # check that the patient is not at the yearly limit
+    # check that the patient is not at the yearly limit.
     if($drug_test_count['COUNT(*)'] >= $yearly_limit && ($yearly_limit >0)) {
 
        $drugtest = 0;
     }
     else
     {
-    # Now do the randomization and set random_drug_test to the outcome.  maximum_drug_test_yearly
+    # Now do the randomization and set random_drug_test to the outcome.
 
        $drugtest = 0;
        $testdrug = mt_rand(0,100);
@@ -197,7 +204,8 @@ function random_drug_test($tracker_id,$percentage,$yearly_limit) {
          $drugtest = 1;
        }
 
-    }    
+    }   
+   #Update the tracker file.    
    sqlStatement("UPDATE patient_tracker SET " .
                  "random_drug_test = ? " .
                  "WHERE id =? ", array($drugtest,$tracker_id)); 
