@@ -94,7 +94,7 @@ ALTER TABLE `lang_custom` CHANGE `constant_name` `constant_name` mediumtext NOT 
 #EndIf
 
 #IfNotTable patient_tracker
-CREATE TABLE IF NOT EXISTS `patient_tracker` (
+CREATE TABLE `patient_tracker` (
   `id`                     bigint(20)   NOT NULL auto_increment,
   `date`                   datetime     DEFAULT NULL,
   `apptdate`               date         DEFAULT NULL,
@@ -107,15 +107,16 @@ CREATE TABLE IF NOT EXISTS `patient_tracker` (
   `random_drug_test`       TINYINT(1)   DEFAULT NULL, 
   `drug_screen_completed`  TINYINT(1)   NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY (`eid`,`pid`)
+  KEY (`eid`),
+  KEY (`pid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1;
 #EndIf
 
 #IfNotTable patient_tracker_element
-CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
+CREATE TABLE `patient_tracker_element` (
   `pt_tracker_id`      bigint(20)   NOT NULL default '0',
-  `start_datetime`     datetime     NOT NULL,
-  `room`               varchar(20)  default NULL,
+  `start_datetime`     datetime     DEFAULT NULL,
+  `room`               varchar(20)  NOT NULL default '',
   `status`             varchar(31)  NOT NULL default '',
   `seq`                varchar(4)   NOT NULL default '',
   `user`               varchar(255) NOT NULL default '',
@@ -124,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
 #EndIf
 
 #IfMissingColumn openemr_postcalendar_events pc_room
-ALTER TABLE `openemr_postcalendar_events` ADD `pc_room` VARCHAR(20) default NULL ;
+ALTER TABLE `openemr_postcalendar_events` ADD `pc_room` varchar(20) NOT NULL DEFAULT '' ;
 #EndIf
 
 #IfMissingColumn list_options toggle_setting_1

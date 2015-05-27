@@ -27,7 +27,7 @@
 $fake_register_globals=false;
 $sanitize_all_escapes=true;
 
-require_once("../interface/globals.php");
+require_once("../globals.php");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/formatting.inc.php");
 require_once("$srcdir/options.inc.php");
@@ -38,11 +38,11 @@ require_once("$srcdir/patient_tracker.inc.php");
 <head>
 
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-<link rel="stylesheet" type="text/css" href="../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
-<script type="text/javascript" src="../library/dialog.js"></script>
-<script type="text/javascript" src="../library/js/common.js"></script>
-<script type="text/javascript" src="../library/js/jquery-1.9.1.min.js"></script>
-<script type="text/javascript" src="../library/js/blink/jquery.modern-blink.js"></script>
+<link rel="stylesheet" type="text/css" href="../../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
+<script type="text/javascript" src="../../library/dialog.js"></script>
+<script type="text/javascript" src="../../library/js/common.js"></script>
+<script type="text/javascript" src="../../library/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="../../library/js/blink/jquery.modern-blink.js"></script>
 
 <script>
 jQuery(function($) {
@@ -53,7 +53,7 @@ jQuery(function($) {
   
 function bpopup(tkid) {
  top.restoreSession()	
- window.open('../custom/patient_tracker_status.php?tracker_id=' + tkid ,'_blank', 'width=500,height=250,resizable=1');
+ window.open('../patient_tracker/patient_tracker_status.php?tracker_id=' + tkid ,'_blank', 'width=500,height=250,resizable=1');
  return false;
 }
 
@@ -83,7 +83,7 @@ top.restoreSession();
 <?php } else { ?>
  var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
  parent.left_nav.setPatient(pname,newpid,pubpid,'',dobstr);
- parent.frames[othername].location.href = '../interface/patient_file/summary/demographics.php?set_pid=' + newpid;
+ parent.frames[othername].location.href = '../patient_file/summary/demographics.php?set_pid=' + newpid;
 <?php } ?>
  }
 
@@ -102,6 +102,9 @@ function openNewTopWindow(newpid) {
 <body class="body_top" >
 
 <form id='pattrk' method='post' action='patient_tracker.php' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
+ <form name='myform'><input type='checkbox' name='form_new_window' value='1'<?php
+  if (!empty($GLOBALS['ptkr_pt_list_new_window'])) echo ' checked'; ?> /><?php
+  echo xlt('Open Demographics in New Window'); ?></form>
 <?php if ($GLOBALS['pat_trkr_timer'] =='0') { ?>
 <table border='0' cellpadding='5' cellspacing='0'>
  <tr>
@@ -172,16 +175,22 @@ $to_date = date("Y-m-d");
 $datetime = date("Y-m-d H:i:s");
 $tracker_board ='true';
 
-$appointments = fetchtrkrEvents( $from_date, $to_date , $where, '', $tracker_board);
+$appointments = fetch_Patient_Tracker_Events( $from_date, $to_date ,'', '', true);
 
 	foreach ( $appointments as $appointment ) {
 		$tracker_id = $appointment['pt_tracker_id'];
 		$docname  = $appointment['lname'] . ', ' . $appointment['fname'] . ' ' . $appointment['mname'];
         $ptname = $appointment['fname'] . " " . $appointment['lname'];
         $raw_encounter_date = date("Y-m-d", strtotime($appointment['date']));
-		if (strlen($docname)<= 3 ) continue;
 		$newarrive = collect_checkin($appointment['id']);
         $newend = collect_checkout($appointment['id']);
+        if (strlen($docname)<= 3 ) continue;
+        if (is_checkout($appointment['status']) && $GLOBALS['checkout_roll_off'] >0) {
+           $to_time = strtotime($newend);
+           $from_time = strtotime($datetime);
+           $display_check_out = round(abs($from_time - $to_time) / 60,0);
+		   if ( $display_check_out >= $GLOBALS['checkout_roll_off'] ) continue;
+        }
         $colorevents = (collectApptStatusSettings($appointment['status']));
         $bgcolor = $colorevents['color'];
         $statalert = $colorevents['time_alert'];
@@ -208,11 +217,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where, '', $tracker_boa
          </td>
          <td class="detail" align="center">  
          <a href=""  onclick="return bpopup(
-         <?php
-            if (strlen($appointment['pt_traker_id']) == 0){		 
-               $statusverb = getListItemTitle("apptstat",$appointment['status']); echo text($appointment['id']);  
-            }
-		 ?> ) " ><?php echo text($statusverb); ?></a>		 
+         <?php  $statusverb = getListItemTitle("apptstat",$appointment['status']); echo text($appointment['id']);  ?> ) " ><?php echo text($statusverb); ?></a>		 
 		 </td>
         <?php		 
 		 //time in status
@@ -310,7 +315,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where, '', $tracker_boa
     } else {
       testcomplete_toggle="false";
     }
-      $.post( "../library/ajax/drug_screen_completed.php", {
+      $.post( "../../library/ajax/drug_screen_completed.php", {
         trackerid: this.id,
         testcomplete: testcomplete_toggle
       });
@@ -318,7 +323,7 @@ $appointments = fetchtrkrEvents( $from_date, $to_date , $where, '', $tracker_boa
   });	
 </script>
 <!-- form used to open a new top level window when a patient row is clicked -->
-<form name='fnew' method='post' target='_blank' action='../interface/main/main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
+<form name='fnew' method='post' target='_blank' action='../main/main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
 <input type='hidden' name='patientID'      value='0' />
 </form>
 </body>

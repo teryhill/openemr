@@ -26,7 +26,7 @@
 $fake_register_globals=false;
 $sanitize_all_escapes=true;
   
-require_once("../interface/globals.php");
+require_once("../globals.php");
 require_once("$srcdir/options.inc.php");
 require_once("$srcdir/forms.inc");
 require_once("$srcdir/encounter_events.inc.php");
@@ -35,10 +35,10 @@ require_once("$srcdir/patient_tracker.inc.php");
  <html>
   <head>
   <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-  <link rel="stylesheet" type="text/css" href="../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
-  <script type="text/javascript" src="../library/js/jquery.1.3.2.js"></script>
-  <script type="text/javascript" src="../library/js/common.js"></script>
-  <script type="text/javascript" src="../library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
+  <script type="text/javascript" src="../../library/js/jquery.1.3.2.js"></script>
+  <script type="text/javascript" src="../../library/js/common.js"></script>
+  <script type="text/javascript" src="../../library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
 
 <?php
  

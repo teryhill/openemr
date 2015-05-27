@@ -24,14 +24,16 @@ $sanitize_all_escapes = true;
 $fake_register_globals = false;
 
 require_once("../../interface/globals.php");
-//include_once("{$GLOBALS['srcdir']}/sql.inc");
+
 $drugval = '0';
 if ($_POST['testcomplete'] =='true') {
 	$drugval = '1';
 }
 
 $tracker_id = $_POST['trackerid'];
-
+  if($tracker_id != 0) 
+  {  
            sqlStatement("UPDATE patient_tracker SET " .
 			   "drug_screen_completed = ? " .
                "WHERE id =? ", array($drugval,$tracker_id));
+  }             

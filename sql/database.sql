@@ -4548,7 +4548,8 @@ CREATE TABLE IF NOT EXISTS `patient_tracker` (
   `random_drug_test`       TINYINT(1)   DEFAULT NULL,
   `drug_screen_completed`  TINYINT(1)   NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY (`eid`,`pid`)
+  KEY (`eid`),
+  KEY (`pid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1;
 
 -- 

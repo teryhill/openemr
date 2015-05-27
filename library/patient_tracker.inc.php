@@ -22,29 +22,31 @@
 * @author Terry Hill <terry@lillysystems.com>
 * @link http://www.open-emr.org 
 */
-require_once($GLOBALS['srcdir'] . '/appointments.inc.php');
+require_once(dirname(__FILE__) . '/appointments.inc.php');
 
-function fetchtrkrEvents( $from_date, $to_date, $where_param = null, $orderby_param = null , $tracker_board ) 
+function fetch_Patient_Tracker_Events( $from_date, $to_date, $where_param = null, $orderby_param = null , $tracker_board ) 
 {
     # used to determine which providers to display in the Patient Tracker
-    $provider_id = '';
+    $provider_id = null;
     if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar'] !='1') {
       $provider_id = $_SESSION[authUserID];
     }
-    $events = fetchAppointments( $from_date, $to_date, null, $provider_id, null, null, null, null, null, $tracker_board );
+    $events = fetchAppointments( $from_date, $to_date, null, $provider_id, null, null, null, null, null, true );
     return $events;
 }
 
+#check to see if a status code exist as a check in
 function  is_checkin($option) {
-  #check to see if a status code exist as a check in
+  
   $row = sqlQuery("SELECT toggle_setting_1 FROM list_options WHERE " .
     "list_id = 'apptstat' AND option_id = ?", array($option));
   if (empty($row['toggle_setting_1'])) return(false);
   return(true);
 }
 
+#check to see if a status code exist as a check out
 function  is_checkout($option) {
-  #check to see if a status code exist as a check out
+  
   $row = sqlQuery("SELECT toggle_setting_2 FROM list_options WHERE " .
     "list_id = 'apptstat' AND option_id = ?", array($option));
   if (empty($row['toggle_setting_2'])) return(false);
@@ -66,8 +68,6 @@ if ($enc_yn['encounter'] == '0' || $enc_yn == '0') return(false);
  # this function will return the tracker id that is managed  
 function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$room='',$enc_id='') {
   $datetime = date("Y-m-d H:i:s");
-  $yearly_limit = $GLOBALS['maximum_drug_test_yearly'];
-  $percentage = $GLOBALS['drug_testing_percentage'];	
 
   #Check to see if there is an entry in the patient_tracker table.
   $tracker = sqlQuery("SELECT id, apptdate, appttime, eid, pid, original_user, encounter, lastseq,".
@@ -121,6 +121,8 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
     sqlStatement("UPDATE `openemr_postcalendar_events` SET `pc_room` = ? WHERE `pc_eid` = ?", array($room,$eid));
   }
   if( $GLOBALS['drug_screen'] && !empty($status)  && is_checkin($status)) {
+    $yearly_limit = $GLOBALS['maximum_drug_test_yearly'];
+    $percentage = $GLOBALS['drug_testing_percentage'];	  
     random_drug_test($tracker_id,$percentage,$yearly_limit);
   }
   # Returning the tracker id that has been managed
@@ -181,7 +183,7 @@ function random_drug_test($tracker_id,$percentage,$yearly_limit) {
                                      "WHERE id =? ", array($tracker_id));
       $Patient_id = $drug_test_done['pid'];
 
-  If (is_null($drug_test_done['random_drug_test'])) {
+  if (is_null($drug_test_done['random_drug_test'])) {
     # get a count of the number of times the patient has been screened.
     if ($yearly_limit >0) {
       # check to see if screens are within the current year.

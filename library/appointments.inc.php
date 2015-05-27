@@ -31,21 +31,21 @@ $ORDERHASH = array(
 	'status' => array( 'status', 'date', 'time', 'patient' )
 );
 
-function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param = null, $tracker_board ) 
+function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param = null, $tracker_board = false ) 
 {
-	$tracker_fields = '';
-    $tracker_joins = '';
    
    $where =
-		"( (e.pc_endDate >= '$from_date' AND e.pc_eventDate <= '$to_date' AND e.pc_recurrtype = '1') OR " .
-  		  "(e.pc_eventDate >= '$from_date' AND e.pc_eventDate <= '$to_date') )";
+        "( (e.pc_endDate >= '$from_date' AND e.pc_eventDate <= '$to_date' AND e.pc_recurrtype = '1') OR " .
+  	    "(e.pc_eventDate >= '$from_date' AND e.pc_eventDate <= '$to_date') )";
 
-	if ( $where_param ) $where .= $where_param;
+    if ( $where_param ) $where .= $where_param;
 	
-	$order_by = "e.pc_eventDate, e.pc_startTime";
-	if ( $orderby_param ) {
-		$order_by = $orderby_param;
-	}
+    $order_by = "e.pc_eventDate, e.pc_startTime";
+    if ( $orderby_param ) {
+       $order_by = $orderby_param;
+    }
+ 	$tracker_fields = '';
+    $tracker_joins = '';   
     
     if ($tracker_board) {     
     $tracker_fields = "t.id, t.date, t.apptdate, t.appttime, t.eid, t.pid, t.original_user, t.encounter, t.lastseq, t.random_drug_test, t.drug_screen_completed, " .
@@ -108,7 +108,7 @@ function fetchAllEvents( $from_date, $to_date, $provider_id = null, $facility_id
 	return $appointments;
 }
 
-function fetchAppointments( $from_date, $to_date, $patient_id = null, $provider_id = null, $facility_id = null, $pc_appstatus = null, $with_out_provider = null, $with_out_facility = null, $pc_catid = null, $tracker_board )
+function fetchAppointments( $from_date, $to_date, $patient_id = null, $provider_id = null, $facility_id = null, $pc_appstatus = null, $with_out_provider = null, $with_out_facility = null, $pc_catid = null, $tracker_board = false )
 {
 	$where = "";
 	if ( $provider_id ) $where .= " AND e.pc_aid = '$provider_id'";
