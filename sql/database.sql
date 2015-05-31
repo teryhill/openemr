@@ -3927,6 +3927,12 @@ INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('amendment_status'
 INSERT INTO list_options(list_id,option_id,title) VALUES ('lists' ,'amendment_from','Amendment From');
 INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('amendment_from' ,'patient','Patient', 10);
 INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('amendment_from' ,'insurance','Insurance', 20);
+
+-- Patient Flow Board Rooms
+INSERT INTO list_options(list_id,option_id,title) VALUES ('lists','patient_flow_board_rooms','Patient Flow Board Rooms');
+INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '1', 'Room 1', 10);
+INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '2', 'Room 2', 20);
+INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '3', 'Room 3', 30);
 -- --------------------------------------------------------
 
 -- 

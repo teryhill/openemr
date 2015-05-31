@@ -151,7 +151,14 @@ function DOBandEncounter()
 				 $info_msg .= " $encounter";
 		 }
              # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
-	 		 manage_tracker_status($event_date,$appttime,$_GET['eid'],$_POST['form_pid'],$_SESSION["authUser"],$_POST['form_apptstatus'],$_POST['form_room'],$encounter);
+                 if ( isset($GLOBALS['temporary-eid-for-manage-tracker']) || !empty($_GET['eid']) ) {
+                    // Note that the temporary-eid-for-manage-tracker is used to capture the eid for new appointments and when separate a recurring
+                    // appointment. It is set in the InsertEvent() function. Note that in the case of spearating a recurrent appointment, the get eid
+                    // parameter is actually erroneous(is eid of the recurrent appt and not the new separated appt), so need to use the
+                    // temporary-eid-for-manage-tracker global instead.
+                    $temp_eid = (isset($GLOBALS['temporary-eid-for-manage-tracker'])) ? $GLOBALS['temporary-eid-for-manage-tracker'] : $_GET['eid'];
+	 	    manage_tracker_status($event_date,$appttime,$temp_eid,$_POST['form_pid'],$_SESSION["authUser"],$_POST['form_apptstatus'],$_POST['form_room'],$encounter);
+	 }
 	 }
     else 
      {
@@ -669,10 +676,10 @@ if ($_POST['form_action'] == "save") {
  }
 
  if ($_POST['form_action'] != "") {
-  // Close this window and refresh the calendar display.
+  // Close this window and refresh the calendar (or the patient_tracker) display.
   echo "<html>\n<body>\n<script language='JavaScript'>\n";
   if ($info_msg) echo " alert('" . addslashes($info_msg) . "');\n";
-  echo " if (opener && !opener.closed && opener.refreshme) opener.refreshme();\n";
+  echo " if (opener && !opener.closed && opener.refreshme) { opener.refreshme(); } else { window.opener.location.reload(); };\n";
   echo " window.close();\n";
   echo "</script>\n</body>\n</html>\n";
   exit();
@@ -1465,7 +1472,9 @@ if ($repeatexdate != "") {
    <b><?php echo xlt('Room Number'); ?>:</b>
   </td>
   <td colspan='4' nowrap>
-   <input type='text' size='5' name='form_room' value='<?php echo attr($pcroom); ?>' title='<?php echo xla('Room number');?>' />
+<?php
+	echo generate_select_list('form_room', 'patient_flow_board_rooms',$pcroom, xl('Room Number'));
+?>
   </td>
  </tr>
 <?php } ?>

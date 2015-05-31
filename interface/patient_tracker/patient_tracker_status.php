@@ -70,8 +70,10 @@ require_once("$srcdir/patient_tracker.inc.php");
                            "from openemr_postcalendar_events where pc_eid =? " , array($pceid));
         $encounter = todaysEncounterCheck($tkpid, $apptdate, $genenc['reason'], $genenc['facility'], $genenc['billing_facility'], $genenc['provider'], $genenc['category'],false);
         # Capture the appt status and room number for patient tracker. This will map the encounter to it also.
+        if (!empty($pceid)) {
         manage_tracker_status($apptdate,$appttime,$pceid,$tkpid,$_SESSION["authUser"],$status,$theroom,$encounter);
 	 }
+     }
      else 
      {
         # Capture the appt status and room number for patient tracker.
@@ -103,7 +105,10 @@ require_once("$srcdir/patient_tracker.inc.php");
 ?>
 	<br><br>   
 	<span class=text><?php  echo xlt('Exam Room Number'); ?>: </span><br>
-    <input type='text' name="roomnum" size=5 value="<?php echo attr($trow['lastroom']);?>" ><br><br>
+<?php
+	echo generate_select_list('roomnum', 'patient_flow_board_rooms',$trow['lastroom'], xl('Exam Room Number'));
+?>
+<br><br>
     <tr>
      <td>
       <a href='javascript:;' class='css_button_small' style='color:gray' onclick='document.getElementById("form_note").submit();'><span><?php echo xla('Save')?></span></a>
