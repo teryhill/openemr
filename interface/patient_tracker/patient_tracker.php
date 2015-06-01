@@ -216,6 +216,7 @@ $datetime = date("Y-m-d H:i:s");
 
 # go get the information and process it
 $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
+$appointments = sortAppointments( $appointments, 'time' );
 
 	foreach ( $appointments as $appointment ) {
         
