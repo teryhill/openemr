@@ -23,7 +23,7 @@
  * @link http://www.open-emr.org 
  *   
  */
-
+ 
 $fake_register_globals=false;
 $sanitize_all_escapes=true;
 
@@ -38,18 +38,16 @@ require_once("$srcdir/patient_tracker.inc.php");
 <head>
 
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-<link rel="stylesheet" type="text/css" href="../../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
 <script type="text/javascript" src="../../library/dialog.js"></script>
 <script type="text/javascript" src="../../library/js/common.js"></script>
 <script type="text/javascript" src="../../library/js/jquery-1.9.1.min.js"></script>
 <script type="text/javascript" src="../../library/js/blink/jquery.modern-blink.js"></script>
 
-<script>
-jQuery(function($) {
-    $('.js-blink-infinite').modernBlink();
-});
-</script>
 <script language="JavaScript">
+$(document).ready(function(){
+  refreshbegin('1');
+  $('.js-blink-infinite').modernBlink();
+});
   
 function bpopup(tkid) {
  top.restoreSession()	
@@ -57,54 +55,86 @@ function bpopup(tkid) {
  return false;
 }
 
-var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>"
+function calendarpopup(eid) {
+ top.restoreSession()   
+ window.open('../main/calendar/add_edit_event.php?eid=' + eid,'_blank', 'width=550,height=400,resizable=1');
+ return false;
+}
 
-if (document.images){
-var parsetime=reftime.split(":")
-parsetime=parsetime[0]*60+parsetime[1]*1
+function refreshbegin(first){
+  <?php if ($GLOBALS['pat_trkr_timer'] != '0') { ?>
+    var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>";
+    var parsetime=reftime.split(":");
+    parsetime=(parsetime[0]*60)+(parsetime[1]*1)*1000;
+    if (first != '1') {
+      top.restoreSession();
+      document.pattrk.submit();
+    }
+    setTimeout("refreshbegin('0')",parsetime);
+  <?php } else { ?>
+    return;
+  <?php } ?>
 }
-function refreshbegin(){
-if (!document.images)
-return
-if (parsetime==1)
-window.location.reload()
-else{ 
-parsetime-=1
-setTimeout("refreshbegin()",1050)
-  }
-}
-window.onload=refreshbegin
-</script>
-<script>
-function topatient(newpid, pubpid, pname, enc, datestr, dobstr) {
-top.restoreSession();
-<?php if ($GLOBALS['ptkr_pt_list_new_window']) { ?>    
-   openNewTopWindow(newpid);
-<?php } else { ?>
- var othername = (window.name == 'RTop') ? 'RBot' : 'RTop';
- parent.left_nav.setPatient(pname,newpid,pubpid,'',dobstr);
- parent.frames[othername].location.href = '../patient_file/summary/demographics.php?set_pid=' + newpid;
-<?php } ?>
+
+function topatient(newpid, enc) {
+ if (document.pattrk.form_new_window.checked) {
+   openNewTopWindow(newpid,enc);
  }
+ else {
+   top.restoreSession();
+   <?php if ($GLOBALS['concurrent_layout']) { ?>
+     if (enc > 0) {
+       document.location.href = "../patient_file/summary/demographics.php?set_pid=" + newpid + "&set_encounterid=" + enc;
+     }
+     else {
+       document.location.href = "../patient_file/summary/demographics.php?set_pid=" + newpid; 
+     }
+   <?php } else { ?>
+     top.location.href = "../patient_file/patient_file.php?set_pid=" + newpid;
+   <?php } ?>
+ }
+}
 
-
-function openNewTopWindow(newpid) {
+function openNewTopWindow(newpid,newencounterid) {
  document.fnew.patientID.value = newpid;
+ document.fnew.encounterID.value = newencounterid;
  top.restoreSession();
  document.fnew.submit();
  }
  
-
 </script>
 
 </head>
 
 <body class="body_top" >
 
-<form id='pattrk' method='post' action='patient_tracker.php' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
- <form name='myform'><input type='checkbox' name='form_new_window' value='1'<?php
-  if (!empty($GLOBALS['ptkr_pt_list_new_window'])) echo ' checked'; ?> /><?php
-  echo xlt('Open Demographics in New Window'); ?></form>
+<?php if ($GLOBALS['pat_trkr_timer'] == '0') { ?>
+<form name='pattrk' id='pattrk' method='post' action='patient_tracker.php' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
+<?php } else { ?>
+<form name='pattrk' id='pattrk' method='post' action='patient_tracker.php?skip_timeout_reset=1' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
+<?php } ?>
+
+ <?php
+ if (isset($_POST['setting_new_window'])) {
+   if (isset($_POST['form_new_window'])) {
+     $new_window_checked = " checked";
+   }
+   else {
+     $new_window_checked = '';
+   }
+ }
+ else {
+   if ($GLOBALS['ptkr_pt_list_new_window']) {
+     $new_window_checked = " checked";
+   }
+   else {
+     $new_window_checked = '';
+   }
+ }
+ ?>
+ <input type='hidden' name='setting_new_window' value='1' />
+ <input type='checkbox' name='form_new_window' value='1'<?php echo $new_window_checked; ?> /><?php
+  echo xlt('Open Patient in New Window'); ?>
 <?php if ($GLOBALS['pat_trkr_timer'] =='0') { ?>
 <table border='0' cellpadding='5' cellspacing='0'>
  <tr>
@@ -173,51 +203,74 @@ $appointments = array();
 $from_date = date("Y-m-d");
 $to_date = date("Y-m-d");
 $datetime = date("Y-m-d H:i:s");
-$tracker_board ='true';
 
-$appointments = fetch_Patient_Tracker_Events( $from_date, $to_date ,'', '', true);
+$appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
 
 	foreach ( $appointments as $appointment ) {
-		$tracker_id = $appointment['pt_tracker_id'];
-		$docname  = $appointment['lname'] . ', ' . $appointment['fname'] . ' ' . $appointment['mname'];
-        $ptname = $appointment['fname'] . " " . $appointment['lname'];
-        $raw_encounter_date = date("Y-m-d", strtotime($appointment['date']));
-		$newarrive = collect_checkin($appointment['id']);
-        $newend = collect_checkout($appointment['id']);
-        if (strlen($docname)<= 3 ) continue;
-        if (is_checkout($appointment['status']) && $GLOBALS['checkout_roll_off'] >0) {
-           $to_time = strtotime($newend);
-           $from_time = strtotime($datetime);
-           $display_check_out = round(abs($from_time - $to_time) / 60,0);
-		   if ( $display_check_out >= $GLOBALS['checkout_roll_off'] ) continue;
-        }
-        $colorevents = (collectApptStatusSettings($appointment['status']));
-        $bgcolor = $colorevents['color'];
-        $statalert = $colorevents['time_alert'];
+        
+                if ($appointment['pc_recurrtype'] != 0) {
+                        // TODO: Note this block of code can likely be removed when the appointment recursion bug has been fixed.
+                        // don't show if date has been excluded
+                        // example of pc_recurrspec having "exdate" of "20150527,20150528,";
+                        $date_squash = str_replace("-","",$appointment['pc_eventDate']);
+                        $recurrent_info = unserialize($appointment['pc_recurrspec']);
+                        if (preg_match("/$date_squash/",$recurrent_info['exdate'])) {
+                                continue;
+                        }
+                }
+                
+                // Collect variables and do some processing
+                $docname  = $appointment['ulname'] . ', ' . $appointment['ufname'] . ' ' . $appointment['umname'];
+                if (strlen($docname)<= 3 ) continue;
+                $ptname = $appointment['lname'] . ', ' . $appointment['fname'] . ' ' . $appointment['mname'];
+                $appt_enc = $appointment['encounter'];
+                $appt_eid = (!empty($appointment['eid'])) ? $appointment['eid'] : $appointment['pc_eid'];
+                $appt_pid = (!empty($appointment['pid'])) ? $appointment['pid'] : $appointment['pc_pid'];
+                $status = (!empty($appointment['status'])) ? $appointment['status'] : $appointment['pc_apptstatus'];
+                $appt_room = (!empty($appointment['room'])) ? $appointment['room'] : $appointment['pc_room'];
+                $appt_time = (!empty($appointment['appttime'])) ? $appointment['appttime'] : $appointment['pc_startTime'];
+                $tracker_id = $appointment['id'];
+                $newarrive = collect_checkin($tracker_id);
+                $newend = collect_checkout($tracker_id);
+                $colorevents = (collectApptStatusSettings($status));
+                $bgcolor = $colorevents['color'];
+                $statalert = $colorevents['time_alert'];
+                if ( is_checkout($status) && ($GLOBALS['checkout_roll_off'] > 0) ) {
+                        $to_time = strtotime($newend);
+                        $from_time = strtotime($datetime);
+                        $display_check_out = round(abs($from_time - $to_time) / 60,0);
+                        if ( $display_check_out >= $GLOBALS['checkout_roll_off'] ) continue;
+                }
 ?>
         <tr bgcolor='<?php echo $bgcolor ?>'>
         <td class="detail" align="center">
-        <?php echo text($appointment['pid']) ?>
+        <?php echo text($appt_pid) ?>
          </td>
         <td class="detail" align="center">
-        <a href="" onclick="return topatient('<?php echo text($appointment['pid']);?>','<?php echo text($appointment['pubpid']);?>','<?php echo text($ptname);?>','<?php echo text($appointment['encounter']);?>','<?php echo text(oeFormatShortDate($raw_encounter_date));?>','<?php echo text(oeFormatShortDate($appointment['DOB']));?>' )" >
-        <?php echo text($appointment['lname']) . ', ' . text($appointment['fname']) . ' ' . text($appointment['mname']); ?></a>
+        <a href="#" onclick="return topatient('<?php echo attr($appt_pid);?>','<?php echo attr($appt_enc);?>')" >
+        <?php echo text($ptname); ?></a>
          </td>
         <td class="detail" align="center">
-		 <?php if($appointment['encounter'] != 0) echo text($appointment['encounter']); ?></a>
+		 <?php if($appt_enc != 0) echo text($appt_enc); ?></a>
          </td>
          <td class="detail" align="center">
-         <?php echo text($appointment['room']) ; ?>  
+         <?php echo text($appt_room) ; ?>  
          </td>
          <td class="detail" align="center">
-         <?php echo text($appointment['appttime']) ?>
+         <?php echo text($appt_time) ?>
          </td>
          <td class="detail" align="center">
         <?php echo text(substr($newarrive,11)); ?>
          </td>
-         <td class="detail" align="center">  
-         <a href=""  onclick="return bpopup(
-         <?php  $statusverb = getListItemTitle("apptstat",$appointment['status']); echo text($appointment['id']);  ?> ) " ><?php echo text($statusverb); ?></a>		 
+         <td class="detail" align="center"> 
+         <?php if (empty($tracker_id)) { //for appt not yet with tracker id and for recurring appt ?>
+           <a href=""  onclick="return calendarpopup(<?php echo text($appt_eid); ?>)">
+         <?php } else { ?>
+           <a href=""  onclick="return bpopup(<?php echo text($tracker_id); ?>)">
+         <?php } ?>
+         <?php echo text(getListItemTitle("apptstat",$status)); ?>
+         </a>
+
 		 </td>
         <?php		 
 		 //time in status
@@ -250,7 +303,7 @@ $appointments = fetch_Patient_Tracker_Events( $from_date, $to_date ,'', '', true
          <?php echo text(xl_appt_category($appointment['pc_title'])) ?>
          </td>
          <td class="detail" align="center">
-         <?php echo text($appointment['ulname']) . ', ' . text($appointment['ufname']) . ' ' . text($appointment['umname']); ?>
+         <?php echo text($docname); ?>
          </td>
          <td class="detail" align="center"> 
          <?php		 
@@ -290,7 +343,7 @@ $appointments = fetch_Patient_Tracker_Events( $from_date, $to_date ,'', '', true
          <?php } else {  echo "  <td>"; }?>
          <?php if (strtotime($newarrive) != '' && $appointment['random_drug_test'] == '1') { ?> 
          <td class="detail" align="center">
-		 <?php if (is_checkout($appointment['status'])) { ?>
+		 <?php if (strtotime($newend) != '') { ?>
 		     <input type=checkbox  disabled='disable' class="drug_screen_completed" id="<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>"  <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
 		 <?php } else { ?>
 		     <input type=checkbox  class="drug_screen_completed" id='<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>' name="drug_screen_completed" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
@@ -304,8 +357,8 @@ $appointments = fetch_Patient_Tracker_Events( $from_date, $to_date ,'', '', true
 ?>
 
 </table>
-
 </form>
+
 <script type="text/javascript">
   $(document).ready(function() { 
  $(".drug_screen_completed").change(function() {
@@ -325,6 +378,7 @@ $appointments = fetch_Patient_Tracker_Events( $from_date, $to_date ,'', '', true
 <!-- form used to open a new top level window when a patient row is clicked -->
 <form name='fnew' method='post' target='_blank' action='../main/main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
 <input type='hidden' name='patientID'      value='0' />
+<input type='hidden' name='encounterID'    value='0' />
 </form>
 </body>
 </html>

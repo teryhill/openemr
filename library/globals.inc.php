@@ -964,7 +964,7 @@ $GLOBALS_METADATA = array(
     'checkout_roll_off' => array(
       xl('Number of Minutes to display completed checkouts'),
       'num',
-      '30',                       // default
+      '0',                       // default
       xl('Number of Minutes to display completed checkouts. Zero is continuous display')
     ),
     
