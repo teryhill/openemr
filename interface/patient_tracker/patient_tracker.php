@@ -3,7 +3,8 @@
  *  Patient Tracker (Patient Flow Board)
  *
  *  This program displays the information entered in the Calendar program , 
- *  allowing the user to change status and veiw those changed here and in the Calendar
+ *  allowing the user to change status and view those changed here and in the Calendar
+ *  Will allow the collection of length of time spent in each status
  * 
  * Copyright (C) 2015 Terry Hill <terry@lillysystems.com> 
  * 
@@ -21,9 +22,11 @@
  * @package OpenEMR 
  * @author Terry Hill <terry@lilysystems.com> 
  * @link http://www.open-emr.org 
- *   
+ *  
+ * Please help the overall project by sending changes you make to the author and to the OpenEMR community.
+ * 
  */
-
+ 
 $fake_register_globals=false;
 $sanitize_all_escapes=true;
 
@@ -48,19 +51,22 @@ $(document).ready(function(){
   refreshbegin('1');
   $('.js-blink-infinite').modernBlink();
 });
-  
+ 
+// popup for patient tracker status 
 function bpopup(tkid) {
  top.restoreSession()	
  window.open('../patient_tracker/patient_tracker_status.php?tracker_id=' + tkid ,'_blank', 'width=500,height=250,resizable=1');
  return false;
 }
 
+// popup for calendar add edit 
 function calendarpopup(eid) {
  top.restoreSession()   
  window.open('../main/calendar/add_edit_event.php?eid=' + eid,'_blank', 'width=550,height=400,resizable=1');
  return false;
 }
 
+// auto refresh screen pat_trkr_timer is the timer variable
 function refreshbegin(first){
   <?php if ($GLOBALS['pat_trkr_timer'] != '0') { ?>
     var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>";
@@ -76,6 +82,7 @@ function refreshbegin(first){
   <?php } ?>
 }
 
+// used to display the patient demographic and encounter screens
 function topatient(newpid, enc) {
  if (document.pattrk.form_new_window.checked) {
    openNewTopWindow(newpid,enc);
@@ -95,6 +102,7 @@ function topatient(newpid, enc) {
  }
 }
 
+// opens the demographic and encounter screens in a new window
 function openNewTopWindow(newpid,newencounterid) {
  document.fnew.patientID.value = newpid;
  document.fnew.encounterID.value = newencounterid;
@@ -108,9 +116,9 @@ function openNewTopWindow(newpid,newencounterid) {
 
 <body class="body_top" >
 
-<?php if ($GLOBALS['pat_trkr_timer'] == '0') { ?>
+<?php if ($GLOBALS['pat_trkr_timer'] == '0') { # if the screen is not set up for auto refresh it can be closed by auto log off ?>
 <form name='pattrk' id='pattrk' method='post' action='patient_tracker.php' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
-<?php } else { ?>
+<?php } else { # if the screen is set up for auto refresh this will allow it to be closed by auto logoff ?>
 <form name='pattrk' id='pattrk' method='post' action='patient_tracker.php?skip_timeout_reset=1' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
 <?php } ?>
 
@@ -198,28 +206,31 @@ function openNewTopWindow(newpid,newencounterid) {
  </tr>
 
 <?php
-
+#define variables, future enhancement allow changing the to_date and from_date 
+#to allow picking a date to review
+ 
 $appointments = array();
 $from_date = date("Y-m-d");
 $to_date = date("Y-m-d");
 $datetime = date("Y-m-d H:i:s");
 
+# go get the information and process it
 $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
 
 	foreach ( $appointments as $appointment ) {
-
+        
                 if ($appointment['pc_recurrtype'] != 0) {
-                        // TODO: Note this block of code can likely be removed when the appointment recursion bug has been fixed.
-                        // don't show if date has been excluded
-                        // example of pc_recurrspec having "exdate" of "20150527,20150528,";
+                        # TODO: Note this block of code can likely be removed when the appointment recursion bug has been fixed.
+                        # don't show if date has been excluded
+                        # example of pc_recurrspec having "exdate" of "20150527,20150528,";
                         $date_squash = str_replace("-","",$appointment['pc_eventDate']);
                         $recurrent_info = unserialize($appointment['pc_recurrspec']);
                         if (preg_match("/$date_squash/",$recurrent_info['exdate'])) {
                                 continue;
                         }
                 }
-
-                // Collect variables and do some processing
+                
+                # Collect variables and do some processing
                 $docname  = $appointment['ulname'] . ', ' . $appointment['ufname'] . ' ' . $appointment['umname'];
                 if (strlen($docname)<= 3 ) continue;
                 $ptname = $appointment['lname'] . ', ' . $appointment['fname'] . ' ' . $appointment['mname'];
@@ -235,6 +246,7 @@ $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
                 $colorevents = (collectApptStatusSettings($status));
                 $bgcolor = $colorevents['color'];
                 $statalert = $colorevents['time_alert'];
+                # process the time to allow items with a check out status to be displayed
                 if ( is_checkout($status) && ($GLOBALS['checkout_roll_off'] > 0) ) {
                         $to_time = strtotime($newend);
                         $from_time = strtotime($datetime);
@@ -263,17 +275,17 @@ $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
         <?php echo text(substr($newarrive,11)); ?>
          </td>
          <td class="detail" align="center"> 
-         <?php if (empty($tracker_id)) { //for appt not yet with tracker id and for recurring appt ?>
-           <a href=""  onclick="return calendarpopup(<?php echo text($appt_eid); ?>)">
+         <?php if (empty($tracker_id)) { #for appt not yet with tracker id and for recurring appt ?>
+           <a href=""  onclick="return calendarpopup(<?php echo text($appt_eid); # calls popup for add edit calendar event?>)">
          <?php } else { ?>
-           <a href=""  onclick="return bpopup(<?php echo text($tracker_id); ?>)">
+           <a href=""  onclick="return bpopup(<?php echo text($tracker_id); # calls popup for patient tracker status?>)">
          <?php } ?>
-         <?php echo text(getListItemTitle("apptstat",$status)); ?>
+         <?php echo text(getListItemTitle("apptstat",$status)); # drop down list for appointment status?>
          </a>
 
 		 </td>
         <?php		 
-		 //time in status
+		 #time in current status
 		 $to_time = strtotime(date("Y-m-d H:i:s"));
 		 $yestime = '0'; 
 		 if (strtotime($newend) != '') {
@@ -286,17 +298,19 @@ $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
 			$from_time = strtotime($appointment['start_datetime']);
 			$yestime = '1';
         }
-          $timecheck = round(abs($to_time - $from_time) / 60,0);
-        if ($timecheck >= $statalert && ($statalert != '0')) { 
-           echo "<td align='center' class='js-blink-infinite'>	";
+
+        $timecheck = round(abs($to_time - $from_time) / 60,0);
+        if ($timecheck >= $statalert && ($statalert != '0')) {         # Determine if the time in status limit has been reached.
+           echo "<td align='center' class='js-blink-infinite'>	";     # and if so blink
         }
         else
         {
-           echo "<td align='center' class='detail'> ";
+           echo "<td align='center' class='detail'> ";                 # and if not do not blink
         }
         if (($yestime == '1') && ($timecheck >=1) && (strtotime($newarrive)!= '')) { 
 		   echo text($timecheck . ' ' .($timecheck >=2 ? xl('minutes'): xl('minute'))); 
 		}
+        #end time in current status
         ?>	
 		 </td>
          <td class="detail" align="center">
@@ -308,7 +322,7 @@ $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
          <td class="detail" align="center"> 
          <?php		 
 		 
-		 // total time in practice
+		 # total time in practice
 		 if (strtotime($newend) != '') {
  			$from_time = strtotime($newarrive);
 			$to_time = strtotime($newend);
@@ -318,10 +332,11 @@ $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
 			$from_time = strtotime($newarrive);
  		    $to_time = strtotime(date("Y-m-d H:i:s"));
          }	
-       $timecheck2 = round(abs($to_time - $from_time) / 60,0);	 
-       if (strtotime($newarrive) != '' && ($timecheck2 >=1)) {  		
-		echo text($timecheck2 . ' ' .($timecheck2 >=2 ? xl('minutes'): xl('minute')));
-	   }
+         $timecheck2 = round(abs($to_time - $from_time) / 60,0);	 
+         if (strtotime($newarrive) != '' && ($timecheck2 >=1)) {  		
+            echo text($timecheck2 . ' ' .($timecheck2 >=2 ? xl('minutes'): xl('minute')));
+         }
+         # end total time in practice
         ?>		 
 		<?php echo text($appointment['pc_time']); ?>
          </td>
@@ -343,7 +358,7 @@ $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
          <?php } else {  echo "  <td>"; }?>
          <?php if (strtotime($newarrive) != '' && $appointment['random_drug_test'] == '1') { ?> 
          <td class="detail" align="center">
-		 <?php if (strtotime($newend) != '') { ?>
+		 <?php if (strtotime($newend) != '') { # the following block allows the check box for drug screens to be disabled once the status is check out ?>
 		     <input type=checkbox  disabled='disable' class="drug_screen_completed" id="<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>"  <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
 		 <?php } else { ?>
 		     <input type=checkbox  class="drug_screen_completed" id='<?php echo htmlspecialchars($appointment['pt_tracker_id'], ENT_NOQUOTES) ?>' name="drug_screen_completed" <?php if ($appointment['drug_screen_completed'] == "1") echo "checked";?>>
@@ -361,6 +376,7 @@ $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
 
 <script type="text/javascript">
   $(document).ready(function() { 
+  // toggle of the check box status for drug screen completed and ajax call to update the database
  $(".drug_screen_completed").change(function() {
       top.restoreSession();
     if (this.checked) {
