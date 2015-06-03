@@ -17,7 +17,8 @@ $COMPARE_FUNCTION_HASH = array(
 	'time' => 'compareAppointmentsByTime',
 	'type' => 'compareAppointmentsByType',
 	'comment' => 'compareAppointmentsByComment',
-	'status' => 'compareAppointmentsByStatus'
+	'status' => 'compareAppointmentsByStatus',
+	'completed' => 'compareAppointmentsByCompletedDrugScreen'
 );
 
 $ORDERHASH = array(
@@ -28,7 +29,8 @@ $ORDERHASH = array(
   	'time' => array( 'time', 'date', 'patient' ),
   	'type' => array( 'type', 'date', 'time', 'patient' ),
   	'comment' => array( 'comment', 'date', 'time', 'patient' ),
-	'status' => array( 'status', 'date', 'time', 'patient' )
+	'status' => array( 'status', 'date', 'tim,', 'patient' ),
+	'completed' => array( 'completed', 'date', 'time', 'patient' )    
 );
 
 function fetchEvents( $from_date, $to_date, $where_param = null, $orderby_param = null, $tracker_board = false ) 
@@ -457,6 +459,13 @@ function compareAppointmentsByStatus( $appointment1, $appointment2 )
 	$status1 = $appointment1['pc_apptstatus'];
 	$status2 = $appointment2['pc_apptstatus'];
 	return compareBasic( $status1, $status2 );
+}
+
+function compareAppointmentsByCompletedDrugScreen( $appointment1, $appointment2 )
+{
+	$completed1 = $appointment1['drug_screen_completed'];
+	$completed2 = $appointment2['drug_screen_completed'];
+	return compareBasic( $completed1, $completed2 );
 }
 
 function fetchAppointmentCategories()

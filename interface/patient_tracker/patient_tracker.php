@@ -48,7 +48,7 @@ require_once("$srcdir/patient_tracker.inc.php");
 
 <script language="JavaScript">
 $(document).ready(function(){
-  refreshbegin('1');
+  //refreshbegin('1');
   $('.js-blink-infinite').modernBlink();
 });
  
@@ -65,22 +65,38 @@ function calendarpopup(eid) {
  window.open('../main/calendar/add_edit_event.php?eid=' + eid,'_blank', 'width=550,height=400,resizable=1');
  return false;
 }
+var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>"
 
-// auto refresh screen pat_trkr_timer is the timer variable
-function refreshbegin(first){
-  <?php if ($GLOBALS['pat_trkr_timer'] != '0') { ?>
-    var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>";
-    var parsetime=reftime.split(":");
-    parsetime=(parsetime[0]*60)+(parsetime[1]*1)*1000;
-    if (first != '1') {
-      top.restoreSession();
-      document.pattrk.submit();
-    }
-    setTimeout("refreshbegin('0')",parsetime);
-  <?php } else { ?>
-    return;
-  <?php } ?>
+if (document.images){
+var parsetime=reftime.split(":")
+parsetime=parsetime[0]*60+parsetime[1]*1
 }
+function refreshbegin(){
+if (!document.images)
+return
+if (parsetime==1)
+window.location.reload()
+else{ 
+parsetime-=1
+setTimeout("refreshbegin()",1050)
+  }
+}
+window.onload=refreshbegin
+// auto refresh screen pat_trkr_timer is the timer variable
+//function refreshbegin(first){
+//  <?php if ($GLOBALS['pat_trkr_timer'] != '0') { ?>
+//    var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>";
+//    var parsetime=reftime.split(":");
+//    parsetime=(parsetime[0]*60)+(parsetime[1]*1)*1000;
+//    if (first != '1') {
+//      top.restoreSession();
+//      document.pattrk.submit();
+//    }
+//    setTimeout("refreshbegin('0')",parsetime);
+//  <?php } else { ?>
+//    return;
+//  <?php } ?>
+//} 
 
 // used to display the patient demographic and encounter screens
 function topatient(newpid, enc) {
@@ -118,7 +134,7 @@ function openNewTopWindow(newpid,newencounterid) {
 
 <?php if ($GLOBALS['pat_trkr_timer'] == '0') { # if the screen is not set up for auto refresh it can be closed by auto log off ?>
 <form name='pattrk' id='pattrk' method='post' action='patient_tracker.php' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
-<?php } else { # if the screen is set up for auto refresh this will allow it to be closed by auto logoff ?>
+<?php } else { # if the screen is set up for auto refresh this will not allow it to be closed by auto logoff ?>
 <form name='pattrk' id='pattrk' method='post' action='patient_tracker.php?skip_timeout_reset=1' onsubmit='return top.restoreSession()' enctype='multipart/form-data'>
 <?php } ?>
 
@@ -267,7 +283,7 @@ $appointments = sortAppointments( $appointments, 'time' );
 		 <?php if($appt_enc != 0) echo text($appt_enc); ?></a>
          </td>
          <td class="detail" align="center">
-         <?php echo text($appt_room) ; ?>  
+         <?php echo $roomtitle = getListItemTitle('patient_flow_board_rooms', $appt_room);?>
          </td>
          <td class="detail" align="center">
          <?php echo text($appt_time) ?>
@@ -301,12 +317,12 @@ $appointments = sortAppointments( $appointments, 'time' );
         }
 
         $timecheck = round(abs($to_time - $from_time) / 60,0);
-        if ($timecheck >= $statalert && ($statalert != '0')) {         # Determine if the time in status limit has been reached.
-           echo "<td align='center' class='js-blink-infinite'>	";     # and if so blink
+        if ($timecheck >= $statalert && ($statalert != '0')) { # Determine if the time in status limit has been reached.
+           echo "<td align='center' class='js-blink-infinite'>	"; # and if so blink
         }
         else
         {
-           echo "<td align='center' class='detail'> ";                 # and if not do not blink
+           echo "<td align='center' class='detail'> "; # and if not do not blink
         }
         if (($yestime == '1') && ($timecheck >=1) && (strtotime($newarrive)!= '')) { 
 		   echo text($timecheck . ' ' .($timecheck >=2 ? xl('minutes'): xl('minute'))); 

@@ -18,6 +18,9 @@
  * 
  * @author  Terry Hill <terry@lillysystems.com>
  * @link    http://www.open-emr.org
+ *
+ * Please help the overall project by sending changes you make to the author and to the OpenEMR community.
+ *
  */
 
 $sanitize_all_escapes = true;

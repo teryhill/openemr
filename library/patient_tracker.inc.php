@@ -2,7 +2,7 @@
 /** 
 * library/patient_tracker.inc.php Functions used in the Patient Flow Board. 
 * 
-* Functions for use in the Patient Flow Board
+* Functions for use in the Patient Flow Board and Patient Flow Board Reports.
 * 
 * 
 * Copyright (C) 2015 Terry Hill <terry@lillysystems.com> 
@@ -21,6 +21,9 @@
 * @package OpenEMR 
 * @author Terry Hill <terry@lillysystems.com>
 * @link http://www.open-emr.org 
+*
+* Please help the overall project by sending changes you make to the author and to the OpenEMR community.
+*
 */
 require_once(dirname(__FILE__) . '/appointments.inc.php');
 
