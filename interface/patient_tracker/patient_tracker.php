@@ -60,9 +60,9 @@ function bpopup(tkid) {
 }
 
 // popup for calendar add edit 
-function calendarpopup(eid) {
+function calendarpopup(eid,date_squash) {
  top.restoreSession()   
- window.open('../main/calendar/add_edit_event.php?eid=' + eid,'_blank', 'width=550,height=400,resizable=1');
+ window.open('../main/calendar/add_edit_event.php?eid=' + eid + '&date=' + date_squash,'_blank', 'width=550,height=400,resizable=1');
  return false;
 }
 
@@ -219,12 +219,15 @@ $appointments = fetch_Patient_Tracker_Events($from_date, $to_date);
 $appointments = sortAppointments( $appointments, 'time' );
 
 	foreach ( $appointments as $appointment ) {
-        
+
+                # Collect appt date and set up squashed date for use below
+                $date_appt = $appointment['pc_eventDate'];
+                $date_squash = str_replace("-","",$date_appt);
+    
                 if ($appointment['pc_recurrtype'] != 0) {
                         # TODO: Note this block of code can likely be removed when the appointment recursion bug has been fixed.
                         # don't show if date has been excluded
                         # example of pc_recurrspec having "exdate" of "20150527,20150528,";
-                        $date_squash = str_replace("-","",$appointment['pc_eventDate']);
                         $recurrent_info = unserialize($appointment['pc_recurrspec']);
                         if (preg_match("/$date_squash/",$recurrent_info['exdate'])) {
                                 continue;
@@ -277,9 +280,9 @@ $appointments = sortAppointments( $appointments, 'time' );
          </td>
          <td class="detail" align="center"> 
          <?php if (empty($tracker_id)) { #for appt not yet with tracker id and for recurring appt ?>
-           <a href=""  onclick="return calendarpopup(<?php echo text($appt_eid); # calls popup for add edit calendar event?>)">
+           <a href=""  onclick="return calendarpopup(<?php echo attr($appt_eid).",".attr($date_squash); # calls popup for add edit calendar event?>)">
          <?php } else { ?>
-           <a href=""  onclick="return bpopup(<?php echo text($tracker_id); # calls popup for patient tracker status?>)">
+           <a href=""  onclick="return bpopup(<?php echo attr($tracker_id); # calls popup for patient tracker status?>)">
          <?php } ?>
          <?php echo text(getListItemTitle("apptstat",$status)); # drop down list for appointment status?>
          </a>

@@ -10,9 +10,6 @@
 // sorting by patient, practitioner, appointment type, and date.
 // 2012-01-01 - Added display of home and cell phone and fixed header
 
-$fake_register_globals=false;
-$sanitize_all_escapes=true;
-
 require_once("../globals.php");
 require_once("../../library/patient.inc");
 require_once("$srcdir/formatting.inc.php");

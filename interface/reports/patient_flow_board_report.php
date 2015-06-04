@@ -184,7 +184,7 @@ $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['fo
 
                 while ($urow = sqlFetchArray($ures)) {
                     $provid = $urow['id'];
-                    echo "    <option value='$provid'";
+                    echo "    <option value='" . attr($provid) . "'";
                     if ($provid == $_POST['form_provider']) echo " selected";
                     echo ">" . text($urow['lname']) . ", " . text($urow['fname']) . "\n";
                 }
