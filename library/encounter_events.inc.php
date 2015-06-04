@@ -316,6 +316,7 @@ function InsertEvent($args,$from = 'general') {
     $pc_recurrtype = $args['recurrspec']['event_repeat_on_freq'] ? '2' : '1';
   }
   $form_pid = empty($args['form_pid']) ? '' : $args['form_pid'];
+  $form_room = empty($args['form_room']) ? '' : $args['form_room'];
 
 	if($from == 'general'){
     $pc_eid = sqlInsert("INSERT INTO openemr_postcalendar_events ( " .
@@ -328,7 +329,7 @@ function InsertEvent($args,$from = 'general') {
 			$args['form_title'],$args['form_comments'],$_SESSION['authUserID'],$args['event_date'],
 			fixDate($args['form_enddate']),$args['duration'],$pc_recurrtype,serialize($args['recurrspec']),
 			$args['starttime'],$args['endtime'],$args['form_allday'],$args['form_apptstatus'],$args['form_prefcat'],
-			$args['locationspec'],(int)$args['facility'],(int)$args['billing_facility'],$args['form_room'])
+			$args['locationspec'],(int)$args['facility'],(int)$args['billing_facility'],$form_room)
 		);
 
             manage_tracker_status($args['event_date'],$args['starttime'],$pc_eid,$form_pid,$_SESSION['authUser'],$args['form_apptstatus'],$args['form_room']);

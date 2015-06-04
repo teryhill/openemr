@@ -679,8 +679,9 @@ if ($_POST['form_action'] == "save") {
   // Close this window and refresh the calendar (or the patient_tracker) display.
   echo "<html>\n<body>\n<script language='JavaScript'>\n";
   if ($info_msg) echo " alert('" . addslashes($info_msg) . "');\n";
-  echo " if (opener && !opener.closed && opener.refreshme) { " .
-       " opener.refreshme(); } else { window.opener.location.reload(); };\n";
+  echo " if (opener && !opener.closed && opener.refreshme) {  opener.refreshme(); " .
+         "} else { " .
+         "window.opener.location.reload(); };\n";
   echo " window.close();\n";
   echo "</script>\n</body>\n</html>\n";
   exit();
@@ -716,6 +717,7 @@ if ($_POST['form_action'] == "save") {
  if ($_REQUEST['patientid']) $patientid = $_REQUEST['patientid'];
  $patientname = xl('Click to select');
  $patienttitle = "";
+ $pcroom = "";
  $hometext = "";
  $row = array();
  $informant = "";

@@ -4549,10 +4549,10 @@ CREATE TABLE IF NOT EXISTS `patient_tracker` (
   `appttime`               time         DEFAULT NULL,
   `eid`                    bigint(20)   NOT NULL default '0',
   `pid`                    bigint(20)   NOT NULL default '0',
-  `original_user`          varchar(255) NOT NULL default '',
+  `original_user`          varchar(255) NOT NULL default '' COMMENT 'This is the user that created the original record',
   `encounter`              bigint(20)   NOT NULL default '0',
-  `lastseq`                varchar(4)   NOT NULL default '',
-  `random_drug_test`       TINYINT(1)   DEFAULT NULL,
+  `lastseq`                varchar(4)   NOT NULL default '' COMMENT 'The element file should contain this number of elements',
+  `random_drug_test`       TINYINT(1)   DEFAULT NULL COMMENT 'NULL if not randomized. If randomized, 0 is no, 1 is yes',
   `drug_screen_completed`  TINYINT(1)   NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY (`eid`),
@@ -4565,12 +4565,12 @@ CREATE TABLE IF NOT EXISTS `patient_tracker` (
 
 DROP TABLE IF EXISTS `patient_tracker_element`;
 CREATE TABLE IF NOT EXISTS `patient_tracker_element` (
-  `pt_tracker_id`      bigint(20)   NOT NULL default '0',
+  `pt_tracker_id`      bigint(20)   NOT NULL default '0' COMMENT 'maps to id column in patient_tracker table',
   `start_datetime`     datetime     DEFAULT NULL,
   `room`               varchar(20)  NOT NULL default '',
   `status`             varchar(31)  NOT NULL default '',
-  `seq`                varchar(4)   NOT NULL default '',
-  `user`               varchar(255) NOT NULL default '',
+  `seq`                varchar(4)   NOT NULL default '' COMMENT 'This is a numerical sequence for this pt_tracker_id events',
+  `user`               varchar(255) NOT NULL default '' COMMENT 'This is the user that created this element',
   KEY  (`pt_tracker_id`,`seq`)
 ) ENGINE=MyISAM;
 

@@ -28,6 +28,9 @@
  * 
  */
 
+$fake_register_globals=false;
+$sanitize_all_escapes=true;
+ 
 require_once("../globals.php");
 require_once("../../library/patient.inc");
 require_once("$srcdir/formatting.inc.php");
@@ -36,8 +39,9 @@ require_once "$srcdir/formdata.inc.php";
 require_once "$srcdir/appointments.inc.php";
 require_once("$srcdir/patient_tracker.inc.php");
 
-//$alertmsg = ''; # not used yet but maybe later
 $patient = $_REQUEST['patient'];
+
+
 
 if ($patient && ! $_POST['form_from_date']) {
     # This sets the dates in the date select calendars
@@ -150,7 +154,7 @@ $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['fo
 <div id="report_parameters_daterange"><?php echo date("d F Y", strtotime($from_date)) ." &nbsp; to &nbsp; ". date("d F Y", strtotime($to_date)); #sets date range for calendars ?>
 </div>
 
-<form method='post' name='theform' id='theform' action='patient_flow_board_report.php'>
+<form method='post' name='theform' id='theform' action='patient_flow_board_report.php' onsubmit='return top.restoreSession()'>
 
 <div id="report_parameters">
 
@@ -162,7 +166,7 @@ $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['fo
         <table class='text'>
             <tr>
                 <td class='label'><?php echo xlt('Facility'); ?>:</td>
-                <td><?php dropdown_facility(strip_escape_custom($facility), 'form_facility'); ?>
+                <td><?php dropdown_facility($facility, 'form_facility'); ?>
                 </td>
                 <td class='label'><?php echo xlt('Provider'); ?>:</td>
                 <td><?php
@@ -176,13 +180,13 @@ $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['fo
                 $ures = sqlStatement($query);
 
                 echo "   <select name='form_provider'>\n";
-                echo "    <option value=''>-- " . xl('All') . " --\n";
+                echo "    <option value=''>-- " . xlt('All') . " --\n";
 
                 while ($urow = sqlFetchArray($ures)) {
                     $provid = $urow['id'];
                     echo "    <option value='$provid'";
                     if ($provid == $_POST['form_provider']) echo " selected";
-                    echo ">" . $urow['lname'] . ", " . $urow['fname'] . "\n";
+                    echo ">" . text($urow['lname']) . ", " . text($urow['fname']) . "\n";
                 }
 
                 echo "   </select>\n";
@@ -194,7 +198,7 @@ $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['fo
             <tr>
                 <td class='label'><?php echo xlt('From'); ?>:</td>
                 <td><input type='text' name='form_from_date' id="form_from_date"
-                    size='10' value='<?php echo $from_date ?>'
+                    size='10' value='<?php echo attr($from_date) ?>'
                     onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)'
                     title='yyyy-mm-dd'> <img src='../pic/show_calendar.gif'
                     align='absbottom' width='24' height='22' id='img_from_date'
@@ -202,7 +206,7 @@ $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['fo
                     title='<?php echo xlt('Click here to choose a date'); ?>'></td>
                 <td class='label'><?php echo xlt('To'); ?>:</td>
                 <td><input type='text' name='form_to_date' id="form_to_date"
-                    size='10' value='<?php echo $to_date ?>'
+                    size='10' value='<?php echo attr($to_date) ?>'
                     onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)'
                     title='yyyy-mm-dd'> <img src='../pic/show_calendar.gif'
                     align='absbottom' width='24' height='22' id='img_to_date'
@@ -237,10 +241,10 @@ $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['fo
                 <?php echo xlt('Patient ID'); # this uses pubpid for patient searching ?>:
             </td>
             <td>
-                <input type='text' name='form_patient_id' size='10' maxlength='20' value='<?php echo $form_patient_id ?>'
-                title=<?php echo xlt('Optional numeric patient ID','\'','\''); ?> />
+                <input type='text' name='form_patient_id' size='10' maxlength='20' value='<?php echo attr($form_patient_id) ?>'
+                title='<?php echo xlt('Optional numeric patient ID'); ?>' />
             </td>
- 
+
             </tr>  			
             <tr>
             <?php # these two selects will show entries that do not have a facility or a provider ?>
@@ -356,7 +360,7 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
         <th><?php echo xlt('Drug Screen'); # not sure if Sorting by Drug Screen is useful ?></th>
   
      <?php if (!$chk_show_completed_drug_screens) { ?>
-         <th><?php echo xlt(' '); # Used to make the screen look uniform ?></th>
+         <th>&nbsp;</th>
       <?php } else { ?>
          <th><a href="nojs.php" onclick="return dosort('completed')"
       <?php if ($form_orderby == "completed") echo " style=\"color:#00cc00\"" ?>><?php  echo xlt('Completed'); ?></a>
@@ -407,7 +411,7 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
         if ($appointment['pc_recurrtype'] == '1' ) continue;
         # only get the drug screens that are set to yes.
         if ($chk_show_drug_screens ==1 ) {
-           if (text($appointment['random_drug_test']) != '1') continue;
+           if ($appointment['random_drug_test'] != '1') continue;
         }
         #if a patient id is entered just get that patient.       
         if (strlen($form_patient_id) !=0 ) {
@@ -444,7 +448,7 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
         <td class="detail">&nbsp;<?php echo text($appointment['pubpid']) ?>
         </td>
 
-        <td class="detail">&nbsp;<?php echo xl_appt_category($appointment['pc_catname']) ?>
+        <td class="detail">&nbsp;<?php echo text(xl_appt_category($appointment['pc_catname'])) ?>
         </td>
 
         <td class="detail">&nbsp;
@@ -468,9 +472,13 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
             $from_time = strtotime($newarrive);
 			$to_time = strtotime($newend);
             $timecheck2 = round(abs($to_time - $from_time) / 60,0);	 
-        ?>    
+        ?>  
+        <?php if ($newend != '' && $newarrive != '') { ?>        
         <td class="detail">&nbsp;<?php echo text($timecheck2 . ' ' .($timecheck2 >=2 ? xl('minutes'): xl('minute'))) ?></td>
-
+        <?php } else { ?>
+        <td class="detail">&nbsp;</td>
+        <?php } ?>
+        
     <?php } else { # this section is for the drug screen report ?>  
 
         <td class="detail">&nbsp;<?php echo ($docname == $lastdocname) ? "" : $docname ?>
@@ -485,12 +493,12 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
         <td class="detail">&nbsp;<?php echo text($appointment['fname'] . " " . $appointment['lname']) ?>
         </td>
 
-        <td class="detail">&nbsp;<?php echo $appointment['pubpid'] ?></td>
+        <td class="detail">&nbsp;<?php echo text($appointment['pubpid']) ?></td>
 
-        <td class="detail" align = >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php if (text($appointment['random_drug_test']) == '1') {  echo xl('Yes'); }  else { echo xl('No'); }?></td>
+        <td class="detail" align = >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php if ($appointment['random_drug_test'] == '1') {  echo xlt('Yes'); }  else { echo xlt('No'); }?></td>
  
         <?php if ($chk_show_completed_drug_screens) { ?>
-          <td class="detail">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php if (text($appointment['drug_screen_completed']) == '1') {  echo xl('Yes'); }  else { echo xl('No'); }?></td>
+          <td class="detail">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php if ($appointment['drug_screen_completed'] == '1') {  echo xlt('Yes'); }  else { echo xlt('No'); }?></td>
         <?php } else { ?>
           <td class="detail">&nbsp; </td> 
         <?php } ?> 
@@ -510,9 +518,9 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
     ?>
     <tr>
      <?php if (!$chk_show_drug_screens && !$chk_show_completed_drug_screens) { # is it Patient Flow Board or Drug screen ?>
-        <td colspan="10" align="left"><?php echo xlt('Total number of Patient Flow Board entries'); ?>&nbsp;<?php echo $j;?>&nbsp;<?php echo xlt('Patients'); ?></td>
+        <td colspan="10" align="left"><?php echo xlt('Total number of Patient Flow Board entries'); ?>&nbsp;<?php echo text($j);?>&nbsp;<?php echo xlt('Patients'); ?></td>
      <?php } else { ?>
-        <td colspan="10" align="left"><?php echo xlt('Total number of Drug Screen entries'); ?>&nbsp;<?php echo $j;?>&nbsp;<?php echo xlt('Patients'); ?></td>
+        <td colspan="10" align="left"><?php echo xlt('Total number of Drug Screen entries'); ?>&nbsp;<?php echo text($j);?>&nbsp;<?php echo xlt('Patients'); ?></td>
      <?php } ?> 
     </tr>
     </tbody>
@@ -522,8 +530,8 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
 <div class='text'><?php echo xlt('Please input search criteria above, and click Submit to view results.' ); ?>
 </div>
     <?php } ?> <input type="hidden" name="form_orderby"
-    value="<?php echo $form_orderby ?>" /> <input type="hidden"
-    name="patient" value="<?php echo $patient ?>" /> <input type='hidden'
+    value="<?php echo attr($form_orderby) ?>" /> <input type="hidden"
+    name="patient" value="<?php echo attr($patient) ?>" /> <input type='hidden'
     name='form_refresh' id='form_refresh' value='' /></form>
 
 </body>

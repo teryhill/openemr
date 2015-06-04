@@ -48,7 +48,7 @@ require_once("$srcdir/patient_tracker.inc.php");
 
 <script language="JavaScript">
 $(document).ready(function(){
-  //refreshbegin('1');
+  refreshbegin('1');
   $('.js-blink-infinite').modernBlink();
 });
  
@@ -65,38 +65,22 @@ function calendarpopup(eid) {
  window.open('../main/calendar/add_edit_event.php?eid=' + eid,'_blank', 'width=550,height=400,resizable=1');
  return false;
 }
-var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>"
 
-if (document.images){
-var parsetime=reftime.split(":")
-parsetime=parsetime[0]*60+parsetime[1]*1
-}
-function refreshbegin(){
-if (!document.images)
-return
-if (parsetime==1)
-window.location.reload()
-else{ 
-parsetime-=1
-setTimeout("refreshbegin()",1050)
-  }
-}
-window.onload=refreshbegin
 // auto refresh screen pat_trkr_timer is the timer variable
-//function refreshbegin(first){
-//  <?php if ($GLOBALS['pat_trkr_timer'] != '0') { ?>
-//    var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>";
-//    var parsetime=reftime.split(":");
-//    parsetime=(parsetime[0]*60)+(parsetime[1]*1)*1000;
-//    if (first != '1') {
-//      top.restoreSession();
-//      document.pattrk.submit();
-//    }
-//    setTimeout("refreshbegin('0')",parsetime);
-//  <?php } else { ?>
-//    return;
-//  <?php } ?>
-//} 
+function refreshbegin(first){
+  <?php if ($GLOBALS['pat_trkr_timer'] != '0') { ?>
+    var reftime="<?php echo attr($GLOBALS['pat_trkr_timer']); ?>";
+    var parsetime=reftime.split(":");
+    parsetime=(parsetime[0]*60)+(parsetime[1]*1)*1000;
+    if (first != '1') {
+      top.restoreSession();
+      document.pattrk.submit();
+    }
+    setTimeout("refreshbegin('0')",parsetime);
+  <?php } else { ?>
+    return;
+ <?php } ?>
+} 
 
 // used to display the patient demographic and encounter screens
 function topatient(newpid, enc) {
@@ -283,7 +267,7 @@ $appointments = sortAppointments( $appointments, 'time' );
 		 <?php if($appt_enc != 0) echo text($appt_enc); ?></a>
          </td>
          <td class="detail" align="center">
-         <?php echo $roomtitle = getListItemTitle('patient_flow_board_rooms', $appt_room);?>
+         <?php echo getListItemTitle('patient_flow_board_rooms', $appt_room);?>
          </td>
          <td class="detail" align="center">
          <?php echo text($appt_time) ?>

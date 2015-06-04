@@ -103,7 +103,7 @@ CREATE TABLE `patient_tracker` (
   `pid`                    bigint(20)   NOT NULL default '0',
   `original_user`          varchar(255) NOT NULL default '' COMMENT 'This is the user that created the original record',
   `encounter`              bigint(20)   NOT NULL default '0',
-  `lastseq`                varchar(4)   NOT NULL default '' COMMENT 'The element file should contain this number of elements for this id',
+  `lastseq`                varchar(4)   NOT NULL default '' COMMENT 'The element file should contain this number of elements',
   `random_drug_test`       TINYINT(1)   DEFAULT NULL COMMENT 'NULL if not randomized. If randomized, 0 is no, 1 is yes', 
   `drug_screen_completed`  TINYINT(1)   NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -118,8 +118,8 @@ CREATE TABLE `patient_tracker_element` (
   `start_datetime`     datetime     DEFAULT NULL,
   `room`               varchar(20)  NOT NULL default '',
   `status`             varchar(31)  NOT NULL default '',
-  `seq`                varchar(4)   NOT NULL default '' COMMENT 'This gives a numerical sequence for the events of this pt_tracker_id',
-  `user`               varchar(255) NOT NULL default '' COMMENT 'Yhis is the user that created this element',
+  `seq`                varchar(4)   NOT NULL default '' COMMENT 'This is a numerical sequence for this pt_tracker_id events',
+  `user`               varchar(255) NOT NULL default '' COMMENT 'This is the user that created this element',
   KEY  (`pt_tracker_id`,`seq`)
 ) ENGINE=MyISAM;
 #EndIf

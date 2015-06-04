@@ -79,7 +79,9 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
   }
 
   $datetime = date("Y-m-d H:i:s");
-
+  if (is_null($room)) {
+      $room = '';   
+  }
   #Check to see if there is an entry in the patient_tracker table.
   $tracker = sqlQuery("SELECT id, apptdate, appttime, eid, pid, original_user, encounter, lastseq,".
                        "patient_tracker_element.room AS lastroom,patient_tracker_element.status AS laststatus ".
