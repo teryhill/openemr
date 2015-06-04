@@ -27,7 +27,7 @@
  * Please help the overall project by sending changes you make to the author and to the OpenEMR community.
  * 
  */
-
+ 
 $fake_register_globals=false;
 $sanitize_all_escapes=true;
  
@@ -40,8 +40,6 @@ require_once "$srcdir/appointments.inc.php";
 require_once("$srcdir/patient_tracker.inc.php");
 
 $patient = $_REQUEST['patient'];
-
-
 
 if ($patient && ! $_POST['form_from_date']) {
     # This sets the dates in the date select calendars
@@ -83,7 +81,7 @@ if ( $_POST['with_out_facility'] ) {
 $provider  = $_POST['form_provider'];
 $facility  = $_POST['form_facility'];  #(CHEMED) facility filter
 $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['form_orderby'] : 'date';
-
+$form_patient_id = trim($_POST['form_patient_id']);
 ?>
 
 <html>
