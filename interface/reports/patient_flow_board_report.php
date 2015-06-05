@@ -402,11 +402,15 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
     $appointments = sortAppointments( $appointments, $form_orderby );
     # $j is used to count the number of patients that match the selected criteria.    
     $j=0;
+
     foreach ( $appointments as $appointment ) {
         $patient_id = $appointment['pid'];
+        $tracker_id = $appointment['pt_tracker_id'];
         $docname  = $appointment['ulname'] . ', ' . $appointment['ufname'] . ' ' . $appointment['umname'];
         # if there is a recurring appointment I just want the expanded entry.
         if ($appointment['pc_recurrtype'] == '1' ) continue;
+        # only get items with a tracker id.
+        if ($tracker_id == '' ) continue;
         # only get the drug screens that are set to yes.
         if ($chk_show_drug_screens ==1 ) {
            if ($appointment['random_drug_test'] != '1') continue;
@@ -414,17 +418,17 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
         #if a patient id is entered just get that patient.       
         if (strlen($form_patient_id) !=0 ) {
           if ($appointment['pubpid'] != $form_patient_id ) continue;
-        }        
+        } 
+        
         $errmsg  = "";
         $newarrive = '';
         $newend = '';
-        $tracker_id = $appointment['pt_tracker_id'];
         # getting arrive time and end time from the elements file.
         if ($tracker_id != 0) {
            $newarrive = collect_checkin($tracker_id);
            $newend = collect_checkout($tracker_id);
         }
-        $pc_apptstatus = $appointment['pc_apptstatus'];
+        $tracker_status = $appointment['status'];
         # $j is incremented for a patient that made it for display.
         $j=$j+1;
         ?>
@@ -452,10 +456,10 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
         <td class="detail">&nbsp;
             <?php
                 //Appointment Status
-                if($pc_apptstatus != ""){
+                if($tracker_status != ""){
                     $frow['data_type']=1;
                     $frow['list_id']='apptstat';
-                    generate_print_field($frow, $pc_apptstatus);
+                    generate_print_field($frow, $tracker_status);
                 }
             ?>
         </td>
