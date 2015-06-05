@@ -38,7 +38,11 @@ require_once "$srcdir/options.inc.php";
 require_once "$srcdir/formdata.inc.php";
 require_once "$srcdir/appointments.inc.php";
 require_once("$srcdir/patient_tracker.inc.php");
-
+function print_r2($val){
+        echo '<pre>';
+        print_r($val);
+        echo  '</pre>';
+}
 $patient = $_REQUEST['patient'];
 
 if ($patient && ! $_POST['form_from_date']) {
@@ -81,7 +85,11 @@ if ( $_POST['with_out_facility'] ) {
 $provider  = $_POST['form_provider'];
 $facility  = $_POST['form_facility'];  #(CHEMED) facility filter
 $form_orderby = getComparisonOrder( $_REQUEST['form_orderby'] ) ?  $_REQUEST['form_orderby'] : 'date';
-$form_patient_id = trim($_POST['form_patient_id']);
+//$form_patient_id = trim($_POST['form_patient_id']);
+if ($_POST["form_patient"])
+$form_patient = isset($_POST['form_patient']) ? $_POST['form_patient'] : '';
+$form_pid = isset($_POST['form_pid']) ? $_POST['form_pid'] : '';
+if ($form_patient == '' ) $form_pid = '';
 ?>
 
 <html>
@@ -108,7 +116,20 @@ $form_patient_id = trim($_POST['form_patient_id']);
     f.submit();
     return false;
  }
+ 
+// CapMinds :: invokes  find-patient popup.
+ function sel_patient() {
+  dlgopen('../main/calendar/find_patient_popup.php?pflag=0', '_blank', 500, 400);
+ }
 
+// CapMinds :: callback by the find-patient popup.
+ function setpatient(pid, lname, fname, dob) {
+  var f = document.theform;
+  f.form_patient.value = lname + ', ' + fname;
+  f.form_pid.value = pid;
+
+ }
+ 
 </script>
 
 <style type="text/css">
@@ -173,7 +194,7 @@ $form_patient_id = trim($_POST['form_patient_id']);
                 #
 
                 $query = "SELECT id, lname, fname FROM users WHERE ".
-                  "authorized = 1 $provider_facility_filter ORDER BY lname, fname"; #(CHEMED) facility filter
+                  "authorized = 1  ORDER BY lname, fname"; #(CHEMED) facility filter
 
                 $ures = sqlStatement($query);
 
@@ -235,19 +256,20 @@ $form_patient_id = trim($_POST['form_patient_id']);
                 </td>
             </tr>
             <tr>
-            <td class='label'>
-                <?php echo xlt('Patient ID'); # this uses pubpid for patient searching ?>:
-            </td>
-            <td>
-                <input type='text' name='form_patient_id' size='10' maxlength='20' value='<?php echo attr($form_patient_id) ?>'
-                title='<?php echo xlt('Optional numeric patient ID'); ?>' />
-            </td>
-
+			<td>
+			&nbsp;&nbsp;<span class='text'><?php echo xlt('Patient'); ?>: </span>
+			</td>
+			<td>
+			<input type='text' size='20' name='form_patient' style='width:100%;cursor:pointer;cursor:hand' value='<?php echo attr($form_patient) ? attr($form_patient) : xla('Click To Select'); ?>' onclick='sel_patient()' title='<?php echo xla('Click to select patient'); ?>' />
+			<input type='hidden' name='form_pid' value='<?php echo attr($form_pid); ?>' />
+			</td>
+			
+                <td colspan="2"><input type="checkbox" name="show_details" id="show_details" <?php if($chk_show_details) echo "checked";?>>&nbsp;<?php echo xlt('Show Details'); ?></td>
             </tr>  			
             <tr>
             <?php # these two selects will show entries that do not have a facility or a provider ?>
-                <td colspan="2"><input type="checkbox" name="with_out_provider" id="with_out_provider" <?php if($chk_with_out_provider) echo "checked";?>>&nbsp;<?php echo xlt('Without Provider'); ?></td>
-                <td colspan="2"><input type="checkbox" name="with_out_facility" id="with_out_facility" <?php if($chk_with_out_facility) echo "checked";?>>&nbsp;<?php echo xlt('Without Facility'); ?></td>
+<!--                <td colspan="2"><input type="checkbox" name="with_out_provider" id="with_out_provider" <?php //if($chk_with_out_provider) echo "checked";?>>&nbsp;<?php //echo xlt('Without Provider'); ?></td>
+                <td colspan="2"><input type="checkbox" name="with_out_facility" id="with_out_facility" <?php //if($chk_with_out_facility) echo "checked";?>>&nbsp;<?php //echo xlt('Without Facility'); ?></td>-->
             </tr>
             <?php if ($GLOBALS['drug_screen']) { ?>
            	<tr>
@@ -317,8 +339,8 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
      <?php if ($form_orderby == "type") echo " style=\"color:#00cc00\"" ?>><?php  echo xlt('Type'); ?></a>
         </th>
 
-        <th><a href="nojs.php" onclick="return dosort('status')"
-     <?php if ($form_orderby == "status") echo " style=\"color:#00cc00\"" ?>><?php  echo xlt('Status'); ?></a>
+        <th><a href="nojs.php" onclick="return dosort('trackerstatus')"
+     <?php if ($form_orderby == "trackerstatus") echo " style=\"color:#00cc00\"" ?>><?php  echo xlt('Status'); ?></a>
         </th>
         
         <th><?php echo xlt('Arrive Time'); # not sure if Sorting by Arrive Time is useful ?></th>
@@ -402,7 +424,7 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
     $appointments = sortAppointments( $appointments, $form_orderby );
     # $j is used to count the number of patients that match the selected criteria.    
     $j=0;
-
+    //print_r2($appointments);
     foreach ( $appointments as $appointment ) {
         $patient_id = $appointment['pid'];
         $tracker_id = $appointment['pt_tracker_id'];
@@ -416,8 +438,8 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
            if ($appointment['random_drug_test'] != '1') continue;
         }
         #if a patient id is entered just get that patient.       
-        if (strlen($form_patient_id) !=0 ) {
-          if ($appointment['pubpid'] != $form_patient_id ) continue;
+        if (strlen($form_pid) !=0 ) {
+          if ($appointment['pid'] != $form_pid ) continue;
         } 
         
         $errmsg  = "";
