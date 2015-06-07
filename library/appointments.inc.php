@@ -10,15 +10,15 @@
  // Holds library functions (and hashes) used by the appointment reporting module
 
 $COMPARE_FUNCTION_HASH = array(
-	'doctor' => 'compareAppointmentsByDoctorName',
-	'patient' => 'compareAppointmentsByPatientName',
-	'pubpid' => 'compareAppointmentsByPatientId',
-	'date' => 'compareAppointmentsByDate',
-	'time' => 'compareAppointmentsByTime',
-	'type' => 'compareAppointmentsByType',
-	'comment' => 'compareAppointmentsByComment',
-	'status' => 'compareAppointmentsByStatus',
-	'completed' => 'compareAppointmentsByCompletedDrugScreen',
+    'doctor' => 'compareAppointmentsByDoctorName',
+    'patient' => 'compareAppointmentsByPatientName',
+    'pubpid' => 'compareAppointmentsByPatientId',
+    'date' => 'compareAppointmentsByDate',
+    'time' => 'compareAppointmentsByTime',
+    'type' => 'compareAppointmentsByType',
+    'comment' => 'compareAppointmentsByComment',
+    'status' => 'compareAppointmentsByStatus',
+    'completed' => 'compareAppointmentsByCompletedDrugScreen',
     'trackerstatus' => 'compareAppointmentsByTrackerStatus'
 );
 
@@ -30,8 +30,8 @@ $ORDERHASH = array(
   	'time' => array( 'time', 'date', 'patient' ),
   	'type' => array( 'type', 'date', 'time', 'patient' ),
   	'comment' => array( 'comment', 'date', 'time', 'patient' ),
-	'status' => array( 'status', 'date', 'time', 'patient' ),
-	'completed' => array( 'completed', 'date', 'time', 'patient' ),
+    'status' => array( 'status', 'date', 'time', 'patient' ),
+    'completed' => array( 'completed', 'date', 'time', 'patient' ),
     'trackerstatus' => array( 'trackerstatus', 'date', 'time', 'patient' ),    
 );
 

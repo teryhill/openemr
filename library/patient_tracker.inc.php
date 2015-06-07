@@ -27,6 +27,52 @@
 */
 require_once(dirname(__FILE__) . '/appointments.inc.php');
 
+function get_Tracker_Time_Interval ($tracker_from_time, $tracker_to_time, $allow_sec=false) {
+
+    $tracker_time_calc = strtotime($tracker_to_time) - strtotime($tracker_from_time);
+
+    $tracker_time = "";
+    if ($tracker_time_calc > 60*60*24) {        
+        $days = floor($tracker_time_calc/60/60/24);
+        $tracker_time .=  "$days days"; 
+        $tracker_time_calc = $tracker_time_calc - ($days * (60*60*24));        
+    }
+    if ($tracker_time_calc > 60*60) {
+        $hours = floor($tracker_time_calc/60/60);
+        if(strlen($days != 0)) {
+          $tracker_time .=  ", $hours hours"; 
+        }
+        else
+        {
+          $tracker_time .=  "$hours hours";
+        }
+        $tracker_time_calc = $tracker_time_calc - ($hours * (60*60));        
+    }
+    if ($tracker_time_calc > 60) {
+        $minutes = floor($tracker_time_calc/60);
+        if(strlen($hours != 0)) {
+          $tracker_time .=  ", $minutes minutes"; 
+         }
+        else
+        {   
+          $tracker_time .=  "$minutes minutes"; 
+        }        
+        $tracker_time_calc = $tracker_time_calc - ($minutes * 60);        
+    }    
+      if ($allow_sec == 1) {   
+       if ($tracker_time_calc > 0) {
+        if(strlen($minutes != 0)) {
+          $tracker_time .= " and $tracker_time_calc seconds"; 
+         }
+        else
+        {
+          $tracker_time .= "$tracker_time_calc seconds"; 
+        }        
+      }
+}  
+    return $tracker_time ;
+} 
+
 function fetch_Patient_Tracker_Events($from_date, $to_date) 
 {
     # used to determine which providers to display in the Patient Tracker
@@ -151,6 +197,15 @@ function collectApptStatusSettings($option) {
   if (empty($row['notes'])) return $option;
   list($color_settings['color'], $color_settings['time_alert']) = explode("|", $row['notes']);
   return $color_settings;
+}
+
+function collect_Tracker_Elements($trackerid) 
+{
+ $res = sqlStatement("SELECT * FROM patient_tracker_element WHERE pt_tracker_id = ? ORDER BY seq ", array($trackerid));
+ for($iter=0; $row=sqlFetchArray($res); $iter++) {
+  $returnval[$iter]=$row;
+ }
+return $returnval;
 }
 
 #used to determine check in time 
