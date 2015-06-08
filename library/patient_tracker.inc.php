@@ -34,39 +34,81 @@ function get_Tracker_Time_Interval ($tracker_from_time, $tracker_to_time, $allow
     $tracker_time = "";
     if ($tracker_time_calc > 60*60*24) {        
         $days = floor($tracker_time_calc/60/60/24);
-        $tracker_time .=  "$days days"; 
+        if($days >= 2){   
+          $tracker_time .=  "$days ". xl('days'); 
+        }
+        else
+        {
+          $tracker_time .=  "$days ". xl('day');   
+        }
         $tracker_time_calc = $tracker_time_calc - ($days * (60*60*24));        
     }
     if ($tracker_time_calc > 60*60) {
         $hours = floor($tracker_time_calc/60/60);
         if(strlen($days != 0)) {
-          $tracker_time .=  ", $hours hours"; 
+          if($hours >= 2){   
+             $tracker_time .=  ", $hours " . x1('hours'); 
+          }
+          else
+          {
+             $tracker_time .=  ", $hours " . x1('hour');   
+          }
         }
         else
         {
-          $tracker_time .=  "$hours hours";
+          if($hours >= 2){ 
+             $tracker_time .=  "$hours " . xl('hours');
+          }
+          else
+          {
+             $tracker_time .=  "$hours " . xl('hour');   
+          }
         }
         $tracker_time_calc = $tracker_time_calc - ($hours * (60*60));        
     }
     if ($tracker_time_calc > 60) {
         $minutes = floor($tracker_time_calc/60);
         if(strlen($hours != 0)) {
-          $tracker_time .=  ", $minutes minutes"; 
+          if($minutes >= 2){   
+            $tracker_time .=  ", $minutes " . xl('minutes');
+          }
+          else
+          {
+            $tracker_time .=  ", $minutes " . xl('minute');
+          }          
          }
         else
-        {   
-          $tracker_time .=  "$minutes minutes"; 
+        {  
+          if($minutes >= 2){     
+            $tracker_time .=  "$minutes " . xl('minutes'); 
+          }
+          else
+          {
+            $tracker_time .=  "$minutes " . xl('minute'); 
+          }          
         }        
         $tracker_time_calc = $tracker_time_calc - ($minutes * 60);        
     }    
       if ($allow_sec == 1) {   
        if ($tracker_time_calc > 0) {
         if(strlen($minutes != 0)) {
-          $tracker_time .= " and $tracker_time_calc seconds"; 
+          if($tracker_time_calc >= 2){   
+            $tracker_time .= ", $tracker_time_calc " . xl('seconds'); 
+          }
+          else
+          {
+            $tracker_time .= ", $tracker_time_calc " . xl('second');               
+          }    
          }
         else
         {
-          $tracker_time .= "$tracker_time_calc seconds"; 
+          if($tracker_time_calc >= 2){ 
+            $tracker_time .= " $tracker_time_calc " . xl('seconds'); 
+          }
+          else
+          {
+            $tracker_time .= " $tracker_time_calc " . xl('second');    
+          }
         }        
       }
 }  
@@ -199,9 +241,11 @@ function collectApptStatusSettings($option) {
   return $color_settings;
 }
 
+# This is used to collect the tracker elements for the Patient Flow Board Report
+# returns the elements in an array 
 function collect_Tracker_Elements($trackerid) 
 {
- $res = sqlStatement("SELECT * FROM patient_tracker_element WHERE pt_tracker_id = ? ORDER BY seq ", array($trackerid));
+ $res = sqlStatement("SELECT * FROM patient_tracker_element WHERE pt_tracker_id = ? ORDER BY LENGTH(seq), seq ", array($trackerid));
  for($iter=0; $row=sqlFetchArray($res); $iter++) {
   $returnval[$iter]=$row;
  }
