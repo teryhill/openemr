@@ -520,7 +520,7 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
         ?>
 	    <tr valign='top' class="detail" >
 	      <td colspan="6" class="detail" align='left'>
-          <td class="detail">
+          
             <?php
                 # get the verbiage for the status code            
                 $track_stat = $tracker_elements[$i][status];
@@ -529,9 +529,16 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
                 $alert_time = '0';
                 $alert_color = $colorevents['color'];
                 $alert_time = $colorevents['time_alert'];
+                if (is_checkin($track_stat) || is_checkout($track_stat)) {
+            ?> 
+            <td class="detail"><b>
+            <?php } else { ?>            
+            <td class="detail">
+            <?php
+                }
                 echo  getListItemTitle("apptstat",$track_stat);
             ?> 
-            </td>            
+            </b></td>            
             <td class="detail">&nbsp;<?php echo text(substr($tracker_elements[$i][start_datetime],11)); ?></td>
             <?php # figure out the next time of the status
              $k = $i+1;
