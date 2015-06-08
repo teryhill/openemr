@@ -514,16 +514,20 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
         <td class="detail">&nbsp;</td>
         <?php } ?>
         <?php if ($chk_show_details) { # lets show the detail lines 
-              $i='0';
+              $i = '0';
               $k = '0';
               for ($x = 1; $x <= $last_seq; $x++) {   
         ?>
 	    <tr valign='top' class="detail" >
 	      <td colspan="6" class="detail" align='left'>
-            <td class="detail">
+          <td class="detail">
             <?php
                 # get the verbiage for the status code            
                 $track_stat = $tracker_elements[$i][status];
+                # Get Interval alert time and status color.
+                $colorevents = (collectApptStatusSettings($track_stat));
+                $alert_color = $colorevents['color'];
+                $alert_time = $colorevents['time_alert'];
                 echo  getListItemTitle("apptstat",$track_stat);
             ?> 
             </td>            
@@ -545,9 +549,13 @@ if ($_POST['form_refresh'] || $_POST['form_orderby']) {
             <td class="detail">&nbsp;<?php echo text(substr($next_tracker_time,11)) ?></td>
             <?php # compute the total time of the status
               $tracker_time = get_Tracker_Time_Interval($start_tracker_time, $next_tracker_time, true);
+              if($tracker_time > $alert_time) {
             ?>             
             <td class="detail">&nbsp;<?php echo text($tracker_time); ?></td>
+              <?php } else { ?>
+            <td class="detail"  bgcolor='<?php echo $alert_color ?>'>&nbsp;<?php echo text($tracker_time); ?></td>
             <?php 
+              }
                $i++;
             }
           }
