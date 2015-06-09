@@ -66,7 +66,8 @@ function get_Tracker_Time_Interval ($tracker_from_time, $tracker_to_time, $allow
         }
         $tracker_time_calc = $tracker_time_calc - ($hours * (60*60));        
     }
-    if ($tracker_time_calc > 60) {
+    if ($allow_sec) { 
+     if ($tracker_time_calc > 60) {
         $minutes = floor($tracker_time_calc/60);
         if(strlen($hours != 0)) {
           if($minutes >= 2){   
@@ -88,8 +89,35 @@ function get_Tracker_Time_Interval ($tracker_from_time, $tracker_to_time, $allow
           }          
         }        
         $tracker_time_calc = $tracker_time_calc - ($minutes * 60);        
-    }    
-      if ($allow_sec == 1) {   
+     }
+    }
+    else
+    {
+       $minutes = round($tracker_time_calc/60);
+        if(strlen($hours != 0)) {
+          if($minutes >= 2){   
+            $tracker_time .=  ", $minutes " . xl('minutes');
+          }
+          else
+          {
+            $tracker_time .=  ", $minutes " . xl('minute');
+          }          
+         }
+        else
+        {  
+          if($minutes >= 2){     
+            $tracker_time .=  "$minutes " . xl('minutes'); 
+          }
+          else
+          {
+            if($minutes > 0){ 
+              $tracker_time .=  "$minutes " . xl('minute');
+            }            
+          }          
+        }        
+        $tracker_time_calc = $tracker_time_calc - ($minutes * 60);  
+    }
+      if ($allow_sec) {   
        if ($tracker_time_calc > 0) {
         if(strlen($minutes != 0)) {
           if($tracker_time_calc >= 2){   
@@ -103,11 +131,11 @@ function get_Tracker_Time_Interval ($tracker_from_time, $tracker_to_time, $allow
         else
         {
           if($tracker_time_calc >= 2){ 
-            $tracker_time .= " $tracker_time_calc " . xl('seconds'); 
+            $tracker_time .= "$tracker_time_calc " . xl('seconds'); 
           }
           else
           {
-            $tracker_time .= " $tracker_time_calc " . xl('second');    
+            $tracker_time .= "$tracker_time_calc " . xl('second');    
           }
         }        
       }
