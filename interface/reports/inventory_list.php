@@ -5,7 +5,8 @@
  // modify it under the terms of the GNU General Public License
  // as published by the Free Software Foundation; either version 2
  // of the License, or (at your option) any later version.
-
+ // 2015-06-20 - brought up to security standards terry@lillysystems.com
+ 
 //SANITIZE ALL ESCAPES
 $sanitize_all_escapes=true;
 //
@@ -53,7 +54,7 @@ $res = sqlStatement("SELECT d.*, SUM(di.on_hand) AS on_hand " .
 <?php html_header_show(); ?>
 
 <link rel="stylesheet" href='<?php  echo $css_header ?>' type='text/css'>
-<title><?php  xl('Inventory List','e'); ?></title>
+<title><?php  echo xlt('Inventory List'); ?></title>
 
 <style>
 /* specifically include & exclude from printing */
@@ -89,11 +90,11 @@ a, a:visited, a:hover { color:#0000cc; }
 
 <body leftmargin='0' topmargin='0' marginwidth='0' marginheight='0' class='body_top'>
 
-<center>
+<div style="text-align: center;">
 
-<h2><?php echo htmlspecialchars(xl('Inventory List'))?></h2>
+<h2><?php echo xlt('Inventory List')?></h2>
 
-<form method='post' action='inventory_list.php' name='theform'>
+<form method='post' action='inventory_list.php' name='theform' onsubmit='return top.restoreSession()'>
 
 <div id="report_parameters">
 <!-- form_action is set to "submit" at form submit time -->
@@ -104,9 +105,9 @@ a, a:visited, a:hover { color:#0000cc; }
    <table class='text'>
     <tr>
      <td nowrap>
-      <?php echo htmlspecialchars(xl('For the past')); ?>
-      <input type="input" name="form_days" size='3' value="<?php echo $form_days; ?>" />
-      <?php echo htmlspecialchars(xl('days')); ?>
+      <?php echo xlt('For the past'); ?>
+      <input type="input" name="form_days" size='3' value="<?php echo attr($form_days); ?>" />
+      <?php echo xlt('days'); ?>
      </td>
     </tr>
    </table>
@@ -115,12 +116,12 @@ a, a:visited, a:hover { color:#0000cc; }
    <table style='border-left:1px solid; width:100%; height:100%'>
     <tr>
      <td valign='middle'>
-      <a href='#' class='css_button' onclick='mysubmit("submit")' style='margin-left:1em'>
-       <span><?php echo htmlspecialchars(xl('Submit'), ENT_NOQUOTES); ?></span>
+      <a href='#' class='css_button' onclick='mysubmit("submit")' onsubmit='return top.restoreSession()' style='margin-left:1em'>
+       <span><?php echo xlt('Submit'); ?></span>
       </a>
 <?php if ($form_action) { ?>
-      <a href='#' class='css_button' onclick='window.print()' style='margin-left:1em'>
-       <span><?php echo htmlspecialchars(xl('Print'), ENT_NOQUOTES); ?></span>
+      <a href='#' class='css_button' onclick='window.print()' onsubmit='return top.restoreSession()' style='margin-left:1em'>
+       <span><?php echo xlt('Print'); ?></span>
       </a>
 <?php } ?>
      </td>
@@ -137,14 +138,14 @@ a, a:visited, a:hover { color:#0000cc; }
 <table border='0' cellpadding='1' cellspacing='2' width='98%'>
  <thead style='display:table-header-group'>
   <tr class='head'>
-   <th><?php  xl('Name','e'); ?></th>
-   <th><?php  xl('NDC','e'); ?></th>
-   <th><?php  xl('Form','e'); ?></th>
-   <th align='right'><?php echo htmlspecialchars(xl('QOH')); ?></th>
-   <th align='right'><?php echo htmlspecialchars(xl('Reorder')); ?></th>
-   <th align='right'><?php echo htmlspecialchars(xl('Avg Monthly')); ?></th>
-   <th align='right'><?php echo htmlspecialchars(xl('Stock Months')); ?></th>
-   <th><?php echo htmlspecialchars(xl('Warnings')); ?></th>
+   <th><?php echo xlt('Name'); ?></th>
+   <th><?php echo xlt('NDC'); ?></th>
+   <th><?php echo xlt('Form'); ?></th>
+   <th align='right'><?php echo xlt('QOH'); ?></th>
+   <th align='right'><?php echo xlt('Reorder'); ?></th>
+   <th align='right'><?php echo xlt('Avg Monthly'); ?></th>
+   <th align='right'><?php echo xlt('Stock Months'); ?></th>
+   <th><?php echo xlt('Warnings'); ?></th>
   </tr>
  </thead>
  <tbody>
@@ -175,13 +176,13 @@ while ($row = sqlFetchArray($res)) {
   if ($sale_quantity != 0) {
     $stock_months = sprintf('%0.1f', $on_hand * $months / $sale_quantity);
     if ($stock_months < 1.0) {
-      addWarning(htmlspecialchars(xl('QOH is less than monthly usage')));
+      addWarning(xlt('QOH is less than monthly usage'));
     }
   }
 
   // Check for reorder point reached.
   if (!empty($row['reorder_point']) && $on_hand <= $row['reorder_point']) {
-    addWarning(htmlspecialchars(xl('Reorder point has been reached')));
+    addWarning(xlt('Reorder point has been reached'));
   }
 
   // Compute the smallest quantity that might be taken from a lot based on the
@@ -213,30 +214,30 @@ while ($row = sqlFetchArray($res)) {
   while ($irow = sqlFetchArray($ires)) {
     $lotno = $irow['lot_number'];
     if ($irow['on_hand'] < $min_sale) {
-      addWarning(htmlspecialchars(xl('Lot') . " '$lotno' " . xl('quantity seems unusable')));
+      addWarning(xlt('Lot') . " '$lotno' " . xlt('quantity seems unusable'));
     }
     if (!empty($irow['expiration'])) {
       $expdays = (int) ((strtotime($irow['expiration']) - time()) / (60 * 60 * 24));
       if ($expdays <= 0) {
-        addWarning(htmlspecialchars(xl('Lot') . " '$lotno' " . xl('has expired')));
+        addWarning(xlt('Lot') . " '$lotno' " . xlt('has expired'));
       }
       else if ($expdays <= 30) {
-        addWarning(htmlspecialchars(xl('Lot') . " '$lotno' " . xl('expires in') . " $expdays " . xl('days')));
+        addWarning(xlt('Lot') . " '$lotno' " . xlt('expires in') . " $expdays " . xlt('days'));
       }
     }
   }
 
   echo " <tr class='detail' bgcolor='$bgcolor'>\n";
-  echo "  <td>" . htmlentities($row['name']) . "</td>\n";
-  echo "  <td>" . htmlentities($row['ndc_number']) . "</td>\n";
+  echo "  <td>" . text($row['name']) . "</td>\n";
+  echo "  <td>" . text($row['ndc_number']) . "</td>\n";
   echo "  <td>" .
        generate_display_field(array('data_type'=>'1','list_id'=>'drug_form'), $row['form']) .
        "</td>\n";
-  echo "  <td align='right'>" . $row['on_hand'] . "</td>\n";
-  echo "  <td align='right'>" . $row['reorder_point'] . "</td>\n";
-  echo "  <td align='right'>$monthly</td>\n";
-  echo "  <td align='right'>$stock_months</td>\n";
-  echo "  <td style='color:red'>$warnings</td>\n";
+  echo "  <td align='right'>" . text($row['on_hand']) . "</td>\n";
+  echo "  <td align='right'>" . text($row['reorder_point']) . "</td>\n";
+  echo "  <td align='right'>" . attr($monthly) ."</td>\n";
+  echo "  <td align='right'>" . attr($stock_months) ."</td>\n";
+  echo "  <td style='color:red'>" . attr($warnings) . "</td>\n";
   echo " </tr>\n";
  }
 ?>
@@ -246,6 +247,6 @@ while ($row = sqlFetchArray($res)) {
 <?php } // end if submit ?>
 
 </form>
-</center>
+</div>
 </body>
 </html>

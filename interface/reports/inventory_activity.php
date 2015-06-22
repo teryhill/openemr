@@ -5,6 +5,7 @@
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
+// 2015-06-20 - brought up to security standards terry@lillysystems.com
 
 // Report columns:
 // Product Name (blank where repeated)
@@ -117,13 +118,13 @@ function thisLineItem($product_id, $warehouse_id, $patient_id, $encounter_id,
             echo '"'  . esc4Export($warehouse) . '"';
             echo ',"' . esc4Export($product)   . '"';
           }
-          echo ',"' . ($secei - $secqtys[0] - $secqtys[1] - $secqtys[2] - $secqtys[3] - $secqtys[4]) . '"'; // start inventory
-          echo ',"' . $secqtys[0] . '"'; // sales
-          echo ',"' . $secqtys[1] . '"'; // distributions
-          echo ',"' . $secqtys[2] . '"'; // purchases
-          echo ',"' . $secqtys[3] . '"'; // transfers
-          echo ',"' . $secqtys[4] . '"'; // adjustments
-          echo ',"' . $secei      . '"'; // end inventory
+          echo ',"' . attr($secei - $secqtys[0] - $secqtys[1] - $secqtys[2] - $secqtys[3] - $secqtys[4]) . '"'; // start inventory
+          echo ',"' . attr($secqtys[0]) . '"'; // sales
+          echo ',"' . attr($secqtys[1]) . '"'; // distributions
+          echo ',"' . attr($secqtys[2]) . '"'; // purchases
+          echo ',"' . attr($secqtys[3]) . '"'; // transfers
+          echo ',"' . attr($secqtys[4]) . '"'; // adjustments
+          echo ',"' . attr($secei)      . '"'; // end inventory
           echo "\n";
         }
       }
@@ -133,39 +134,39 @@ function thisLineItem($product_id, $warehouse_id, $patient_id, $encounter_id,
  <tr bgcolor="#ddddff">
 <?php if ($product_first) { ?>
   <td class="detail">
-   <?php echo htmlspecialchars($prodleft); $prodleft = " "; ?>
+   <?php echo text($prodleft); $prodleft = " "; ?>
   </td>
   <td class="detail" colspan='3'>
-   <?php if ($_POST['form_details']) echo htmlspecialchars(xl('Total for')) . ' '; echo htmlspecialchars($warehouse); ?>
+   <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo text($warehouse); ?>
   </td>
 <?php } else { ?>
   <td class="detail">
-   <?php echo htmlspecialchars($whleft); $whleft = " "; ?>
+   <?php echo text($whleft); $whleft = " "; ?>
   </td>
   <td class="detail" colspan='3'>
-   <?php if ($_POST['form_details']) echo htmlspecialchars(xl('Total for')) . ' '; echo htmlspecialchars($product); ?>
+   <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo text($product); ?>
   </td>
 <?php } ?>
   <td class="dehead" align="right">
-   <?php echo $secei - $secqtys[0] - $secqtys[1] - $secqtys[2] - $secqtys[3] - $secqtys[4]; ?>
+   <?php echo attr($secei - $secqtys[0] - $secqtys[1] - $secqtys[2] - $secqtys[3] - $secqtys[4]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $secqtys[0]; ?>
+   <?php echo attr($secqtys[0]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $secqtys[1]; ?>
+   <?php echo attr($secqtys[1]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $secqtys[2]; ?>
+   <?php echo attr($secqtys[2]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $secqtys[3]; ?>
+   <?php echo attr($secqtys[3]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $secqtys[4]; ?>
+   <?php echo attr($secqtys[4]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $secei; ?>
+   <?php echo attr($secei); ?>
   </td>
  </tr>
 <?php
@@ -199,28 +200,28 @@ function thisLineItem($product_id, $warehouse_id, $patient_id, $encounter_id,
    &nbsp;
   </td>
   <td class="detail" colspan="3">
-   <?php echo htmlspecialchars(xl('Total for')) . ' '; echo htmlspecialchars($product_first ? $product : $warehouse); ?>
+   <?php echo xlt('Total for') . ' '; echo text($product_first ? $product : $warehouse); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $priei - $priqtys[0] - $priqtys[1] - $priqtys[2] - $priqtys[3] - $priqtys[4]; ?>
+   <?php echo attr($priei - $priqtys[0] - $priqtys[1] - $priqtys[2] - $priqtys[3] - $priqtys[4]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $priqtys[0]; ?>
+   <?php echo attr($priqtys[0]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $priqtys[1]; ?>
+   <?php echo attr($priqtys[1]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $priqtys[2]; ?>
+   <?php echo attr($priqtys[2]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $priqtys[3]; ?>
+   <?php echo attr($priqtys[3]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $priqtys[4]; ?>
+   <?php echo attr($priqtys[4]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $priei; ?>
+   <?php echo attr($priei); ?>
   </td>
  </tr>
 <?php
@@ -246,13 +247,13 @@ function thisLineItem($product_id, $warehouse_id, $patient_id, $encounter_id,
         echo '"'  . esc4Export($warehouse) . '"';
         echo ',"' . esc4Export($product)   . '"';
       }
-      echo ',"' . oeFormatShortDate($transdate) . '"';
+      echo ',"' . text(oeFormatShortDate($transdate)) . '"';
       echo ',"' . esc4Export($invnumber) . '"';
-      echo ',"' . $qtys[0]             . '"'; // sales
-      echo ',"' . $qtys[1]             . '"'; // distributions
-      echo ',"' . $qtys[2]             . '"'; // purchases
-      echo ',"' . $qtys[3]             . '"'; // transfers
-      echo ',"' . $qtys[4]             . '"'; // adjustments
+      echo ',"' . attr($qtys[0])             . '"'; // sales
+      echo ',"' . attr($qtys[1])             . '"'; // distributions
+      echo ',"' . attr($qtys[2])             . '"'; // purchases
+      echo ',"' . attr($qtys[3])             . '"'; // transfers
+      echo ',"' . attr($qtys[4])             . '"'; // adjustments
       echo "\n";
     }
     else {
@@ -260,42 +261,42 @@ function thisLineItem($product_id, $warehouse_id, $patient_id, $encounter_id,
  <tr>
 <?php if ($product_first) { ?>
   <td class="detail">
-   <?php echo htmlspecialchars($prodleft); $prodleft = " "; ?>
+   <?php echo text($prodleft); $prodleft = " "; ?>
   </td>
   <td class="detail">
-   <?php echo htmlspecialchars($whleft); $whleft = " "; ?>
+   <?php echo text($whleft); $whleft = " "; ?>
   </td>
 <?php } else { ?>
   <td class="detail">
-   <?php echo htmlspecialchars($whleft); $whleft = " "; ?>
+   <?php echo text($whleft); $whleft = " "; ?>
   </td>
   <td class="detail">
-   <?php echo htmlspecialchars($prodleft); $prodleft = " "; ?>
+   <?php echo text($prodleft); $prodleft = " "; ?>
   </td>
 <?php } ?>
   <td class="dehead">
-   <?php echo oeFormatShortDate($transdate); ?>
+   <?php echo text(oeFormatShortDate($transdate)); ?>
   </td>
   <td class="detail">
-   <?php echo htmlspecialchars($invnumber); ?>
+   <?php echo text($invnumber); ?>
   </td>
   <td class="detail">
    &nbsp;
   </td>
   <td class="dehead" align="right">
-   <?php echo $qtys[0]; ?>
+   <?php echo attr($qtys[0]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $qtys[1]; ?>
+   <?php echo attr($qtys[1]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $qtys[2]; ?>
+   <?php echo attr($qtys[2]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $qtys[3]; ?>
+   <?php echo attr($qtys[3]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $qtys[4]; ?>
+   <?php echo attr($qtys[4]); ?>
   </td>
   <td class="detail">
    &nbsp;
@@ -329,29 +330,29 @@ if ($form_action == 'export') {
   header("Content-Description: File Transfer");
   // CSV headers:
   if ($product_first) {
-    echo '"' . esc4export(xl('Product'  )) . '",';
-    echo '"' . esc4export(xl('Warehouse')) . '",';
+    echo '"' . esc4export(xlt('Product'  )) . '",';
+    echo '"' . esc4export(xlt('Warehouse')) . '",';
   } else {
-    echo '"' . esc4export(xl('Warehouse')) . '",';
-    echo '"' . esc4export(xl('Product'  )) . '",';
+    echo '"' . esc4export(xlt('Warehouse')) . '",';
+    echo '"' . esc4export(xlt('Product'  )) . '",';
   }
   if ($_POST['form_details']) {
-    echo '"' . esc4export(xl('Date'         )) . '",';
-    echo '"' . esc4export(xl('Invoice'      )) . '",';
-    echo '"' . esc4export(xl('Sales'        )) . '",';
-    echo '"' . esc4export(xl('Distributions')) . '",';
-    echo '"' . esc4export(xl('Purchases'    )) . '",';
-    echo '"' . esc4export(xl('Transfers'    )) . '",';
-    echo '"' . esc4export(xl('Adjustments'  )) . '"' . "\n";
+    echo '"' . esc4export(xlt('Date'         )) . '",';
+    echo '"' . esc4export(xlt('Invoice'      )) . '",';
+    echo '"' . esc4export(xlt('Sales'        )) . '",';
+    echo '"' . esc4export(xlt('Distributions')) . '",';
+    echo '"' . esc4export(xlt('Purchases'    )) . '",';
+    echo '"' . esc4export(xlt('Transfers'    )) . '",';
+    echo '"' . esc4export(xlt('Adjustments'  )) . '"' . "\n";
   }
   else {
-    echo '"' . esc4export(xl('Start'        )) . '",';
-    echo '"' . esc4export(xl('Sales'        )) . '",';
-    echo '"' . esc4export(xl('Distributions')) . '",';
-    echo '"' . esc4export(xl('Purchases'    )) . '",';
-    echo '"' . esc4export(xl('Transfers'    )) . '",';
-    echo '"' . esc4export(xl('Adjustments'  )) . '",';
-    echo '"' . esc4export(xl('End'          )) . '"' . "\n";
+    echo '"' . esc4export(xlt('Start'        )) . '",';
+    echo '"' . esc4export(xlt('Sales'        )) . '",';
+    echo '"' . esc4export(xlt('Distributions')) . '",';
+    echo '"' . esc4export(xlt('Purchases'    )) . '",';
+    echo '"' . esc4export(xlt('Transfers'    )) . '",';
+    echo '"' . esc4export(xlt('Adjustments'  )) . '",';
+    echo '"' . esc4export(xlt('End'          )) . '"' . "\n";
   }
 } // end export
 else {
@@ -359,7 +360,7 @@ else {
 <html>
 <head>
 <?php html_header_show();?>
-<title><?php echo htmlspecialchars(xl('Inventory Activity')) ?></title>
+<title><?php echo xlt('Inventory Activity') ?></title>
 
 <link rel='stylesheet' href='<?php echo $css_header ?>' type='text/css'>
 
@@ -398,11 +399,11 @@ else {
 
 <body leftmargin='0' topmargin='0' marginwidth='0' marginheight='0' class='body_top'>
 
-<center>
+<div style="text-align: center;">
 
-<h2><?php echo htmlspecialchars(xl('Inventory Activity'))?></h2>
+<h2><?php echo xlt('Inventory Activity')?></h2>
 
-<form method='post' action='inventory_activity.php?product=<?php echo htmlspecialchars($product_first, ENT_QUOTES); ?>'>
+<form method='post' action='inventory_activity.php?product=<?php echo attr($product_first); ?>' onsubmit='return top.restoreSession()'>
 
 <div id="report_parameters">
 <!-- form_action is set to "submit" or "export" at form submit time -->
@@ -413,42 +414,42 @@ else {
    <table class='text'>
     <tr>
      <td class='label'>
-      <?php echo htmlspecialchars(xl('By')); ?>:
+      <?php echo xlt('By'); ?>:
      </td>
      <td nowrap>
       <select name='form_by'>
-       <option value='p'><?php echo htmlspecialchars(xl('Product')); ?></option>
-       <option value='w'<?php if (!$product_first) echo ' selected'; ?>><?php echo htmlspecialchars(xl('Warehouse')); ?></option>
+       <option value='p'><?php echo xlt('Product'); ?></option>
+       <option value='w'<?php if (!$product_first) echo ' selected'; ?>><?php echo xlt('Warehouse'); ?></option>
       </select>
      </td>
      <td class='label'>
-      <?php echo htmlspecialchars(xl('From')); ?>:
+      <?php echo xlt('From'); ?>:
      </td>
      <td nowrap>
       <input type='text' name='form_from_date' id="form_from_date" size='10'
-       value='<?php echo htmlspecialchars($form_from_date, ENT_QUOTES) ?>'
-       title='<?php echo htmlspecialchars(xl('yyyy-mm-dd'), ENT_QUOTES) ?>'
+       value='<?php echo attr($form_from_date) ?>'
+       title='<?php echo xlt('yyyy-mm-dd') ?>'
        onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)'>
       <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
        id='img_from_date' border='0' alt='[?]' style='cursor:pointer'
-       title='<?php echo htmlspecialchars(xl('Click here to choose a date'), ENT_QUOTES); ?>'>
+       title='<?php echo xlt('Click here to choose a date'); ?>'>
      </td>
      <td class='label'>
-      <?php echo htmlspecialchars(xl('To')); ?>:
+      <?php echo xlt('To'); ?>:
      </td>
      <td nowrap>
       <input type='text' name='form_to_date' id="form_to_date" size='10'
-       value='<?php echo htmlspecialchars($form_to_date, ENT_QUOTES) ?>'
-       title='<?php echo htmlspecialchars(xl('yyyy-mm-dd'), ENT_QUOTES) ?>'
+       value='<?php echo attr($form_to_date) ?>'
+       title='<?php echo xlt('yyyy-mm-dd') ?>'
        onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)'>
       <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
        id='img_to_date' border='0' alt='[?]' style='cursor:pointer'
-       title='<?php echo htmlspecialchars(xl('Click here to choose a date'), ENT_QUOTES); ?>'>
+       title='<?php echo xlt('Click here to choose a date'); ?>'>
      </td>
     </tr>
     <tr>
      <td class='label'>
-      <?php echo htmlspecialchars(xl('For'), ENT_NOQUOTES); ?>:
+      <?php echo xlt('For'); ?>:
      </td>
      <td nowrap>
 <?php
@@ -457,21 +458,21 @@ else {
 $query = "SELECT drug_id, name FROM drugs ORDER BY name, drug_id";
 $pres = sqlStatement($query);
 echo "      <select name='form_product'>\n";
-echo "       <option value=''>-- " . htmlspecialchars(xl('All Products')) . " --\n";
+echo "       <option value=''>-- " . xlt('All Products') . " --\n";
 while ($prow = sqlFetchArray($pres)) {
   $drug_id = $prow['drug_id'];
-  echo "       <option value='$drug_id'";
+  echo "       <option value='".attr($drug_id)."'";
   if ($drug_id == $form_product) echo " selected";
-  echo ">" . htmlspecialchars($prow['name']) . "\n";
+  echo ">" . attr($prow['name']) . "\n";
 }
 echo "      </select>\n";
 ?>
      </td>
      <td class='label'>
-      <?php echo htmlspecialchars(xl('Details')); ?>:
+      <?php echo xlt('Details'); ?>:
      </td>
      <td colspan='3' nowrap>
-      <input type='checkbox' name='form_details' value='1'<?php if ($_POST['form_details']) echo " checked"; ?> />
+     <input type='checkbox' name='form_details' value='1'<?php if ($_POST['form_details']) echo " checked"; ?> />
      </td>
     </tr>
    </table>
@@ -480,15 +481,15 @@ echo "      </select>\n";
    <table style='border-left:1px solid; width:100%; height:100%'>
     <tr>
      <td valign='middle'>
-      <a href='#' class='css_button' onclick='mysubmit("submit")' style='margin-left:1em'>
-       <span><?php echo htmlspecialchars(xl('Submit')); ?></span>
+      <a href='#' class='css_button' onclick='mysubmit("submit")' style='margin-left:1em' onsubmit='return top.restoreSession()'>
+       <span><?php echo xlt('Submit'); ?></span>
       </a>
 <?php if ($form_action) { ?>
-      <a href='#' class='css_button' onclick='window.print()' style='margin-left:1em'>
-       <span><?php echo htmlspecialchars(xl('Print')); ?></span>
+      <a href='#' class='css_button' onclick='window.print()' style='margin-left:1em' onsubmit='return top.restoreSession()'>
+       <span><?php echo xlt('Print'); ?></span>
       </a>
-      <a href='#' class='css_button' onclick='mysubmit("export")' style='margin-left:1em'>
-       <span><?php echo htmlspecialchars(xl('CSV Export')); ?></span>
+      <a href='#' class='css_button' onclick='mysubmit("export")' style='margin-left:1em' onsubmit='return top.restoreSession()'>
+       <span><?php echo xlt('CSV Export'); ?></span>
       </a>
 <?php } ?>
      </td>
@@ -506,43 +507,43 @@ echo "      </select>\n";
 
  <tr bgcolor="#dddddd">
   <td class="dehead">
-   <?php echo htmlspecialchars($product_first ? xl('Product') : xl('Warehouse')); ?>
+   <?php echo attr($product_first ? xlt('Product') : xlt('Warehouse')); ?>
   </td>
 <?php if ($_POST['form_details']) { ?>
   <td class="dehead">
-   <?php echo htmlspecialchars($product_first ? xl('Warehouse') : xl('Product')); ?>
+   <?php echo attr($product_first ? xlt('Warehouse') : xlt('Product')); ?>
   </td>
   <td class="dehead">
-   <?php echo htmlspecialchars(xl('Date')); ?>
+   <?php echo xlt('Date'); ?>
   </td>
   <td class="dehead">
-   <?php echo htmlspecialchars(xl('Invoice')); ?>
+   <?php echo xlt('Invoice'); ?>
   </td>
 <?php } else { ?>
   <td class="dehead" colspan="3">
-   <?php echo htmlspecialchars($product_first ? xl('Warehouse') : xl('Product')); ?>
+   <?php echo attr($product_first ? xlt('Warehouse') : xlt('Product')); ?>
   </td>
 <?php } ?>
   <td class="dehead" align="right" width="8%">
-   <?php echo htmlspecialchars(xl('Start')); ?>
+   <?php echo xlt('Start'); ?>
   </td>
   <td class="dehead" align="right" width="8%">
-   <?php echo htmlspecialchars(xl('Sales')); ?>
+   <?php echo xlt('Sales'); ?>
   </td>
   <td class="dehead" align="right" width="8%">
-   <?php echo htmlspecialchars(xl('Distributions')); ?>
+   <?php echo xlt('Distributions'); ?>
   </td>
   <td class="dehead" align="right" width="8%">
-   <?php echo htmlspecialchars(xl('Purchases')); ?>
+   <?php echo xlt('Purchases'); ?>
   </td>
   <td class="dehead" align="right" width="8%">
-   <?php echo htmlspecialchars(xl('Transfers')); ?>
+   <?php echo xlt('Transfers'); ?>
   </td>
   <td class="dehead" align="right" width="8%">
-   <?php echo htmlspecialchars(xl('Adjustments')); ?>
+   <?php echo xlt('Adjustments'); ?>
   </td>
   <td class="dehead" align="right" width="8%">
-   <?php echo htmlspecialchars(xl('End')); ?>
+   <?php echo xlt('End'); ?>
   </td>
  </tr>
 <?php
@@ -603,7 +604,7 @@ if ($form_action) { // if submit or export
         thisLineItem($row['drug_id'], $row['warehouse_id'], 0,
           0, $row['name'], $row['title'], $row['destroy_date'],
           array(0, 0, 0, 0, 0 - $row['on_hand']),
-          xl('Destroyed'));
+          xlt('Destroyed'));
       }
     }
 
@@ -639,28 +640,28 @@ if ($form_action) { // if submit or export
 ?>
  <tr bgcolor="#dddddd">
   <td class="detail" colspan="4">
-   <?php echo htmlspecialchars(xl('Grand Total')); ?>
+   <?php echo xlt('Grand Total'); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $grei - $grandqtys[0] - $grandqtys[1] - $grandqtys[2] - $grandqtys[3] - $grandqtys[4]; ?>
+   <?php echo attr($grei - $grandqtys[0] - $grandqtys[1] - $grandqtys[2] - $grandqtys[3] - $grandqtys[4]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $grandqtys[0]; ?>
+   <?php echo attr($grandqtys[0]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $grandqtys[1]; ?>
+   <?php echo attr($grandqtys[1]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $grandqtys[2]; ?>
+   <?php echo attr($grandqtys[2]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $grandqtys[3]; ?>
+   <?php echo attr($grandqtys[3]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $grandqtys[4]; ?>
+   <?php echo attr($grandqtys[4]); ?>
   </td>
   <td class="dehead" align="right">
-   <?php echo $grei; ?>
+   <?php echo attr($grei); ?>
   </td>
  </tr>
 <?php
@@ -677,7 +678,7 @@ if ($form_action != 'export') {
 ?>
 
 </form>
-</center>
+</div>
 </body>
 
 <!-- stuff for the popup calendar -->
