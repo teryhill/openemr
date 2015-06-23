@@ -63,22 +63,22 @@ function getEndInventory($product_id = 0, $warehouse_id = '~') {
   // report end date (which is effectively a type of transaction).
   $eirow = sqlQuery("SELECT sum(di.on_hand) AS on_hand " .
     "FROM drug_inventory AS di WHERE " .
-    "( di.destroy_date IS NULL OR di.destroy_date > '$form_to_date' ) " .
-    "$prodcond $whidcond");
+    "( di.destroy_date IS NULL OR di.destroy_date > ? ) " .
+    "$prodcond $whidcond", array($form_to_date));
 
   // Get sum of sales/adjustments/purchases after the report end date.
   $sarow = sqlQuery("SELECT sum(ds.quantity) AS quantity " .
     "FROM drug_sales AS ds, drug_inventory AS di WHERE " .
-    "ds.sale_date > '$form_to_date' AND " .
+    "ds.sale_date > ? AND " .
     "di.inventory_id = ds.inventory_id " .
-    "$prodcond $whidcond");
+    "$prodcond $whidcond", array($form_to_date));
 
   // Get sum of transfers out after the report end date.
   $xfrow = sqlQuery("SELECT sum(ds.quantity) AS quantity " .
     "FROM drug_sales AS ds, drug_inventory AS di WHERE " .
-    "ds.sale_date > '$form_to_date' AND " .
+    "ds.sale_date > ? AND " .
     "di.inventory_id = ds.xfer_inventory_id " .
-    "$prodcond $whidcond");
+    "$prodcond $whidcond", array($form_to_date));
 
   return $eirow['on_hand'] + $sarow['quantity'] - $xfrow['quantity'];
 }
@@ -312,7 +312,7 @@ function thisLineItem($product_id, $warehouse_id, $patient_id, $encounter_id,
   }
 } // end function
 
-if (! acl_check('acct', 'rep')) die(htmlspecialchars(xl("Unauthorized access.")));
+if (! acl_check('acct', 'rep')) die(xlt("Unauthorized access."));
 
 // this is "" or "submit" or "export".
 $form_action = $_POST['form_action'];
@@ -570,13 +570,13 @@ if ($form_action) { // if submit or export
     "FROM drug_inventory AS di " .
     "JOIN drugs AS d ON d.drug_id = di.drug_id " .
     "LEFT JOIN drug_sales AS s ON " .
-    "s.sale_date >= '$from_date' AND s.sale_date <= '$to_date' AND " .
+    "s.sale_date >= ? AND s.sale_date <= ? AND " .
     "s.drug_id = di.drug_id AND " .
     "( s.inventory_id = di.inventory_id OR s.xfer_inventory_id = di.inventory_id ) " .
     "LEFT JOIN list_options AS lo ON lo.list_id = 'warehouse' AND " .
     "lo.option_id = di.warehouse_id " .
     "LEFT JOIN form_encounter AS fe ON fe.pid = s.pid AND fe.encounter = s.encounter " .
-    "WHERE ( di.destroy_date IS NULL OR di.destroy_date >= '$form_from_date' )";
+    "WHERE ( di.destroy_date IS NULL OR di.destroy_date >= ? )";
 
   // If a product was specified.
   if ($form_product) {
@@ -591,7 +591,7 @@ if ($form_action) { // if submit or export
       "di.inventory_id, s.sale_date, s.sale_id";
   }
 
-  $res = sqlStatement($query);
+  $res = sqlStatement($query, array($from_date, $to_date, $form_from_date));
   while ($row = sqlFetchArray($res)) {
 
     // If new lot and it was destroyed during the reporting period,

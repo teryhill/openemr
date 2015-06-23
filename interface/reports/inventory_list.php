@@ -159,9 +159,9 @@ while ($row = sqlFetchArray($res)) {
   $srow = sqlQuery("SELECT " .
     "SUM(quantity) AS sale_quantity " .
     "FROM drug_sales WHERE " .
-    "drug_id = '$drug_id' AND " .
+    "drug_id = ? AND " .
     "sale_date > DATE_SUB(NOW(), INTERVAL $form_days DAY) " .
-    "AND pid != 0");
+    "AND pid != 0", array($drug_id));
 
   ++$encount;
   $bgcolor = "#" . (($encount & 1) ? "ddddff" : "ffdddd");
@@ -192,10 +192,10 @@ while ($row = sqlFetchArray($res)) {
     $sminrow = sqlQuery("SELECT " .
       "MIN(quantity) AS min_sale " .
       "FROM drug_sales WHERE " .
-      "drug_id = '$drug_id' AND " .
+      "drug_id = ? AND " .
       "sale_date > DATE_SUB(NOW(), INTERVAL $form_days DAY) " .
       "AND pid != 0 " .
-      "AND quantity > 0");
+      "AND quantity > 0", array($drug_id));
     $min_sale = 0 + $sminrow['min_sale'];
   }
 
@@ -203,12 +203,12 @@ while ($row = sqlFetchArray($res)) {
   // expired, soon to expire, or with insufficient quantity for selling.
   $ires = sqlStatement("SELECT * " .
     "FROM drug_inventory WHERE " .
-    "drug_id = '$drug_id' AND " .
+    "drug_id = ? AND " .
     "on_hand > 0 AND " .
     "destroy_date IS NULL AND ( " .
-    "on_hand < '$min_sale' OR " .
+    "on_hand < ? OR " .
     "expiration IS NOT NULL AND expiration < DATE_ADD(NOW(), INTERVAL 30 DAY) " .
-    ") ORDER BY lot_number");
+    ") ORDER BY lot_number", array($drug_id, $min_sale));
 
   // Generate warnings associated with individual lots.
   while ($irow = sqlFetchArray($ires)) {
