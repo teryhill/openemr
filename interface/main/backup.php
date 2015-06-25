@@ -38,19 +38,6 @@ require_once("../globals.php");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/log.inc");
 
-if (!extension_loaded('zlib'))
-    {
-      die('Abort '.basename(__FILE__).' : Missing zlib extensions');
-    }
-if (!function_exists('gzopen') && function_exists('gzopen64'))
-    {
-      function gzopen($filename, $mode, $use_include_path = 0)
-      {
-        return gzopen64($filename, $mode, $use_include_path);
-      }
-    }
-
-
 if (!acl_check('admin', 'super')) die(xl('Not authorized','','','!'));
 
 include_once("Archive/Tar.php");
@@ -391,48 +378,110 @@ if ($form_step == 102) {
     if (file_exists($EXPORT_FILE)) {
       if (! unlink($EXPORT_FILE)) die(xl("Couldn't remove old export file: ") . $EXPORT_FILE);
     }
-    $cmd = "echo 'SET character_set_client = utf8;' > $EXPORT_FILE;";
     // The substitutions below use perl because sed's not usually on windows systems.
     $perl = $PERL_PATH . DIRECTORY_SEPARATOR . 'perl';
-    if ($tables) {
-      $cmd .= "$mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
-        " -p" . escapeshellarg($sqlconf["pass"]) .
-        " --opt --quote-names " .
-        escapeshellarg($sqlconf["dbase"]) . " $tables" .
-        " | $perl -pe 's/ DEFAULT CHARSET=utf8//i; s/ collate[ =][^ ;,]*//i;'" .
-        " >> $EXPORT_FILE;";
-    }
-    $dumppfx = "$mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
-      " -p" . escapeshellarg($sqlconf["pass"]) .
-      " --skip-opt --quote-names --complete-insert --no-create-info";
-    // Individual lists.
-    if (is_array($_POST['form_sel_lists'])) {
-      foreach ($_POST['form_sel_lists'] as $listid) {
-        $cmd .= "echo \"DELETE FROM list_options WHERE list_id = '$listid';\" >> $EXPORT_FILE;";
-        $cmd .= "echo \"DELETE FROM list_options WHERE list_id = 'lists' AND option_id = '$listid';\" >> $EXPORT_FILE;";
-        $cmd .= $dumppfx .
-          " --where=\"list_id = 'lists' AND option_id = '$listid' OR list_id = '$listid'\" " .
-          escapeshellarg($sqlconf["dbase"]) . " list_options" .
-          " >> $EXPORT_FILE;";
-      }
-    }
-    // Individual layouts.
-    if (is_array($_POST['form_sel_layouts'])) {
-      foreach ($_POST['form_sel_layouts'] as $layoutid) {
-        $cmd .= "echo \"DELETE FROM layout_options WHERE form_id = '$layoutid';\" >> $EXPORT_FILE;";
-        if (strpos($layoutid, 'LBF') === 0) {
-          $cmd .= "echo \"DELETE FROM list_options WHERE list_id = 'lbfnames' AND option_id = '$layoutid';\" >> $EXPORT_FILE;";
+    # This condition was added because the windows operating system uses different syntax for the shell commands.
+    # The test is if it is NOT windows. The perl script is also different between the Operating Systems
+    if (!stristr(PHP_OS, 'WIN')) 
+    {
+     # This sets the character_set_client to utf8 in the sql file as part or the import property
+     $cmd = "echo \" SET character_set_client = utf8;\" > $EXPORT_FILE;";
+      
+      if ($tables) 
+      {
+        $cmd .= "$mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
+                " -p" . escapeshellarg($sqlconf["pass"]) .
+                " --opt --quote-names " .
+                escapeshellarg($sqlconf["dbase"]) . " $tables" .
+                " | $perl -pe 's/ DEFAULT CHARSET=utf8//i; s/ collate[ =][^ ;,]*//i;'" .
+                " > $EXPORT_FILE;";
+      } 
+      $dumppfx = "$mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
+                 " -p" . escapeshellarg($sqlconf["pass"]) .
+                 " --skip-opt --quote-names --complete-insert --no-create-info";
+      // Individual lists.
+      if (is_array($_POST['form_sel_lists'])) 
+      {
+        foreach ($_POST['form_sel_lists'] as $listid) 
+        {
+          $cmd .= "echo \"DELETE FROM list_options WHERE list_id = '$listid';\" >> $EXPORT_FILE;";
+          $cmd .= "echo \"DELETE FROM list_options WHERE list_id = 'lists' AND option_id = '$listid';\" >> $EXPORT_FILE;";
           $cmd .= $dumppfx .
-            " --where=\"list_id = 'lbfnames' AND option_id = '$layoutid'\" " .
+            " --where=\"list_id = 'lists' AND option_id = '$listid' OR list_id = '$listid'\" " .
             escapeshellarg($sqlconf["dbase"]) . " list_options" .
             " >> $EXPORT_FILE;";
         }
-        $cmd .= $dumppfx .
-          " --where=\"form_id = '$layoutid'\" " .
-          escapeshellarg($sqlconf["dbase"]) . " layout_options" .
-          " >> $EXPORT_FILE;";
       }
-    }
+      // Individual layouts.
+      if (is_array($_POST['form_sel_layouts'])) 
+      {
+        foreach ($_POST['form_sel_layouts'] as $layoutid) 
+        {
+          $cmd .= "echo \"DELETE FROM layout_options WHERE form_id = '$layoutid';\" >> $EXPORT_FILE;";
+          if (strpos($layoutid, 'LBF') === 0) 
+          {
+            $cmd .= "echo \"DELETE FROM list_options WHERE list_id = 'lbfnames' AND option_id = '$layoutid';\" >> $EXPORT_FILE;";
+            $cmd .= $dumppfx .
+              " --where=\"list_id = 'lbfnames' AND option_id = '$layoutid'\" " .
+              escapeshellarg($sqlconf["dbase"]) . " list_options" .
+              " >> $EXPORT_FILE;";
+          }
+          $cmd .= $dumppfx .
+            " --where=\"form_id = '$layoutid'\" " .
+            escapeshellarg($sqlconf["dbase"]) . " layout_options" .
+            " >> $EXPORT_FILE;";
+        }
+      }
+    }   
+    else
+    {    
+        # windows systems use different command separator and it will export the quotes 
+        $cmd = "echo SET character_set_client = utf8; > $EXPORT_FILE & ";
+      if ($tables) {
+        $cmd .= " $mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
+                " -p" . escapeshellarg($sqlconf["pass"]) .
+                " --opt --quote-names " .
+                escapeshellarg($sqlconf["dbase"]) . " $tables" .
+                " | $perl -pe \"s/ DEFAULT CHARSET=utf8//i; s/ collate[ =][^ ;,]*//i;\"" .
+                " >> $EXPORT_FILE ";
+      }
+      $dumppfx = " $mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
+        " -p" . escapeshellarg($sqlconf["pass"]) .
+        " --skip-opt --quote-names --complete-insert --no-create-info";
+      // Individual lists.
+      if (is_array($_POST['form_sel_lists'])) 
+      {
+        foreach ($_POST['form_sel_lists'] as $listid) 
+        {
+          $cmd .= " echo DELETE FROM list_options WHERE list_id = '$listid'; >> $EXPORT_FILE & ";
+          $cmd .= " echo DELETE FROM list_options WHERE list_id = 'lists' AND option_id = '$listid'; >> $EXPORT_FILE & ";
+          $cmd .= $dumppfx .
+            " --where=\"list_id = 'lists' AND option_id = '$listid' OR list_id = '$listid'\" " .
+            escapeshellarg($sqlconf["dbase"]) . " list_options" .
+           " >> $EXPORT_FILE & ";
+        }
+      }
+      // Individual layouts.
+      if (is_array($_POST['form_sel_layouts'])) 
+      {
+        foreach ($_POST['form_sel_layouts'] as $layoutid) 
+        {
+          $cmd .= " echo DELETE FROM layout_options WHERE form_id = '$layoutid'; >> $EXPORT_FILE & ";
+          if (strpos($layoutid, 'LBF') === 0) 
+          {
+            $cmd .= " echo DELETE FROM list_options WHERE list_id = 'lbfnames' AND option_id = '$layoutid'; >> $EXPORT_FILE & ";
+            $cmd .= $dumppfx .
+              " --where=\"list_id = 'lbfnames' AND option_id = '$layoutid'\" " .
+              escapeshellarg($sqlconf["dbase"]) . " list_options" .
+              " >> $EXPORT_FILE & ";
+          }
+          $cmd .= $dumppfx .
+            " --where=\"form_id = '$layoutid'\" " .
+            escapeshellarg($sqlconf["dbase"]) . " layout_options" .
+            " >> $EXPORT_FILE & ";
+        }
+      }      
+    }       
   }
   else {
     echo xl('No items were selected!');
