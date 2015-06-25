@@ -395,7 +395,7 @@ if ($form_step == 102) {
     $perl = $PERL_PATH . DIRECTORY_SEPARATOR . 'perl';
     # This condition was added because the windows operating system uses different syntax for the shell commands.
     # The test is if it is NOT windows. The perl script is also different between the Operating Systems
-    if (!stristr(PHP_OS, 'WIN')) 
+    if (!IS_WINDOWS) 
     {
      # This sets the character_set_client to utf8 in the sql file as part or the import property
      $cmd = "echo \" SET character_set_client = utf8;\" > $EXPORT_FILE;";
