@@ -283,11 +283,19 @@ function insertItemReportTracker($report_id, $itemized_test_id, $pass, $patient_
  * @return  string/boolean              Rule title for itemization display (false if nothing found)
  */
 function collectItemizedRuleDisplayTitle($report_id, $itemized_test_id, $numerator_label='') {
-  $dispTitle = "";
-  $report_view = collectReportDatabase($report_id);
-  $type_report = $report_view['type'];
-  $dataSheet = json_decode($report_view['data'],TRUE);
-  foreach ($dataSheet as $row) {
+	$dispTitle = "";
+	$report_view = collectReportDatabase($report_id);
+	$type_report = $report_view['type'];
+	//AMC 2014 set dividing into 2 stages Check
+	$report_check = "amc_2014";
+	if (strpos($type_report, $report_check) !== false) {
+		//$stage_report = str_replace($report_check."_", "", $type_report);  
+		$type_report = $report_check;
+	}
+	$type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014") ||
+	($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) ? $type_report : "standard";
+	$dataSheet = json_decode($report_view['data'],TRUE);
+	foreach ($dataSheet as $row) {
     if (isset($row['is_main']) || isset($row['is_sub'])) {
       if (isset($row['is_main'])) {
         // Store this

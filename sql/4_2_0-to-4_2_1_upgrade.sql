@@ -155,3 +155,133 @@ INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_boa
 INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '2', 'Room 2', 20);
 INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '3', 'Room 3', 30);
 #EndIf
+
+-- AMC MU2 Changes
+#IfMissingColumn clinical_rules amc_2014_stage1_flag
+	ALTER TABLE `clinical_rules` ADD COLUMN `amc_2014_stage1_flag` tinyint(1) COMMENT '2014 Stage 1 - Automated Measure Calculation flag for (unable to customize per patient)';
+#EndIf
+
+#IfMissingColumn clinical_rules amc_2014_stage2_flag
+	ALTER TABLE `clinical_rules` ADD COLUMN `amc_2014_stage2_flag` tinyint(1) COMMENT '2014 Stage 2 - Automated Measure Calculation flag for (unable to customize per patient)';
+	
+	INSERT INTO `clinical_rules` 
+	(`id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`, `amc_2011_flag`, `amc_2014_flag`, `amc_code_2014`, `cqm_2011_flag`, `cqm_2014_flag`, `amc_2014_stage1_flag`, `amc_2014_stage2_flag`)
+	VALUES
+	('image_results_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)–20', NULL, NULL, 0, 1),
+	('family_health_history_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)–21', NULL, NULL, 0, 1),
+	('electronic_notes_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)–22', NULL, NULL, 0, 1),
+	('secure_messaging_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)', NULL, NULL, 0, 1),
+	('view_download_transmit_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)–14', NULL, NULL, 1, 1),
+	('cpoe_radiology_amc', 0, 0, 0, 0, '', '', 1, '170.304(a)', 0, 0, 1, '170.314(g)(1)/(2)–7', NULL, NULL, 0, 1),
+	('cpoe_proc_orders_amc', 0, 0, 0, 0, '', '', 1, '170.304(a)', 0, 0, 1, '170.314(g)(1)/(2)–7', NULL, NULL, 0, 1),
+	('send_reminder_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.304(d)', 0, 0, 1, '170.314(g)(1)/(2)–13', NULL, NULL, 0, 1),
+	('cpoe_med_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.304(a)', 0, 0, 1, '170.314(g)(1)/(2)–7', NULL, NULL, 1, 1),
+	('patient_edu_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.302(m)', 0, 0, 1, '170.314(g)(1)/(2)–16', NULL, NULL, 0, 1),
+	('record_vitals_1_stage1_amc', 0, 0, 0, 0, '', '', 1, '170.302(f)', 0, 0, 1, '170.314(g)(1)/(2)–10', NULL, NULL, 0, 0),
+	('record_vitals_2_stage1_amc', 0, 0, 0, 0, '', '', 1, '170.302(f)', 0, 0, 1, '170.314(g)(1)/(2)–10', NULL, NULL, 1, 1),
+	('record_vitals_3_stage1_amc', 0, 0, 0, 0, '', '', 1, '170.302(f)', 0, 0, 1, '170.314(g)(1)/(2)–10', NULL, NULL, 1, 1),
+	('record_vitals_4_stage1_amc', 0, 0, 0, 0, '', '', 1, '170.302(f)', 0, 0, 1, '170.314(g)(1)/(2)–10', NULL, NULL, 1, 1),
+	('record_vitals_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.302(f)', 0, 0, 1, '170.314(g)(1)/(2)–10', NULL, NULL, 0, 0),
+	('provide_sum_pat_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.304(h)', 0, 0, 1, '170.314(g)(1)/(2)–15', NULL, NULL, 0, 1),
+	('vdt_stage2_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)–14', NULL, NULL, 1, 1),
+	('send_sum_stage1_amc', 0, 0, 0, 0, '', '', 1, '170.304(i)', 0, 0, 1, '170.314(g)(1)/(2)–18', NULL, NULL, 1, 0),
+	('send_sum_1_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.304(i)', 0, 0, 1, '170.314(g)(1)/(2)–18', NULL, NULL, 0, 1),
+	('send_sum_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.304(i)', 0, 0, 1, '170.314(g)(1)/(2)–18', NULL, NULL, 0, 1),
+	('e_prescribe_stage1_amc', 0, 0, 0, 0, '', '', 1, '170.304(b)', 0, 0, 1, '170.314(g)(1)/(2)–8', NULL, NULL, 1, 0),
+	('e_prescribe_1_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.304(b)', 0, 0, 1, '170.314(g)(1)/(2)–8', NULL, NULL, 0, 1),
+	('e_prescribe_2_stage2_amc', 0, 0, 0, 0, '', '', 1, '170.304(b)', 0, 0, 1, '170.314(g)(1)/(2)–8', NULL, NULL, 0, 1);
+	
+	INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`)
+	VALUES
+	('clinical_rules', 'cpoe_med_stage2_amc', 'Use CPOE for medication orders.(Alternative)', 47, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'cpoe_proc_orders_amc', 'Use CPOE for procedure orders.', 47, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'cpoe_radiology_amc', 'Use CPOE for radiology orders.', 46, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'electronic_notes_amc', 'Electronic Notes', 3200, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'e_prescribe_1_stage2_amc', 'Generate and transmit permissible prescriptions electronically (All Prescriptions).', 50, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'e_prescribe_2_stage2_amc', 'Generate and transmit permissible prescriptions electronically (Uncontrolled substances with drug formulary).', 50, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'e_prescribe_stage1_amc', 'Generate and transmit permissible prescriptions electronically (Uncontrolled Substances).', 50, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'family_health_history_amc', 'Family Health History', 3100, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'image_results_amc', 'Image Results', 3000, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'patient_edu_stage2_amc', 'Use certified EHR technology to identify patient-specific education resources and provide those resources to the patient if appropriate(New).', 40, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'provide_sum_pat_stage2_amc', 'Provide clinical summaries for patients for each office visit (New).', 75, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'record_vitals_1_stage1_amc', 'Record and chart changes in vital signs (SET 1).', 20, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'record_vitals_2_stage1_amc', 'Record and chart changes in vital signs (BP out of scope).', 20, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'record_vitals_3_stage1_amc', 'Record and chart changes in vital signs (Height / Weight out of scope).', 20, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'record_vitals_4_stage1_amc', 'Record and chart changes in vital signs ( Height / Weight / BP with in scope ).', 20, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'record_vitals_stage2_amc', 'Record and chart changes in vital signs (New).', 20, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'secure_messaging_amc', 'Secure Electronic Messaging', 3400, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'send_reminder_stage2_amc', 'Send reminders to patients per patient preference for preventive/follow up care.', 60, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'send_sum_1_stage2_amc', 'The EP, eligible hospital or CAH who transitions their patient to another setting of care or provider of care or refers their patient to another provider of care should provide summary of care record for each transition of care or referral (Measure A).', 80, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'send_sum_stage1_amc', 'The EP, eligible hospital or CAH who transitions their patient to another setting of care or provider of care or refers their patient to another provider of care should provide summary of care record for each transition of care or referral.', 80, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'send_sum_stage2_amc', 'The EP, eligible hospital or CAH who transitions their patient to another setting of care or provider of care or refers their patient to another provider of care should provide summary of care record for each transition of care or referral (Measure B).', 80, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'vdt_stage2_amc', 'View, Download, Transmit (VDT) (Measure A)', 3500, 0, 0, '', '', NULL, 0, 0),
+	('clinical_rules', 'view_download_transmit_amc', 'View, Download, Transmit (VDT)  (Measure B)', 3500, 0, 0, '', '', NULL, 0, 0);
+#EndIf
+
+#IfNotRow2D clinical_rules id problem_list_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'problem_list_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id med_list_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'med_list_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id med_allergy_list_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'med_allergy_list_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id cpoe_med_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'cpoe_med_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id e_prescribe_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'e_prescribe_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id record_dem_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'record_dem_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id record_smoke_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'record_smoke_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id lab_result_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'lab_result_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id send_reminder_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'send_reminder_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id provide_sum_pat_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'provide_sum_pat_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id patient_edu_amc amc_2014_stage1_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage1_flag` = '1' WHERE `clinical_rules`.`id` = 'patient_edu_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id record_smoke_amc amc_2014_stage2_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage2_flag` = '1' WHERE `clinical_rules`.`id` = 'record_smoke_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id lab_result_amc amc_2014_stage2_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage2_flag` = '1' WHERE `clinical_rules`.`id` = 'lab_result_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfNotRow2D clinical_rules id record_dem_amc amc_2014_stage2_flag 1
+	UPDATE `clinical_rules` SET `amc_2014_stage2_flag` = '1' WHERE `clinical_rules`.`id` = 'record_dem_amc' AND `clinical_rules`.`pid` =0;
+#EndIf
+
+#IfMissingColumn users cpoe
+	ALTER TABLE `users` ADD `cpoe` tinyint(1) NULL DEFAULT NULL;
+#EndIf
+
+#IfMissingColumn procedure_order_code procedure_order_title
+	ALTER TABLE  `procedure_order_code` ADD  `procedure_order_title` varchar( 255 ) NULL DEFAULT NULL;
+#EndIf
+
+#IfMissingColumn procedure_providers lab_director
+	ALTER TABLE `procedure_providers` ADD `lab_director` bigint(20) NOT NULL DEFAULT '0';
+#EndIf
