@@ -563,8 +563,9 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
   $where = "";
 
   if ($INTEGRATED_AR) {
+    $sqlArray = array(); 
     if ($_POST['form_export'] || $_POST['form_csvexport']) {
-      $sqlArray = array();  
+       
       $where = "( 1 = 2";
       foreach ($_POST['form_cb'] as $key => $value) {
          list($key_newval['pid'], $key_newval['encounter']) = explode(".", $key); 
