@@ -466,7 +466,7 @@ function checkAll(checked) {
 						<td>
 						   <select name='form_ageby'>
 						<?php
-						 foreach (array( xl('Service Date'), xl('Last Activity Date')) as $value) {
+						 foreach (array( 'Service Date'=>xl('Service Date'), 'Last Activity Date'=>xl('Last Activity Date')) as $value) {
 						  echo "    <option value='" . attr($value) . "'";
 						  if ($_POST['form_ageby'] == $value) echo " selected";
 						  echo ">" . text($value) . "</option>\n";
@@ -586,10 +586,12 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
     if ($form_date) {
       if ($where) $where .= " AND ";
       if ($form_to_date) {
-        $where .= "f.date >= '$form_date 00:00:00' AND f.date <= '$form_to_date 23:59:59'";
+        $where .= "f.date >= ? AND f.date <= ? ";
+        array_push($sqlArray, $form_date . '00:00:00', $form_to_date . '23:59:59');
       }
       else {
-        $where .= "f.date >= '$form_date 00:00:00' AND f.date <= '$form_date 23:59:59'";
+        $where .= "f.date >= ? AND f.date <= ? ";
+        array_push($sqlArray, $form_date . '00:00:00', $form_date . '23:59:59');
       }
     }
     if ($form_facility) {
@@ -782,8 +784,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
 
   } // end $INTEGRATED_AR
   else {
-    if ($_POST['form_export'] || $_POST['form_csvexport']) {
-      $sqlArray2 = array();  
+    if ($_POST['form_export'] || $_POST['form_csvexport']) {  
       $where = "( 1 = 2";
       foreach ($_POST['form_cb'] as $key => $value) {
          list($key_newval['pid'], $key_newval['encounter']) = explode(".", $key); 
@@ -791,13 +792,11 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
          $newencounter =  $key_newval['encounter'];
          # added this condition to handle the downloading of individual invoices (TLH)
          if($_POST['form_individual'] ==1){         
-           $where .= " OR f.encounter = ? ";
-           array_push($sqlArray2, $newencounter);
+           $where .= " OR f.encounter = $newencounter ";
          }
          else
          {
-           $where .= " OR f.pid = ? ";
-           array_push($sqlArray2, $newkey);
+           $where .= " OR f.pid = $newkey ";
          }
       } 
       $where .= ' )';
@@ -852,7 +851,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
 
     // echo "<!-- $query -->\n"; // debugging
 
-    $t_res = SLQuery($query, $sqlArray2);
+    $t_res = SLQuery($query);
     if ($sl_err) die($sl_err);
     $num_invoices = SLRowCount($t_res);
 
@@ -866,16 +865,16 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
       if ($form_facility) {
         list($patient_id, $encounter_id) = explode(".", $row['invnumber']);
         $tmp = sqlQuery("SELECT count(*) AS count FROM form_encounter WHERE " .
-          "pid = ? AND encounter = ? AND " .
-          "facility_id = ? ", array($patient_id, $encounter_id, $form_facility));
+          "pid = '$patient_id' AND encounter = '$encounter_id' AND " .
+          "facility_id = '$form_facility' ");
         if (empty($tmp['count'])) continue;
       }
 
       if ($form_provider) {
         list($patient_id, $encounter_id) = explode(".", $row['invnumber']);
         $tmp = sqlQuery("SELECT count(*) AS count FROM form_encounter WHERE " .
-          "pid = ? AND encounter = ? AND " .
-          "provider_id = ? ", array($patient_id, $encounter_id, $form_provider));
+          "pid = '$patient_id' AND encounter = '$encounter_id' AND " .
+          "provider_id = '$form_provider' ");
 
         if (empty($tmp['count'])) continue;
       }      
