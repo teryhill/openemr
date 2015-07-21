@@ -466,8 +466,8 @@ function checkAll(checked) {
 						<td>
 						   <select name='form_ageby'>
 						<?php
-						 foreach (array( 'Service Date'=>xl('Service Date'), 'Last Activity Date'=>xl('Last Activity Date')) as $value) {
-						  echo "    <option value='" . attr($value) . "'";
+						 foreach (array( 'Service Date'=>xl('Service Date'), 'Last Activity Date'=>xl('Last Activity Date')) as $key => $value) {
+						  echo "    <option value='" . attr($key) . "'";
 						  if ($_POST['form_ageby'] == $value) echo " selected";
 						  echo ">" . text($value) . "</option>\n";
 						 }
@@ -588,11 +588,11 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
       if ($where) $where .= " AND ";
       if ($form_to_date) {
         $where .= "f.date >= ? AND f.date <= ? ";
-        array_push($sqlArray, $form_date . '00:00:00', $form_to_date . '23:59:59');
+        array_push($sqlArray, $form_date.' 00:00:00', $form_to_date.' 23:59:59');
       }
       else {
         $where .= "f.date >= ? AND f.date <= ? ";
-        array_push($sqlArray, $form_date . '00:00:00', $form_date . '23:59:59');
+        array_push($sqlArray, $form_date.' 00:00:00', $form_date.' 23:59:59');
       }
     }
     if ($form_facility) {
@@ -866,16 +866,16 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
       if ($form_facility) {
         list($patient_id, $encounter_id) = explode(".", $row['invnumber']);
         $tmp = sqlQuery("SELECT count(*) AS count FROM form_encounter WHERE " .
-          "pid = '$patient_id' AND encounter = '$encounter_id' AND " .
-          "facility_id = '$form_facility' ");
+          "pid = ? AND encounter = ? AND " .
+          "facility_id = ? ", array($patient_id, $encounter_id, $form_facility));
         if (empty($tmp['count'])) continue;
       }
 
       if ($form_provider) {
         list($patient_id, $encounter_id) = explode(".", $row['invnumber']);
         $tmp = sqlQuery("SELECT count(*) AS count FROM form_encounter WHERE " .
-          "pid = '$patient_id' AND encounter = '$encounter_id' AND " .
-          "provider_id = '$form_provider' ");
+          "pid = ? AND encounter = ? AND " .
+          "provider_id = ? ", array($patient_id, $encounter_id, $form_provider));
 
         if (empty($tmp['count'])) continue;
       }      
