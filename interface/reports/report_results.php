@@ -223,9 +223,9 @@ require_once "$srcdir/report_database.inc";
 	if($stage_report != ""){
 		$type_title .= " ";
 		if($stage_report == "stage1")
-			$type_title .=  xlt('Stage I');
+			$type_title =  xlt('2014 Automated Measure Calculations (AMC) Stage I');
 		else if($stage_report == "stage2")
-			$type_title .=  xlt('Stage II');
+			$type_title =  xlt('2014 Automated Measure Calculations (AMC) Stage II');
 	}
     $link="cqm.php?report_id=" . attr($row["report_id"]) . "&back=list";  
   }

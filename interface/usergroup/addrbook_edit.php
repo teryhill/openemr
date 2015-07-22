@@ -312,8 +312,8 @@ td { font-size:10pt; }
     value='<?php echo attr($row['organization']); ?>'
     style='width:100%' class='inputtext' />
 	<span id='cpoe_span' style="display:none;">
-		<input type='checkbox' title="<?php xl('CPOE','e'); ?>" name='form_cpoe' id='form_cpoe' value='1' <?php if($row['cpoe']=='1') echo "CHECKED"; ?>/>
-		<label for='form_cpoe'><b><?php xl('CPOE','e'); ?></b></label>
+		<input type='checkbox' title="<?php echo xla('CPOE'); ?>" name='form_cpoe' id='form_cpoe' value='1' <?php if($row['cpoe']=='1') echo "CHECKED"; ?>/>
+		<label for='form_cpoe'><b><?php echo xlt('CPOE'); ?></b></label>
    </span>
   </td>
  </tr>

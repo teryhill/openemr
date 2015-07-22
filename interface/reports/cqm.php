@@ -126,13 +126,13 @@ else {
 	$stageDisplay = "";
 	if($stage_report != ""){
 		if($stage_report == "stage1"){
-			$stageDisplay = xlt('Stage I');
+			$stageDisplay = xlt('Automated Measure Calculations (AMC) - 2014 Stage I');
 		}else if($stage_report == "stage2"){
-			$stageDisplay = xlt('Stage II');
+			$stageDisplay = xlt('Automated Measure Calculations (AMC) - 2014 Stage II');
 		}
 	}
 	?>
-  <title><?php echo xlt('Automated Measure Calculations (AMC) - 2014')." ".$stageDisplay; ?></title>
+  <title><?php echo text($stageDisplay); ?></title>
 <?php } ?>
 
 
@@ -267,7 +267,7 @@ else {
 		 ToDate = d.form_target_date.value;
 		  if ( (FromDate.length > 0) && (ToDate.length > 0) ) {
 			 if (FromDate > ToDate){
-				  alert("<?php xl('End date must be later than Begin date!','e'); ?>");
+				  alert("<?php echo xls('End date must be later than Begin date!'); ?>");
 				  return false;
 			 }
 		 }
@@ -343,7 +343,7 @@ else {
   <?php echo xlt('Automated Measure Calculations (AMC) - 2011'); ?>
 <?php } ?>
 <?php if ($type_report == "amc_2014") { ?>
-  <?php echo xlt('Automated Measure Calculations (AMC) - 2014')." ".$stageDisplay; ?>
+  <?php echo text($stageDisplay); ?>
 <?php } ?>
 
 <?php if (!empty($report_id)) { ?>
@@ -382,11 +382,11 @@ else {
                       <td>
                          <input <?php echo $dis_text; ?> type='text' name='form_begin_date' id="form_begin_date" size='20' value='<?php echo htmlspecialchars( $begin_date, ENT_QUOTES); ?>'
                             onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='<?php echo htmlspecialchars( xl('yyyy-mm-dd hh:mm:ss'), ENT_QUOTES); ?>'>
-                          <?php //if (empty($report_id)) { ?>
+                         
                            <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
                             id='img_begin_date' border='0' alt='[?]' style='cursor:pointer'
                             title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'>
-                          <?php //} ?>
+                        
                       </td>
                    </tr>
 		<?php } ?>
@@ -402,11 +402,11 @@ else {
                         <td>
                            <input <?php echo $dis_text; ?> type='text' name='form_target_date' id="form_target_date" size='20' value='<?php echo htmlspecialchars( $target_date, ENT_QUOTES); ?>'
                                 onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='<?php echo htmlspecialchars( xl('yyyy-mm-dd hh:mm:ss'), ENT_QUOTES); ?>'>
-                           <?php //if (empty($report_id)) { ?>
+                         
                              <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
                                 id='img_target_date' border='0' alt='[?]' style='cursor:pointer'
                                 title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'>
-                           <?php //} ?>
+                       
                         </td>
                 </tr>
 
