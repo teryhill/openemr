@@ -918,9 +918,9 @@ $GLOBALS_METADATA = array(
     'calendar_view_type' => array(
       xl('Default Calendar View'),
       array(
-       'day' => 'Day',
-       'week' => 'Week',
-       'month' => 'Month',
+       'day' => xl('Day'),
+       'week' => xl('Week'),
+       'month' => xl('Month'),
       ),
       'day',                              // default
       xl('This sets the Default Calendar View, Default is Day.')
