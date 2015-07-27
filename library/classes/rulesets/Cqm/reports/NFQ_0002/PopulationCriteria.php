@@ -1,12 +1,12 @@
 <?php
-// Copyright (C) 2011 Ken Chapple <ken@mi-squared.com>
+// Copyright (C) 2015 Ensoftek Inc
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
 //
-class NFQ_0013_PopulationCriteria implements CqmPopulationCrtiteriaFactory
+class NFQ_0002_PopulationCriteria implements CqmPopulationCrtiteriaFactory
 {
     public function getTitle()
     {
@@ -15,21 +15,21 @@ class NFQ_0013_PopulationCriteria implements CqmPopulationCrtiteriaFactory
     
     public function createInitialPatientPopulation()
     {
-        return new NFQ_0013_InitialPatientPopulation();
+        return new NFQ_0002_InitialPatientPopulation();
     }
     
     public function createNumerators()
     {
-        return new NFQ_0013_Numerator();
+        return new NFQ_0002_Numerator();
     }
     
     public function createDenominator()
     {
-        return new DenominatorAllPatients();
+        return new NFQ_0002_Denominator();
     }
     
     public function createExclusion()
     {
-		return new NFQ_0013_Exclusion();
+        return new NFQ_0002_Exclusion();
     }
 }

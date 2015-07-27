@@ -38,6 +38,11 @@ class ReportTypes
         "rule_dm_bp_control_cqm" => array( ReportTypes::CQM, "NFQ_Unimplemented" ),
         "rule_dm_a1c_cqm" => array( ReportTypes::CQM, "NFQ_0059" ),
         "rule_dm_ldl_cqm" => array( ReportTypes::CQM, "NFQ_0064" ),
+		"rule_children_pharyngitis_cqm" => array( ReportTypes::CQM, "NFQ_0002" ), 
+		"rule_fall_screening_cqm" => array( ReportTypes::CQM, "NFQ_0101" ), 
+		"rule_pain_intensity_cqm" => array( ReportTypes::CQM, "NFQ_0384" ), 
+		"rule_child_immun_stat_2014_cqm" => array( ReportTypes::CQM, "NFQ_0038_2014" ), //MU-2014-CQM Immunization Status
+		"rule_tob_use_2014_cqm" => array( ReportTypes::CQM, "NFQ_0028_2014" ),
     	"problem_list_amc" => array( ReportTypes::AMC, "AMC_302c" ), // MU-2014-AMC: 170.314(g)(1)/(2)–4
     	"med_list_amc" => array( ReportTypes::AMC, "AMC_302d" ), // MU-2014-AMC: 170.314(g)(1)/(2)–5
     	"med_allergy_list_amc" => array( ReportTypes::AMC, "AMC_302e" ), // MU-2014-AMC: 170.314(g)(1)/(2)–6

@@ -372,12 +372,34 @@ function collectItemizedPatientsCdrReport($report_id,$itemized_test_id,$pass='al
       break;
     case "exclude":
       $pass_sql=2;
+	  break;
+	case "init_patients":
+      $pass_sql=3;
+	  break;
+	case "exception":
+      $pass_sql=4;
+	  break;
   }
 
   $sqlParameters = array($report_id,$itemized_test_id,$numerator_label);
 
   if ($pass == "all") {
-    $sql_where = " WHERE `report_itemized`.`report_id` = ? AND `report_itemized`.`itemized_test_id` = ? AND `report_itemized`.`numerator_label` = ? ";
+    $sql_where = " WHERE `report_itemized`.`pass` != 3 AND `report_itemized`.`report_id` = ? AND `report_itemized`.`itemized_test_id` = ? AND `report_itemized`.`numerator_label` = ? ";
+  }
+  else if ($pass == "fail") {
+	$exlPidArr = array();
+	$exludeResult = collectItemizedPatientsCdrReport($report_id,$itemized_test_id,'exclude',$numerator_label,false,$sqllimit,$fstart);
+	foreach($exludeResult as $exlResArr){
+		$exlPidArr[] = $exlResArr['pid'];
+	}
+	
+    $sql_where = " WHERE `report_itemized`.`report_id` = ? AND `report_itemized`.`itemized_test_id` = ? AND `report_itemized`.`numerator_label` = ? AND `report_itemized`.`pass` = ? ";
+	
+	if(count($exlPidArr) > 0){
+		$exlPids = implode(",", $exlPidArr);
+		$sql_where .= " AND patient_data.pid NOT IN($exlPids) ";
+	}
+    array_push($sqlParameters,$pass_sql);
   }
   else {
     $sql_where = " WHERE `report_itemized`.`report_id` = ? AND `report_itemized`.`itemized_test_id` = ? AND `report_itemized`.`numerator_label` = ? AND `report_itemized`.`pass` = ? ";
