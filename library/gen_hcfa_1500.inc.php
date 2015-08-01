@@ -436,7 +436,7 @@ function gen_hcfa_1500_page($pid, $encounter, &$log, &$claim) {
 
         // Box 22. Medicaid Resubmission Code and Original Ref. No.
         put_hcfa(38, 50, 10, $claim->medicaidResubmissionCode());
-        put_hcfa(38, 62, 10, $claim->medicaidOriginalReference());
+        put_hcfa(38, 62, 15, $claim->medicaidOriginalReference());
 
         // Box 21 continued. Diagnoses
         if (!empty($diags[1])) {
