@@ -1,11 +1,26 @@
 <?php
-// Copyright (C) 2015 Ensoftek Inc
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// Downloads the XML for the selected criteria/rule
+/**
+ *
+ * QRDA Download 
+ *
+ * Copyright (C) 2015 Ensoftek, Inc
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package OpenEMR
+ * @author  Ensoftek
+ * @link    http://www.open-emr.org
+ */
+
 
 $fake_register_globals=false;
 $sanitize_all_escapes=true;
@@ -14,6 +29,7 @@ require_once("../interface/globals.php");
 require_once "$srcdir/report_database.inc";
 require_once("$srcdir/formatting.inc.php");
 require_once ("$srcdir/options.inc.php");
+require_once("$srcdir/sanitize.inc.php");
 require_once("qrda_category1.inc");
 
 $report_id = (isset($_GET['report_id'])) ? trim($_GET['report_id']) : "";
@@ -39,8 +55,8 @@ $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($typ
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery-ui-1.8.5.custom.min.js"></script>
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/common.js"></script>
 <script language="JavaScript">
-	var reportID = '<?php echo $report_id; ?>';
-	var provider_id = '<?php echo $provider_id;?>';
+	var reportID = '<?php echo attr($report_id); ?>';
+	var provider_id = '<?php echo attr($provider_id);?>';
 	var zipFileArray = new Array();
 	var failureMessage = "";
 	$(document).ready(function(){
@@ -61,7 +77,7 @@ $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($typ
 			criteriaArray.push($(this).attr("id"));
 		});
 		if ( criteriaArray.length == 0 ) {
-			alert("<?php echo('Please select atleast one criteria to download');?>");
+			alert("<?php echo xls('Please select atleast one criteria to download');?>");
 			return false;
 		}
 		for( var i=0 ; i < criteriaArray.length ; i++) {
@@ -156,11 +172,11 @@ $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($typ
 			</div>
 		</th>
 		<th scope="col">
-		 <?php echo htmlspecialchars( xl('Title'), ENT_NOQUOTES); ?>
+		 <?php echo xlt('Title'); ?>
 		</th>
 
 		<th scope="col">
-		 <?php echo htmlspecialchars( xl('Download'),ENT_NOQUOTES); ?>
+		 <?php echo xlt('Download'); ?>
 		</th>
 		<th scope="col">&nbsp;&nbsp;&nbsp;</th>
 	</thead>
@@ -175,7 +191,7 @@ $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($typ
 				echo "<tr>";
 				$cqmCodes[] = $row['cqm_nqf_code'];
 				echo "<td class=multiDownload>";
-				echo "<input id=check" . $counter . " type=checkbox />";
+				echo "<input id=check" . attr($counter) . " type=checkbox />";
 				echo "</td>";
 				echo "<td class='detail'>";
 				if (isset($row['is_main'])) {
@@ -183,34 +199,31 @@ $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($typ
 					$tempCqmAmcString = "";
 					if (($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) {
 					  if (!empty($row['cqm_pqri_code'])) {
-						$tempCqmAmcString .= " " . htmlspecialchars( xl('PQRI') . ":" . $row['cqm_pqri_code'], ENT_NOQUOTES) . " ";
+						$tempCqmAmcString .= " " . text( xl('PQRI') . ":" . $row['cqm_pqri_code']) . " ";
 					  }
 					  if (!empty($row['cqm_nqf_code'])) {
-						$tempCqmAmcString .= " " . htmlspecialchars( xl('NQF') . ":" . $row['cqm_nqf_code'], ENT_NOQUOTES) . " ";
+						$tempCqmAmcString .= " " .  xl('NQF') . ":" . $row['cqm_nqf_code'] . " ";
 					  }
 					}
 					if (!empty($tempCqmAmcString)) {
-						echo "(".$tempCqmAmcString.")";
+						echo "(".text($tempCqmAmcString).")";
 					}
-					/*if ( !(empty($row['concatenated_label'])) ) {
-						echo ", " . htmlspecialchars( xl( $row['concatenated_label'] ), ENT_NOQUOTES) . " ";
-					}*/
 				} else {
 					echo generate_display_field(array('data_type'=>'1','list_id'=>'rule_action_category'),$row['action_category']);
 					echo ": " . generate_display_field(array('data_type'=>'1','list_id'=>'rule_action'),$row['action_item']);
 				}
-				echo "<input type=hidden id=text" . $counter . " name=text" . $counter . " value='" . $row['cqm_nqf_code'] . "'/>";
+				echo "<input type=hidden id=text" . attr($counter) . " name=text" . attr($counter) . " value='" . attr($row['cqm_nqf_code']) . "'/>";
 				echo "</td>";
 				echo "<td align=center>";
-				echo "<div id=download" . $counter . ">";
+				echo "<div id=download" . attr($counter) . ">";
 				echo "<img class='downloadIcon' src='" . $GLOBALS['webroot'] . "/images/downbtn.gif' onclick=downloadXML(" . $counter . ",1); />";
 				echo "</div>";
-				echo "<div style='display:none' id=spin" . $counter . ">";
+				echo "<div style='display:none' id=spin" . attr($counter) . ">";
 				echo "<img src='" . $GLOBALS['webroot'] . "/interface/pic/ajax-loader.gif'/>";
 				echo "</div>";
 				echo "</td>";
 				echo "<td>";
-				echo "<div style='display:none' id=checkmark" . $counter . ">";
+				echo "<div style='display:none' id=checkmark" . attr($counter) . ">";
 				echo "<img src='" . $GLOBALS['webroot'] . "/images/checkmark.png' />";
 				echo "</div>";
 				echo "</td>";

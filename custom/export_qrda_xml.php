@@ -1,11 +1,26 @@
 <?php
-// Copyright (C) 2015 Ensoftek Inc
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// This program exports QRDA Category III 2014 XML format.
+/**
+ *
+ * EXPORT QRDA
+ *
+ * Copyright (C) 2015 Ensoftek, Inc
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package OpenEMR
+ * @author  Ensoftek
+ * @link    http://www.open-emr.org
+ */
+
 
  //SANITIZE ALL ESCAPES
 $sanitize_all_escapes=true;
@@ -20,6 +35,7 @@ require_once "../library/options.inc.php";
 require_once("../library/clinical_rules.php");
 require_once("../library/classes/QRDAXml.class.php");
 require_once "$srcdir/report_database.inc";
+require_once("$srcdir/sanitize.inc.php");
 require_once "qrda_functions.php";
 
 //Remove time limit, since script can take many minutes
@@ -331,7 +347,7 @@ $xml->open_assignAuthor();
 $authorsetid = getUuid();
 $xml->self_customId($authorsetid);
 if($form_provider != ""){
-	$userRow = sqlQuery("SELECT facility, facility_id, federaltaxid, npi, phone,fname, lname FROM users WHERE id= '".$form_provider."'");
+	$userRow = sqlQuery("SELECT facility, facility_id, federaltaxid, npi, phone,fname, lname FROM users WHERE id=?", array($form_provider));
 	$facility_name = $userRow['facility'];
 	$facility_id = $userRow['facility_id'];
 }
@@ -346,7 +362,7 @@ $xml->element('softwareName', 'CYPRESS');
 $xml->close_customTag();
 
 //Facility Address
-$facilResRow = sqlQuery("SELECT name, street,city,state,postal_code, country_code, phone from facility WHERE id = '".$facility_id."'");
+$facilResRow = sqlQuery("SELECT name, street,city,state,postal_code, country_code, phone from facility WHERE id = ?", array($facility_id));
 $xml->add_authReprestOrginisation($facilResRow);
 //$xml->add_facilAddress($facilResRow);
 $xml->close_assignAuthor();
@@ -575,16 +591,6 @@ if(count($dataSheet) > 0){
 		$itemized_test_id = $row['itemized_test_id'];
 		$numerator_label = $row['numerator_label'];
 		
-		//Skip section
-		//if($row['cqm_nqf_code'] == "0028a") continue;
-		
-		//if($row['cqm_nqf_code'] == "0038"){
-			//if(in_array($row['numerator_label'], $NQF38NumArr)) continue;
-		//}
-		
-		//Skipping Multiple Numerator(s)
-		//if(in_array($row['cqm_nqf_code'], $multNumNQFArr)) continue;
-		
 		//CQM Rules 2014 set, 0013 is 0018
 		if($row['cqm_nqf_code'] == "0013") $row['cqm_nqf_code'] = "0018";
 		
@@ -759,14 +765,14 @@ if(count($dataSheet) > 0){
 		
 		$tdTitle = generate_display_field(array('data_type'=>'1','list_id'=>'clinical_rules'),$row['id']);		
 		if (!empty($row['cqm_pqri_code'])) {
-			$tdTitle .= " " . htmlspecialchars( xl('PQRI') . ":" . $row['cqm_pqri_code'], ENT_NOQUOTES) . " ";
+			$tdTitle .= " " . text( xl('PQRI') . ":" . $row['cqm_pqri_code']) . " ";
 		}
 		if (!empty($row['cqm_nqf_code'])) {
-			$tdTitle .= " " . htmlspecialchars( xl('NQF') . ":" . $row['cqm_nqf_code'], ENT_NOQUOTES) . " ";
+			$tdTitle .= " " . text( xl('NQF') . ":" . $row['cqm_nqf_code']) . " ";
 		}
 		
 		if ( !(empty($row['concatenated_label'])) ) {
-			$tdTitle .= ", " . htmlspecialchars( xl( $row['concatenated_label'] ), ENT_NOQUOTES) . " ";
+			$tdTitle .= ", " . text( xl( $row['concatenated_label'] )) . " ";
         }
 		
 		###########################################################
@@ -1429,7 +1435,7 @@ $xml->close_clinicaldocument();
 
 //QRDA File Download Folder in site/cqm_qrda folder
 $qrda_fname = "QRDA_III_".date("YmdHis").".xml";
-$qrda_file_path = $GLOBALS['OE_SITE_DIR'] . "/cqm_qrda/";
+$qrda_file_path = $GLOBALS['OE_SITE_DIR'] . "/documents/cqm_qrda/";
 if(!file_exists($qrda_file_path)){
 	mkdir($qrda_file_path, 0777, true);
 }
@@ -1443,7 +1449,7 @@ fclose($fileQRDAOPen);
 <head>
 <?php html_header_show();?>
 <link rel=stylesheet href="<?php echo $css_header;?>" type="text/css">
-<title><?php echo htmlspecialchars( xl('Export QRDA Report'), ENT_NOQUOTES); ?></title>
+<title><?php echo xlt('Export QRDA Report'); ?></title>
 
 <script type="text/javascript"> 
 	//Close Me function
@@ -1454,18 +1460,18 @@ fclose($fileQRDAOPen);
 </head>
 <body>
 
-<p class="text"><?php echo htmlspecialchars( xl('The exported data appears in the text area below. You can copy and paste this into an email or to any other desired destination (or) download the below link.'), ENT_NOQUOTES); ?></p>
+<p class="text"><?php echo xlt('The exported data appears in the text area below. You can copy and paste this into an email or to any other desired destination (or) download the below link.'); ?></p>
 
 <center>
 <form>
 <p class="text">
-	<a href="qrda_download.php?qrda_fname=<?php echo $qrda_fname;?>"><?php xl("Download QRDA Category III File", "e");?></a>
+	<a href="qrda_download.php?qrda_fname=<?php echo $qrda_fname;?>"><?php echo xlt("Download QRDA Category III File");?></a>
 </p>
 <textarea rows='50' cols='500' style='width:95%' readonly>
 <?php echo trim($xml->getXml()); ?>
 </textarea>
 
-<p><input type='button' value='<?php echo htmlspecialchars( xl('Close'), ENT_QUOTES); ?>' onclick='closeme();' /></p>
+<p><input type='button' value='<?php echo xla('Close'); ?>' onclick='closeme();' /></p>
 </form>
 </center>
 

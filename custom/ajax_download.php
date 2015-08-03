@@ -1,16 +1,32 @@
 <?php
-// Copyright (C) 2015 Ensoftek Inc
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+/**
+ *
+ * QRDA Ajax Download 
+ *
+ * Copyright (C) 2015 Ensoftek, Inc
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package OpenEMR
+ * @author  Ensoftek
+ * @link    http://www.open-emr.org
+ */
 
 $sanitize_all_escapes=true;
 $fake_register_globals=false;
 
 require_once("../interface/globals.php");
 require_once("$srcdir/report_database.inc");
+require_once("$srcdir/sanitize.inc.php");
 require_once("../library/classes/QRDAXml.class.php");
 require_once("../ccr/uuid.php");
 require_once("qrda_category1_functions.php");
@@ -20,7 +36,7 @@ require_once("qrda_functions.php");
 $reportID = $_POST['reportID'];
 $ruleID = $_POST['ruleID'];
 $counter = $_POST['counter'];
-$fileName = ( $_GET['fileName'] ) ? $_GET['fileName'] : "";
+$fileName = ( isset($_GET['fileName']) ) ? $_GET['fileName'] : "";
 $provider_id = $_POST['provider_id'];
 
 if ( $fileName ) {
@@ -36,7 +52,7 @@ if ( $fileName ) {
 		   echo xlt("FAILURE: Couldn't create the zip");
 		}
 		foreach ( $fileList as $eachFile ) {
-			$baseFileName = basename($eachFile);
+			$baseFileName = check_file_dir_name(basename($eachFile));
 			$zip->addFile($eachFile,$baseFileName);
 		}
 		$zip->close();
@@ -99,5 +115,5 @@ if ( count($patients) ) {
 	}
 	echo $zipFileFullPath;
 } else 
-	echo xlt("FAILURE: No patients for measure ") . $ruleID;
+	echo xlt("FAILURE: No patients for measure") . $ruleID;
 ?>

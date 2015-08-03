@@ -283,11 +283,14 @@ function insertItemReportTracker($report_id, $itemized_test_id, $pass, $patient_
  * @return  string/boolean              Rule title for itemization display (false if nothing found)
  */
 function collectItemizedRuleDisplayTitle($report_id, $itemized_test_id, $numerator_label='') {
-  $dispTitle = "";
-  $report_view = collectReportDatabase($report_id);
-  $type_report = $report_view['type'];
-  $dataSheet = json_decode($report_view['data'],TRUE);
-  foreach ($dataSheet as $row) {
+	$dispTitle = "";
+	$report_view = collectReportDatabase($report_id);
+	$type_report = $report_view['type'];
+	
+	$type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ||
+	($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) ? $type_report : "standard";
+	$dataSheet = json_decode($report_view['data'],TRUE);
+	foreach ($dataSheet as $row) {
     if (isset($row['is_main']) || isset($row['is_sub'])) {
       if (isset($row['is_main'])) {
         // Store this
@@ -318,11 +321,17 @@ function collectItemizedRuleDisplayTitle($report_id, $itemized_test_id, $numerat
               $tempCqmAmcString .= " " . xlt('AMC-2011') . ":" . text($row['amc_code']) . " ";
             }
           }
-          if ($type_report == "amc_2014") {
+          if ($type_report == "amc_2014_stage1") {
             if (!empty($row['amc_code_2014'])) {
-              $tempCqmAmcString .= " " . xlt('AMC-2014') . ":" . text($row['amc_code_2014']) . " ";
+              $tempCqmAmcString .= " " . xlt('AMC-2014'). " ". xlt('Stage I') . ":" . text($row['amc_code_2014']) . " ";
             }
           }
+		  if ($type_report == "amc_2014_stage2") {
+            if (!empty($row['amc_code_2014'])) {
+              $tempCqmAmcString .= " " . xlt('AMC-2014'). " ". xlt('Stage II') . ":" . text($row['amc_code_2014']) . " ";
+            }
+          }
+		  
           if (!empty($tempCqmAmcString)) {
             $dispTitle .=  "(".$tempCqmAmcString.")";
           }
@@ -346,7 +355,7 @@ function collectItemizedRuleDisplayTitle($report_id, $itemized_test_id, $numerat
  *
  * @param   integer  $report_id         Report id
  * @param   integer  $itemized_test_id  Itemized test id
- * @param   string   $pass              options are 'fail', 'pass', 'exclude', and 'all'
+ * @param   string   $pass              options are 'fail', 'pass', 'exclude', 'init_patients', 'exception' and 'all'
  * @param   integer  $numerator_label   Numerator label (if applicable)
  * @param   integer  $sqllimit          Sql query pagination info
  * @param   integer  $fstart            Sql query pagination info
@@ -397,7 +406,7 @@ function collectItemizedPatientsCdrReport($report_id,$itemized_test_id,$pass='al
 	
 	if(count($exlPidArr) > 0){
 		$exlPids = implode(",", $exlPidArr);
-		$sql_where .= " AND patient_data.pid NOT IN($exlPids) ";
+		$sql_where .= " AND patient_data.pid NOT IN(add_escape_custom($exlPids)) ";
 	}
     array_push($sqlParameters,$pass_sql);
   }

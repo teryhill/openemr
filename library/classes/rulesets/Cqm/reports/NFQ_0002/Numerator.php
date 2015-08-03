@@ -1,11 +1,26 @@
 <?php
-// Copyright (C) 2015 Ensoftek Inc
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
+/**
+ *
+ * CQM NQF 0002 Numerator
+ *
+ * Copyright (C) 2015 Ensoftek, Inc
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package OpenEMR
+ * @author  Ensoftek
+ * @link    http://www.open-emr.org
+ */
+ 
 class NFQ_0002_Numerator implements CqmFilterIF
 {
     public function getTitle()
@@ -23,7 +38,7 @@ class NFQ_0002_Numerator implements CqmFilterIF
 		//Patients who were tested for Streptococcus A during the same encounter that the antibiotic was prescribed, Encounter category should be office visit.
 		$query = "SELECT count(*) as cnt FROM form_encounter fe ".
 				 "INNER JOIN openemr_postcalendar_categories opc ON fe.pc_catid = opc.pc_catid ".
-				 "INNER JOIN lists l ON l.type = 'medication' AND fe.pid = l.pid  AND l.drug != '' ".
+				 "INNER JOIN lists l ON l.type = 'medication' AND fe.pid = l.pid ".
 				 "INNER JOIN procedure_order po ON po.encounter_id = fe.encounter ".
 				 "INNER JOIN procedure_order_code pc ON po.procedure_order_id = pc.procedure_order_id ".
 				 "WHERE opc.pc_catname = 'Office Visit' ";
