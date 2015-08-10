@@ -4,6 +4,7 @@
  *
  * (TLH) Added payor,provider,fixed cvs download to included selected fields
  * (TLH) Added provider output to screen for all invoices.
+ * (TLH) Added ability to select and output invoices in collections to the csv file.
  * (TLH) Added ability to download selected invoices only or all for patient 
  * 
  * Copyright (C) 2015 Terry Hill <terry@lillysystems.com> 
@@ -1291,9 +1292,9 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
   <td class="detail" align="center">
 <?php
         if ($in_collections) {
-          echo "   <b><font color='red'>IC</font></b>\n";
+          echo "   &nbsp;&nbsp;&nbsp;<input type='checkbox' name='form_cb[" .  attr($row['invnumber'])  . "]' /><b><font color='red'>IC</font></b>\n";
         } else {
-            echo "   <input type='checkbox' name='form_cb[" .  attr($row['invnumber'])  . "]' />\n";
+          echo "   <input type='checkbox' name='form_cb[" .  attr($row['invnumber'])  . "]' />\n";
         }
 ?>
   </td>
@@ -1348,14 +1349,25 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
       echo '"' . oeFormatMoney($row['paid'])          . '",';
       echo '"' . oeFormatMoney($balance)              . '",';
       echo '"' . $row['inactive_days']                . '",';
+      $in_collections = stristr($row['billnote'], 'IN COLLECTIONS') !== false;
       if ($form_cb_err) 
       {
         echo '"' . oeFormatShortDate($row['ladate'])    . '",';
+        if ($in_collections) {
+            echo '"IC",';
+        }
         echo '"' . $row['billing_errmsg']               . '"' . "\n";
       }
       else
       {
-        echo '"' . oeFormatShortDate($row['ladate'])    . '"' . "\n";
+        if ($in_collections) {
+            echo '"' . oeFormatShortDate($row['ladate'])    . '",';
+            echo '"IC"' . "\n";
+        }
+        else
+        {
+           echo '"' . oeFormatShortDate($row['ladate'])    . '"' . "\n";  
+        }
       }
      } 
     } // end $form_csvexport
