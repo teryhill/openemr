@@ -3,8 +3,9 @@
  * Collections report
  *
  * (TLH) Added payor,provider,fixed cvs download to included selected fields
- * (TLH) Added ability to download selected invoices only or all for patient
- *
+ * (TLH) Added provider output to screen for all invoices.
+ * (TLH) Added ability to download selected invoices only or all for patient 
+ * 
  * Copyright (C) 2015 Terry Hill <terry@lillysystems.com> 
  * Copyright (C) 2006-2010 Rod Roark <rod@sunsetsystems.com>
  *
@@ -115,10 +116,9 @@ if ($form_cb_phone   ) ++$initial_colspan;
 if ($form_cb_city    ) ++$initial_colspan;
 if ($form_cb_ins1    ) ++$initial_colspan;
 if ($form_cb_referrer) ++$initial_colspan;
-if ($form_provider   ) ++$initial_colspan;
 if ($form_payer_id   ) ++$initial_colspan;
 
-$final_colspan = $form_cb_adate ? 6 : 5;
+$final_colspan = $form_cb_adate ? 7 : 6;
 
 $grand_total_charges     = 0;
 $grand_total_adjustments = 0;
@@ -480,7 +480,7 @@ function checkAll(checked) {
                                # Added (TLH)
 
                                $query = "SELECT id, lname, fname FROM users WHERE ".
-                               "authorized = 1  ORDER BY lname, fname"; #(CHEMED) facility filter
+                               "authorized = 1  ORDER BY lname, fname"; #provider filter
 
                                $ures = sqlStatement($query);
 
@@ -1107,9 +1107,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
 <?php if ($form_cb_ins1 || $form_payer_id) { ?>
   <th>&nbsp;<?php echo xlt('Primary Ins')?></th>
 <?php } ?>
-<?php if ($form_provider) { ?>
   <th>&nbsp;<?php echo xlt('Provider')?></th>
-<?php } ?>
 <?php if ($form_cb_referrer) { ?>
   <th>&nbsp;<?php echo xlt('Referrer')?></th>
 <?php } ?>
@@ -1233,9 +1231,6 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
         if ($form_cb_ins1 || $form_payer_id ) {
           echo "  <td class='detail'>&nbsp;" . attr($row['ins1']) . "</td>\n";
         }
-        if ($form_provider) {
-          echo "  <td class='detail'>&nbsp;" . attr($provider_name) . "</td>\n";
-        }
         if ($form_cb_referrer) {
           echo "  <td class='detail'>&nbsp;" . attr($row['referrer']) . "</td>\n";
         }
@@ -1244,6 +1239,9 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
         echo "&nbsp;</td>\n";
       }
 ?>
+  <td class="detail">
+   &nbsp;<?php echo attr($row['provider']); ?>
+  </td>
   <td class="detail">
    &nbsp;<a href="../billing/sl_eob_invoice.php?id=<?php echo attr($row['id']) ?>"
     target="_blank"><?php echo empty($row['irnumber']) ? $row['invnumber'] : $row['irnumber']; ?></a>
