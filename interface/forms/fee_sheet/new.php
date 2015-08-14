@@ -105,10 +105,17 @@ function contraceptionClass($code_type, $code) {
 # finds the provider in the encounter file or patient file
 function findProvider() {
   global $encounter, $pid;
+  $get_authorized = sqlQuery("SELECT authorized FROM users WHERE " .
+    " id = ? ", array($_SESSION[authUserID]) );
+  if($get_authorized['authorized'] ==1) {
+      $providerid = $_SESSION[authUserID];
+  }    
+  if($providerid == 0) {
   $find_provider = sqlQuery("SELECT provider_id, supervisor_id FROM form_encounter " .
 		"WHERE pid = ? AND encounter = ? " .
 		"ORDER BY id DESC LIMIT 1", array($pid,$encounter) );
   $providerid = $find_provider['provider_id'];
+  }
   if($providerid == 0) {
     $find_provider = sqlQuery("SELECT providerID FROM patient_data " .
 		"WHERE pid = ? ", array($pid) );
