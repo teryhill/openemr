@@ -133,6 +133,15 @@ if (isset($entryID)) {
   $form_result = $selectedEntry['result'];
 }
 
+if (isset($_GET['rule'])) {
+  $ruleData = sqlQuery("SELECT `developer`, `funding_source`, `release_version` " .
+    "FROM `list_options` " .
+    "WHERE  `list_id`='clinical_rules' AND `option_id`=?", array($_GET['rule']) );
+  $developer = htmlspecialchars($ruleData['developer'], ENT_QUOTES);
+  $funding_source = htmlspecialchars($ruleData['funding_source'], ENT_QUOTES);
+  $release = htmlspecialchars($ruleData['release_version'], ENT_QUOTES);
+}
+
 ?>
 <table cellspacing='0' cellpadding='0' border='0'>
 <tr>
@@ -143,10 +152,34 @@ if (isset($entryID)) {
 </tr>
 </table>
 
-<br><br>
+<br>
 <form action='patient_data.php' name='patient_data' method='post' onsubmit='return top.restoreSession()'>
   <table border=0 cellpadding=1 cellspacing=1>
   <?php
+    echo "<tr>";
+	echo "<td class='bold'>";
+	echo htmlspecialchars( xl('Developer'), ENT_NOQUOTES);
+	echo ":</td><td class='text'>";
+	echo $developer;
+	echo "</td>";
+    echo "</tr>";
+	
+    echo "<tr>"; 	
+	echo "<td class='bold'>";
+	echo htmlspecialchars( xl('Funding Source'), ENT_NOQUOTES);
+	echo ":</td><td class='text'>";
+	echo $funding_source;
+	echo "</td>";
+	echo "</tr>";
+	
+	echo "<tr>";
+	echo "<td class='bold'>";
+    echo htmlspecialchars( xl('Release'), ENT_NOQUOTES);
+    echo ":</td><td class='text' colspan='3'>";
+    echo $release;
+    echo "</td>";
+	echo "</tr>";
+	
     echo "<tr><td class='required'>";
     echo htmlspecialchars( xl('Date/Time'), ENT_NOQUOTES);
     echo ":</td><td class='text'>";
@@ -193,7 +226,6 @@ $res = sqlStatement("SELECT `id`, `date`, `complete`, `result` " .
   "WHERE `category`=? AND `item`=? AND `pid`=? " .
   "ORDER BY `date` DESC", array($category,$item,$pid) );
 ?>
-<br>
 <hr />
 <br>
 <div>

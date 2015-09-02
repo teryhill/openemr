@@ -18,7 +18,7 @@ require_once( library_src( 'RuleCriteriaTargetFactory.php') );
  */
 class RuleManager {
     const SQL_RULE_DETAIL =
-    "SELECT lo.title as title, cr.*
+    "SELECT lo.title as title, lo.developer as developer, lo.funding_source as funding_source, lo.release_version as releases, cr.*
            FROM clinical_rules cr
            JOIN list_options lo
             ON (cr.id = lo.option_id AND lo.list_id = 'clinical_rules')";
@@ -74,7 +74,7 @@ class RuleManager {
 
     const SQL_UPDATE_TITLE =
     "UPDATE list_options
-        SET title = ?
+        SET title = ? , developer = ? , funding_source = ? , release_version = ?       
       WHERE list_id = 'clinical_rules' AND option_id = ?";
 
     const SQL_REMOVE_INTERVALS =
@@ -129,7 +129,7 @@ class RuleManager {
             return null;
         }
 
-        $rule = new Rule($id, $ruleResult['title']);
+        $rule = new Rule($id, $ruleResult['title'] , $ruleResult['developer'] , $ruleResult['funding_source'] , $ruleResult['releases']);
         $this->fillRuleTypes( $rule, $ruleResult );
         $this->fillRuleReminderIntervals( $rule );
         $this->fillRuleFilterCriteria( $rule );
@@ -429,7 +429,7 @@ class RuleManager {
         sqlStatement( "DELETE FROM rule_filter WHERE PASSWORD(CONCAT( id, include_flag, required_flag, method, method_detail, value )) = '". $guid . "'" );
     }
 
-    function updateSummary( $ruleId, $types, $title ) {
+    function updateSummary( $ruleId, $types, $title, $developer, $funding, $release  ) {
         $rule = $this->getRule( $ruleId );
 
         if ( is_null($rule) ) {
@@ -450,7 +450,7 @@ class RuleManager {
             );
 
             // do label
-            $this->doRuleLabel(false, "clinical_rules", $ruleId, $title);
+            $this->doRuleLabel(false, "clinical_rules", $ruleId, $title, $developer, $funding, $release);
             return $ruleId;
         } else {
             // edit
@@ -465,7 +465,7 @@ class RuleManager {
             );
 
             // update title
-            sqlStatement( self::SQL_UPDATE_TITLE, array( $title,
+            sqlStatement( self::SQL_UPDATE_TITLE, array( $title, $developer, $funding, $release ,
                 $ruleId ) );
             return $ruleId;
         }
@@ -710,11 +710,14 @@ class RuleManager {
         }
     }
 
-    private function doRuleLabel( $exists, $listId, $optionId, $title ) {
+    private function doRuleLabel( $exists, $listId, $optionId, $title, $developer, $funding, $release) {
         if ( $exists) {
             // edit
-            sqlStatement( "UPDATE list_options SET title = ? WHERE list_id = ? AND option_id = ?", array(
+            sqlStatement( "UPDATE list_options SET title = ? , developer = ?, funding_source = ?, release_version = ? WHERE list_id = ? AND option_id = ?", array(
                 $title,
+                $developer, 
+                $funding, 
+                $release,
                 $listId,
                 $optionId )
             );
@@ -722,10 +725,13 @@ class RuleManager {
             // update
             $result = sqlQuery( "select max(seq)+10 AS seq from list_options where list_id = ?", array($listId) );
             $seq = $result['seq'];
-            sqlStatement("INSERT INTO list_options (list_id,option_id,title,seq) VALUES ( ?, ?, ?, ? )", array(
+            sqlStatement("INSERT INTO list_options (list_id,option_id,title,developer,funding_source,release_version,seq) VALUES ( ?, ?, ?, ?, ?, ?, ? )", array(
                 $listId,
                 $optionId,
                 $title,
+                $developer, 
+                $funding, 
+                $release,
                 $seq )
             );
         }
