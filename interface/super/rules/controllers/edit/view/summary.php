@@ -36,12 +36,12 @@
     <span class="end_col"><input type="text" name="fld_title" class="field" id="fld_title" value="<?php echo out( $rule->title ); ?>"></span>
     </p>
    
-    <p class="row"><?php $display_developer = out( $rule->developer ); 
+    <p class="row"><?php $display_developer = $rule->developer; 
                          if($display_developer == ""){
                              $display_developer = $rule->getUserRule(); 
                          }?>
     <span class="left_col colhead" data-fld="fld_developer"><?php echo out( xl( 'Developer' ) ); ?></span>
-    <span class="end_col"><input type="text" name="fld_developer" class="field" id="fld_developer" value="<?php echo $display_developer; ?>" maxlength="255"></span>
+    <span class="end_col"><input type="text" name="fld_developer" class="field" id="fld_developer" value="<?php echo out($display_developer); ?>" maxlength="255"></span>
     </p>
     
     <p class="row">

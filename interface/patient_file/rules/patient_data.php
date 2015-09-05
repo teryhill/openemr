@@ -137,9 +137,9 @@ if (isset($_GET['rule'])) {
   $ruleData = sqlQuery("SELECT `developer`, `funding_source`, `release_version` " .
     "FROM `list_options` " .
     "WHERE  `list_id`='clinical_rules' AND `option_id`=?", array($_GET['rule']) );
-  $developer = htmlspecialchars($ruleData['developer'], ENT_QUOTES);
-  $funding_source = htmlspecialchars($ruleData['funding_source'], ENT_QUOTES);
-  $release = htmlspecialchars($ruleData['release_version'], ENT_QUOTES);
+  $developer = $ruleData['developer'];
+  $funding_source = $ruleData['funding_source'];
+  $release = $ruleData['release_version'];
 }
 
 ?>
@@ -158,7 +158,7 @@ if (isset($_GET['rule'])) {
   <?php
     echo "<tr>";
 	echo "<td class='bold'>";
-	echo htmlspecialchars( xl('Developer'), ENT_NOQUOTES);
+	echo xlt('Developer');
 	echo ":</td><td class='text'>";
 	echo $developer;
 	echo "</td>";
@@ -166,7 +166,7 @@ if (isset($_GET['rule'])) {
 	
     echo "<tr>"; 	
 	echo "<td class='bold'>";
-	echo htmlspecialchars( xl('Funding Source'), ENT_NOQUOTES);
+	echo xlt('Funding Source');
 	echo ":</td><td class='text'>";
 	echo $funding_source;
 	echo "</td>";
@@ -174,46 +174,46 @@ if (isset($_GET['rule'])) {
 	
 	echo "<tr>";
 	echo "<td class='bold'>";
-    echo htmlspecialchars( xl('Release'), ENT_NOQUOTES);
+    echo xlt('Release');
     echo ":</td><td class='text' colspan='3'>";
     echo $release;
     echo "</td>";
 	echo "</tr>";
 	
     echo "<tr><td class='required'>";
-    echo htmlspecialchars( xl('Date/Time'), ENT_NOQUOTES);
+    echo xl('Date/Time');
     echo ":</td><td class='text'>";
     echo "<input type='text' size='16' name='form_date' id='form_date' " .
-      "value='" . htmlspecialchars( $form_date, ENT_QUOTES) . "' " .
+      "value='" . attr( $form_date) . "' " .
       "onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' " .
-      "title='" . htmlspecialchars( xl('yyyy-mm-dd hh:mm:ss'), ENT_QUOTES) . "' />";
+      "title='" . xla('yyyy-mm-dd hh:mm:ss') . "' />";
     echo "<img src='../../pic/show_calendar.gif' align='absbottom' width='24' height='22'" .
       "id='img_date' border='0' alt='[?]' style='cursor:pointer'" .
-      "title='" . htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES) . "' />";
+      "title='" . xla'Click here to choose a date') . "' />";
     echo "<script language='JavaScript'>Calendar.setup({inputField:'form_date', ifFormat:'%Y-%m-%d %H:%M:%S', button:'img_date', showsTime:'true'});</script>";
     echo "</td></tr>";
 
     echo "<tr><td class='required'>";
-    echo htmlspecialchars( xl('Completed'), ENT_NOQUOTES);
+    echo xlt('Completed');
     echo ":</td><td class='text'>";
     generate_form_field(array('data_type'=>1,'field_id'=>'complete','list_id'=>'yesno','empty_title'=>'SKIP'), ($form_complete) ? $form_complete : "YES");
     echo "</td></tr>";
 
     echo "<tr><td class='bold'>";
-    echo htmlspecialchars( xl('Results/Details'), ENT_NOQUOTES);
+    echo xlt('Results/Details');
     echo ":</td><td class='text'>";
     echo "<textarea name='form_result' cols='40' rows='3'>";
-    echo htmlspecialchars( $form_result, ENT_NOQUOTES);
+    echo attr($form_result);
     echo "</textarea>";
     echo "</td></tr>";
   echo "</table>";
   echo "<input type='hidden' name='form_category' value='" .
-    htmlspecialchars( $category, ENT_QUOTES)  . "' />";
+    attr($category)  . "' />";
   echo "<input type='hidden' name='form_item' value='" .
-    htmlspecialchars( $item, ENT_QUOTES)  . "' />";
+    attr($item)  . "' />";
   if (isset($entryID)) {
     echo "<input type='hidden' name='form_entryID' value='" .
-      htmlspecialchars( $entryID, ENT_QUOTES)  . "' />";
+      attr($entryID,)  . "' />";
   }
 ?>
 </form>
@@ -234,9 +234,9 @@ if (sqlNumRows($res) >= 1) { //display table ?>
   <table class="showborder" cellspacing="0px" cellpadding="2px">
     <tr class='showborder_head'>
       <th>&nbsp;</th>
-      <th><?php echo htmlspecialchars( xl('Date/Time'), ENT_NOQUOTES); ?></th>
-      <th><?php echo htmlspecialchars( xl('Completed'), ENT_NOQUOTES); ?></th>
-      <th><?php echo htmlspecialchars( xl('Results/Details'), ENT_NOQUOTES); ?></th>
+      <th><?php echo xlt('Date/Time'); ?></th>
+      <th><?php echo xlt('Completed'); ?></th>
+      <th><?php echo xlt('Results/Details'); ?></th>
     </tr>
     <?php
     while ($row = sqlFetchArray($res)) {
@@ -252,22 +252,22 @@ if (sqlNumRows($res) >= 1) { //display table ?>
       }
       else { // show the edit button
         echo "<td><a href='patient_data.php?category=" .
-          htmlspecialchars( $category, ENT_QUOTES) . "&item=" .
-          htmlspecialchars( $item, ENT_QUOTES) . "&entryID=" .
-          htmlspecialchars( $row['id'], ENT_QUOTES) .
+          attr($category) . "&item=" .
+          attr($item) . "&entryID=" .
+          attr($row['id']) .
           "' onclick='top.restoreSession()' class='css_button_small'>" .
-          "<span>" . htmlspecialchars( xl('Edit'), ENT_NOQUOTES) . "</span></a>" .
+          "<span>" . xlt('Edit') . "</span></a>" .
           "</td>";
       }
-      echo "<td>" . htmlspecialchars( $row['date'], ENT_NOQUOTES) . "</td>";
-      echo "<td align='center'>" . htmlspecialchars( $row['complete'], ENT_NOQUOTES) . "</td>";
+      echo "<td>" . attr($row['date']) . "</td>";
+      echo "<td align='center'>" . attr($row['complete']) . "</td>";
       echo "<td>" . nl2br( htmlspecialchars( $row['result'], ENT_NOQUOTES) ) . "</td>";
       echo "</tr>";
     } ?>
   </table>
 <?php } //display table if statement
 else { //no entries
-  echo "<p>" . htmlspecialchars( xl('No previous entries.'), ENT_NOQUOTES) . "</p>";
+  echo "<p>" . xlt('No previous entries.') . "</p>";
 } ?>
 </div>
 
