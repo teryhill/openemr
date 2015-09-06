@@ -157,15 +157,15 @@ INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_boa
 #EndIf
 
 -- Begin: Changes by Ensoftek for Clinical decision support( 170.314(a)(8) )
-#IfMissingColumn list_options developer
-	ALTER TABLE  `list_options` ADD  `developer` VARCHAR( 255 ) NULL DEFAULT NULL;
+#IfMissingColumn clinical_rules developer
+	ALTER TABLE  `clinical_rules` ADD  `developer` VARCHAR( 255 ) NULL DEFAULT NULL;
 #EndIf
 
-#IfMissingColumn list_options funding_source
-	ALTER TABLE  `list_options` ADD  `funding_source` VARCHAR( 255 ) NULL DEFAULT NULL;
+#IfMissingColumn clinical_rules funding_source
+	ALTER TABLE  `clinical_rules` ADD  `funding_source` VARCHAR( 255 ) NULL DEFAULT NULL;
 #EndIf
 
-#IfMissingColumn list_options release_version
-	ALTER TABLE  `list_options` ADD  `release_version` VARCHAR( 255 ) NULL DEFAULT NULL;
+#IfMissingColumn clinical_rules release_version
+	ALTER TABLE  `clinical_rules` ADD  `release_version` VARCHAR( 255 ) NULL DEFAULT NULL;
 #EndIf
 -- End: Changes by Ensoftek for Clinical decision support ( 170.314(a)(8) )

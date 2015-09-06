@@ -134,9 +134,9 @@ if (isset($entryID)) {
 }
 
 if (isset($_GET['rule'])) {
-  $ruleData = sqlQuery("SELECT `developer`, `funding_source`, `release_version` " .
-    "FROM `list_options` " .
-    "WHERE  `list_id`='clinical_rules' AND `option_id`=?", array($_GET['rule']) );
+	$ruleData = sqlQuery("SELECT `developer`, `funding_source`, `release_version` " .
+    "FROM `clinical_rules` " .
+    "WHERE  `id`=? AND `pid`=0", array($_GET['rule']) );
   $developer = $ruleData['developer'];
   $funding_source = $ruleData['funding_source'];
   $release = $ruleData['release_version'];
