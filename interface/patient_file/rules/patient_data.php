@@ -181,7 +181,7 @@ if (isset($_GET['rule'])) {
 	echo "</tr>";
 	
     echo "<tr><td class='required'>";
-    echo xl('Date/Time');
+    echo xlt('Date/Time');
     echo ":</td><td class='text'>";
     echo "<input type='text' size='16' name='form_date' id='form_date' " .
       "value='" . attr( $form_date) . "' " .
@@ -259,8 +259,8 @@ if (sqlNumRows($res) >= 1) { //display table ?>
           "<span>" . xlt('Edit') . "</span></a>" .
           "</td>";
       }
-      echo "<td>" . attr($row['date']) . "</td>";
-      echo "<td align='center'>" . attr($row['complete']) . "</td>";
+      echo "<td>" . text($row['date']) . "</td>";
+      echo "<td align='center'>" . text($row['complete']) . "</td>";
       echo "<td>" . nl2br( htmlspecialchars( $row['result'], ENT_NOQUOTES) ) . "</td>";
       echo "</tr>";
     } ?>
