@@ -39,5 +39,6 @@
 
     $ignoreAuth=true; // ignore the standard authentication for a regular OpenEMR user
     include_once('../interface/globals.php');
-
+    include_once("$srcdir/formatting.inc.php");
+    include_once("$srcdir/documents.inc.php");
 ?>
