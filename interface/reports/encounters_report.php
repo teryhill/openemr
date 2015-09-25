@@ -82,17 +82,14 @@ $orderby = $ORDERHASH[$form_orderby];
   if ($form_encounter_esigned) {
     $esign_fields = ", es.table, es.tid ";
     $esign_joins = "LEFT OUTER JOIN esign_signatures AS es ON es.tid = fe.encounter ";
-    //$esign_from = ",esign_signatures AS es";
   }
     if ($form_esigned) {
     $esign_fields = ", es.table, es.tid ";
     $esign_joins = "LEFT OUTER JOIN esign_signatures AS es ON es.tid = fe.encounter ";
-    //$esign_from = ",esign_signatures AS es";
   }
   if ($form_not_esigned) {
     $esign_fields = ", es.table, es.tid ";
     $esign_joins = "LEFT JOIN esign_signatures AS es on es.tid = fe.encounter ";
-    //$esign_from = ",esign_signatures AS es";
   }
 
 $query = "SELECT " .
@@ -217,7 +214,7 @@ $res = sqlStatement($query);
 				<?php echo xlt('Facility'); ?>:
 			</td>
 			<td>
-			<?php dropdown_facility(attr($form_facility), 'form_facility', true); ?>
+			<?php dropdown_facility($form_facility, 'form_facility', true); ?>
 			</td>
 			<td class='label'>
 			   <?php echo xlt('Provider'); ?>:
@@ -269,7 +266,7 @@ $res = sqlStatement($query);
 				onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='yyyy-mm-dd'>
 			   <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
 				id='img_from_date' border='0' alt='[?]' style='cursor:pointer'
-				title='<?php echo xlt('Click here to choose a date'); ?>'>
+				title='<?php echo xla('Click here to choose a date'); ?>'>
 			</td>
 			<td class='label'>
 			   <?php echo xlt('To'); ?>:
@@ -279,7 +276,7 @@ $res = sqlStatement($query);
 				onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='yyyy-mm-dd'>
 			   <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
 				id='img_to_date' border='0' alt='[?]' style='cursor:pointer'
-				title='<?php echo xlt('Click here to choose a date'); ?>'>
+				title='<?php echo xla('Click here to choose a date'); ?>'>
 			</td>
 			<td>
 			   <label><input type='checkbox' name='form_details'<?php  if ($form_details) echo ' checked'; ?>>
