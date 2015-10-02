@@ -31,6 +31,9 @@
  */
     
     require_once("verify_session.php");
+    include_once("$srcdir/documents.php");
+    require_once($GLOBALS['fileroot'] . "/controllers/C_Document.class.php");
+    use C_Document;
 	
 	// get the temporary folder
     $tmp = $GLOBALS['temporary_files_dir'];
@@ -50,35 +53,43 @@
 		// find the tree of the documents category
 		$sql = "SELECT name FROM categories WHERE lft < ? AND rght > ? ORDER BY lft ASC";
 		$pathres = sqlStatement($sql, array($cat['lft'], $cat['rght']));
-		
+
 		// create the tree of the categories
 		$path = "";
 		while ($parent = sqlFetchArray($pathres)) {
-			$path .= $parent['name']."/";
+			$path .= convert_safe_file_dir_name($parent['name'])."/";
 		}
-		$path .= $cat['name']."/";
+		$path .= convert_safe_file_dir_name($cat['name'])."/";
 		// create the folder structure at the temporary dir
 		if (!is_dir($tmp."/".$pid."/".$path)) {
 			if (!mkdir($tmp."/".$pid."/".$path, 0777, true )){
 				echo xlt("Error creating directory!")."<br />";
 			}
 		}
-		
+
 		// copy the document
-		if(file_exists($GLOBALS['OE_SITE_DIR'] ."/documents/".$pid."/".basename($file['url']))){
-			$sour = $GLOBALS['OE_SITE_DIR'] ."/documents/".$pid."/".basename($file['url']);
+        $documentId = $file['id'];
+        $obj = new \C_Document();
+        $document = $obj->retrieve_action("", $documentId, true, true, true);
+        if($document){
 			$pos = strpos(substr($file['url'], -5), '.');
-			
 			// check if has an extension or find it from the mimetype
 			if ($pos === false) 
 				$file['url'] = $file['url'].get_extension($file['mimetype']);
-			$dest = $tmp."/".$pid."/".$path."/".basename($file['url']);
-			copy($sour, $dest);
-		}
+			$dest = $tmp."/".$pid."/".$path."/".convert_safe_file_dir_name(basename($file['url']));
+          if(file_exists($dest} {
+            $x = 1;
+            do {
+            $dest = ."/".$pid."/".$path."/". $x ."_".convert_safe_file_dir_name(basename($file['url']));
+            $x++;
+            } while (file_exists($dest);
+          {
+          else }
+            file_put_contents($dest,$document);
+          {
+        }
 		else {
-			if(!is_readable($GLOBALS['OE_SITE_DIR'] ."/documents/".$pid."/".basename($file['url']))){
-				echo xlt("Can't read file!")."<br />";
-			}
+				echo xlt("Can't find file!")."<br />";
 		}
 	}
 	
