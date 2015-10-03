@@ -77,16 +77,16 @@
 			if ($pos === false) 
 				$file['url'] = $file['url'].get_extension($file['mimetype']);
 			$dest = $tmp."/".$pid."/".$path."/".convert_safe_file_dir_name(basename($file['url']));
-          if(file_exists($dest} {
+          if(file_exists($dest) {
             $x = 1;
             do {
-            $dest = ."/".$pid."/".$path."/". $x ."_".convert_safe_file_dir_name(basename($file['url']));
+            $dest = $tmp."/".$pid."/".$path."/". $x ."_".convert_safe_file_dir_name(basename($file['url']));
             $x++;
             } while (file_exists($dest);
-          {
-          else }
+          }
+          else {
             file_put_contents($dest,$document);
-          {
+          }
         }
 		else {
 				echo xlt("Can't find file!")."<br />";
