@@ -587,7 +587,7 @@ if ($GLOBALS['patient_id_category_name']) {
 <a href="stats_full.php?active=all" onclick='top.restoreSession()'>
 <?php echo htmlspecialchars(xl('Issues'),ENT_NOQUOTES); ?></a>
 |
-<a href="../../reports/patient_ledger.php?patient_id=<?php echo $pid;?>" onclick='top.restoreSession()'>
+<a href="../../reports/pat_ledger.php?form=1&patient_id=<?php echo $pid;?>" onclick='top.restoreSession()'>
 <?php echo htmlspecialchars(xl('Ledger'),ENT_NOQUOTES); ?></a>
 
 <!-- DISPLAYING HOOKS STARTS HERE -->
