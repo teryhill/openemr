@@ -753,6 +753,13 @@ $GLOBALS_METADATA = array(
       xl('This specifies the Printing of the Custom End of Day Report grouped Provider or allow the Printing of Totals Only')
     ),
 
+    'sales_report_invoice' => array(
+      xl('Display Invoice Number in Sales Report'),
+        'bool',                           // data type
+        '1',                              // default = true
+      xl('This will Display the Invoice Number in the Sales Report if checked or the Patient Name and ID if unchecked.')
+    ),
+    
   ),
     // E-Sign Tab
     //

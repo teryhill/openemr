@@ -34,6 +34,13 @@ require_once "$srcdir/options.inc.php";
 require_once "$srcdir/formdata.inc.php";
 
 $form_provider  = $_POST['form_provider'];
+if ($_POST['form_refresh'] || $_POST['form_csvexport']) {
+  $form_details  = $_POST['form_details']      ? true : false;
+}
+else
+{
+  $form_details = false;
+}
 function bucks($amount) {
   if ($amount) echo oeFormatMoney($amount);
 }
@@ -159,12 +166,22 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td>
    <?php echo oeFormatShortDate($transdate); ?>
   </td>
-   <td>
+   <?php if($GLOBALS['sales_report_invoice'] == 1) {?>
+  <td>
+   <?php echo ' '; ?>
+  </td>
+   <?php }else{ ?>
+  <td>
    <?php echo $pat_name; ?>
-  </td> 
+  </td>
+   <?php } ?>  
   <td class="detail">
-   <!--<a href='../patient_file/pos_checkout.php?ptid=<?php //echo $patient_id; ?>&enc=<?php //echo $encounter_id; ?>'>-->
-   <?php echo $patient_id; ?><!--</a>-->
+  <?php if($GLOBALS['sales_report_invoice'] == 1) {?>
+   <a href='../patient_file/pos_checkout.php?ptid=<?php echo $patient_id; ?>&enc=<?php echo $encounter_id; ?>'>
+   <?php echo $invnumber; ?></a>
+   <?php }else{ ?>
+   <?php echo $patient_id; ?>
+   <?php } ?>
   </td>
   <td align="right">
    <?php echo $qty; ?>
@@ -387,10 +404,17 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    <?php if ($form_details) echo xlt('Date'); ?>
   </th>
   <th>
+   <?php if($GLOBALS['sales_report_invoice'] == 1) {?>
+   <?php if ($form_details) echo ' '; ?>
+  </th>
+  <th>
+   <?php if ($form_details) echo xlt('Invoice'); ?>
+   <?php }else{ ?>   
    <?php if ($form_details) echo xlt('Name'); ?>
   </th>
   <th>
    <?php if ($form_details) echo xlt('ID'); ?>
+   <?php } ?>
   </th>
   <th align="right">
    <?php echo xlt('Qty'); ?>
@@ -552,8 +576,10 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    <?php attr(bucks($grandtotal)); ?>
   </b></td>
  </tr>
- <?php $report_date = date("m/d/y",strtotime($form_from_date))  ; ?>
-<div align='right'><span class='title' ><?php echo xlt(' Report Date '); ?><?php echo attr($report_date);?></span></div>
+ <?php $report_from_date = date("m/d/y",strtotime($form_from_date))  ;
+       $report_to_date = date("m/d/y",strtotime($form_to_date))  ;
+ ?>
+<div align='right'><span class='title' ><?php echo xlt(' Report Date '); ?><?php echo attr($report_from_date);?> - <?php echo attr($report_to_date);?></span></div>
 <?php
 
     } // End not csv export
