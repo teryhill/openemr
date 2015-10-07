@@ -1,14 +1,30 @@
 <?php
-// Copyright (C) 2006-2015 Rod Roark <rod@sunsetsystems.com>
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This is a report of sales by item description.  It's driven from
-// SQL-Ledger so as to include all types of invoice items.
-
+/**
+ * This is a report of sales by item description. It's driven from
+ * SQL-Ledger so as to include all types of invoice items.
+ *
+ * Copyright (C) 2015 Terry Hill <terry@lillysystems.com>
+ * Copyright (C) 2006-2010 Rod Roark <rod@sunsetsystems.com>
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package OpenEMR
+ * @author  Rod Roark <rod@sunsetsystems.com>
+ * @author  Terry Hill <terry@lillysystems.com>
+ * @link    http://www.open-emr.org
+ */
+$sanitize_all_escapes=true;
+$fake_register_globals=false;
+ 
 require_once("../globals.php");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/sql-ledger.inc");
@@ -17,6 +33,7 @@ require_once("$srcdir/formatting.inc.php");
 require_once "$srcdir/options.inc.php";
 require_once "$srcdir/formdata.inc.php";
 
+$form_provider  = $_POST['form_provider'];
 function bucks($amount) {
   if ($amount) echo oeFormatMoney($amount);
 }
@@ -34,7 +51,17 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
 
   $invnumber = $irnumber ? $irnumber : "$patient_id.$encounter_id";
   $rowamount = sprintf('%01.2f', $amount);
-
+  
+   $patdata = sqlQuery("SELECT " .
+  "p.fname, p.mname, p.lname, p.pubpid, p.DOB, " .
+  "p.street, p.city, p.state, p.postal_code, " .
+  "p.ss, p.sex, p.status, p.phone_home, " .
+  "p.phone_biz, p.phone_cell, p.hipaa_notice " .
+  "FROM patient_data AS p " .
+  "WHERE p.pid = ? LIMIT 1", array($patient_id));
+  
+  $pat_name = $patdata['fname'] . ' ' . $patdata['mname'] . ' ' . $patdata['lname'];
+  
   if (empty($rowcat)) $rowcat = 'None';
   $rowproduct = $description;
   if (! $rowproduct) $rowproduct = 'Unknown';
@@ -57,13 +84,16 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    <?php echo display_desc($catleft); $catleft = "&nbsp;"; ?>
   </td>
   <td class="detail" colspan="3">
-   <?php if ($_POST['form_details']) echo xl('Total for') . ' '; echo display_desc($product); ?>
+   <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo display_desc($product); ?>
   </td>
   <td align="right">
-   <?php echo $productqty; ?>
+   <?php echo ' '; ?>
   </td>
   <td align="right">
-   <?php bucks($producttotal); ?>
+   <?php echo attr($productqty); ?>
+  </td>
+  <td align="right">
+   <?php attr(bucks($producttotal)); ?>
   </td>
  </tr>
 <?php
@@ -86,7 +116,10 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    &nbsp;
   </td>
   <td class="detail" colspan="3">
-   <?php echo xl('Total for category') . ' '; echo display_desc($category); ?>
+   <?php echo xlt('Total for category') . ' '; echo display_desc($category); ?>
+  </td>
+  <td align="right">
+   <?php echo ' '; ?>
   </td>
   <td align="right">
    <?php echo $catqty; ?>
@@ -126,9 +159,12 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td>
    <?php echo oeFormatShortDate($transdate); ?>
   </td>
+   <td>
+   <?php echo $pat_name; ?>
+  </td> 
   <td class="detail">
-   <a href='../patient_file/pos_checkout.php?ptid=<?php echo $patient_id; ?>&enc=<?php echo $encounter_id; ?>'>
-   <?php echo $invnumber; ?></a>
+   <!--<a href='../patient_file/pos_checkout.php?ptid=<?php //echo $patient_id; ?>&enc=<?php //echo $encounter_id; ?>'>-->
+   <?php echo $patient_id; ?><!--</a>-->
   </td>
   <td align="right">
    <?php echo $qty; ?>
@@ -212,7 +248,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
 }
 </style>
 
-<title><?php xl('Sales by Item','e') ?></title>
+<title><?php echo xlt('Sales by Item') ?></title>
 
 <script type="text/javascript" src="../../library/js/jquery.1.3.2.js"></script>
 
@@ -227,7 +263,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
 
 <body leftmargin='0' topmargin='0' marginwidth='0' marginheight='0' class="body_top">
 
-<span class='title'><?php xl('Report','e'); ?> - <?php xl('Sales by Item','e'); ?></span>
+<span class='title'><?php echo xlt('Report'); ?> - <?php echo xlt('Sales by Item'); ?></span>
 
 <form method='post' action='sales_by_item.php' id='theform'>
 
@@ -237,76 +273,98 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
 <table>
  <tr>
   <td width='630px'>
-	<div style='float:left'>
-
-	<table class='text'>
-		<tr>
-			<td class='label'>
-				<?php xl('Facility','e'); ?>:
-			</td>
-			<td>
-			<?php dropdown_facility(strip_escape_custom($form_facility), 'form_facility', true); ?>
-			</td>
-			<td class='label'>
-			   <?php xl('From','e'); ?>:
-			</td>
-			<td>
-			   <input type='text' name='form_from_date' id="form_from_date" size='10' value='<?php echo $form_from_date ?>'
-				onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='yyyy-mm-dd'>
-			   <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
-				id='img_from_date' border='0' alt='[?]' style='cursor:pointer'
-				title='<?php xl('Click here to choose a date','e'); ?>'>
-			</td>
-			<td class='label'>
-			   <?php xl('To','e'); ?>:
-			</td>
-			<td>
-			   <input type='text' name='form_to_date' id="form_to_date" size='10' value='<?php echo $form_to_date ?>'
-				onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='yyyy-mm-dd'>
-			   <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
-				id='img_to_date' border='0' alt='[?]' style='cursor:pointer'
-				title='<?php xl('Click here to choose a date','e'); ?>'>
-			</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td>
-			   <input type='checkbox' name='form_details'<?php  if ($form_details) echo ' checked'; ?>>
-			   <?php  xl('Details','e'); ?>
-			</td>
-		</tr>
-	</table>
-
-	</div>
+    <div style='float:left'>
+    <table class='text'>
+        <tr>
+            <td class='label'>
+                <?php echo xlt('Facility'); ?>:
+            </td>
+            <td>
+            <?php dropdown_facility($form_facility, 'form_facility', true); ?>
+            </td>
+            <td class='label'>
+                <?php echo xlt('From'); ?>:
+            </td>
+            <td>
+                <input type='text' name='form_from_date' id="form_from_date" size='10' value='<?php echo attr($form_from_date) ?>'
+                onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='yyyy-mm-dd'>
+                <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
+                id='img_from_date' border='0' alt='[?]' style='cursor:pointer'
+                title='<?php echo xla('Click here to choose a date'); ?>'>
+            </td>
+            <td class='label'>
+                <?php echo xlt('To'); ?>:
+            </td>
+            <td>
+                <input type='text' name='form_to_date' id="form_to_date" size='10' value='<?php echo attr($form_to_date) ?>'
+                onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='yyyy-mm-dd'>
+                <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
+                id='img_to_date' border='0' alt='[?]' style='cursor:pointer'
+                title='<?php echo xla('Click here to choose a date'); ?>'>
+            </td>
+        </tr>
+        <tr>
+          <td class='label'>
+            <?php echo xlt('Provider'); ?>:
+            </td>
+            <td>
+            <?php
+                if (acl_check('acct', 'rep_a')) {
+                    // Build a drop-down list of providers.
+                    $query = "select id, lname, fname from users where " .
+                        "authorized = 1 order by lname, fname";
+                    $res = sqlStatement($query);
+                    echo "   &nbsp;<select name='form_provider'>\n";
+                    echo "    <option value=''>-- " . xlt('All Providers') . " --\n";
+                    while ($row = sqlFetchArray($res)) {
+                        $provid = $row['id'];
+                        echo "    <option value='". attr($provid) ."'";
+                        if ($provid == $_REQUEST['form_provider']) echo " selected";
+                        echo ">" . text($row['lname']) . ", " . text($row['fname']) . "\n";
+                    }
+                    echo "   </select>\n";
+                    } else {
+                    echo "<input type='hidden' name='form_provider' value='" . $_SESSION['authUserID'] . "'>";
+                    }
+            ?>
+            &nbsp;
+            </td>
+            <td>
+               <label><input type='checkbox' name='form_details'<?php  if ($form_details) echo ' checked'; ?>>
+               <?php echo xlt('Details'); ?></label>
+            </td>
+        </tr>
+    </table>
+  </div>
 
   </td>
   <td align='left' valign='middle' height="100%">
-	<table style='border-left:1px solid; width:100%; height:100%' >
-		<tr>
-			<td>
-				<div style='margin-left:15px'>
-					<a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#form_csvexport").attr("value",""); $("#theform").submit();'>
-					<span>
-						<?php xl('Submit','e'); ?>
-					</span>
-					</a>
+    <table style='border-left:1px solid; width:100%; height:100%' >
+         <tr>
+            <td>
+                <div style='margin-left:15px'>
+                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#form_csvexport").attr("value",""); $("#theform").submit();'>
+                    <span>
+                       <?php echo xlt('Submit'); ?>
+                    </span>
+                    </a>
 
-					<?php if ($_POST['form_refresh'] || $_POST['form_csvexport']) { ?>
-					<a href='#' class='css_button' id='printbutton'>
-						<span>
-							<?php xl('Print','e'); ?>
-						</span>
-					</a>
-					<a href='#' class='css_button' onclick='$("#form_refresh").attr("value",""); $("#form_csvexport").attr("value","true"); $("#theform").submit();'>
-						<span>
-							<?php xl('CSV Export','e'); ?>
-						</span>
-					</a>
-					<?php } ?>
-				</div>
-			</td>
-		</tr>
-	</table>
+                    <?php if ($_POST['form_refresh'] || $_POST['form_csvexport']) { ?>
+                    <a href='#' class='css_button' onclick='window.print()'>
+                    <span>
+                        <?php echo xlt('Print'); ?>
+                    </span>
+                    </a>
+                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value",""); $("#form_csvexport").attr("value","true"); $("#theform").submit();'>
+                    <span>
+                        <?php echo xlt('CSV Export'); ?>
+                    </span>
+                    </a>
+                    <?php } ?>
+                </div>
+             </td>
+        </tr>
+    </table>
   </td>
  </tr>
 </table>
@@ -320,22 +378,25 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
 <table >
  <thead>
   <th>
-   <?php xl('Category','e'); ?>
+   <?php echo xlt('Category'); ?>
   </th>
   <th>
-   <?php xl('Item','e'); ?>
+   <?php echo xlt('Item'); ?>
   </th>
   <th>
-   <?php xl('Date','e'); ?>
+   <?php if ($form_details) echo xlt('Date'); ?>
   </th>
   <th>
-   <?php xl('Invoice','e'); ?>
+   <?php if ($form_details) echo xlt('Name'); ?>
+  </th>
+  <th>
+   <?php if ($form_details) echo xlt('ID'); ?>
   </th>
   <th align="right">
-   <?php xl('Qty','e'); ?>
+   <?php echo xlt('Qty'); ?>
   </th>
   <th align="right">
-   <?php xl('Amount','e'); ?>
+   <?php echo xlt('Amount'); ?>
   </th>
  </thead>
 <?php
@@ -359,7 +420,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
 
     if ($INTEGRATED_AR) {
       $query = "SELECT b.fee, b.pid, b.encounter, b.code_type, b.code, b.units, " .
-        "b.code_text, fe.date, fe.facility_id, fe.invoice_refno, lo.title " .
+        "b.code_text, fe.date, fe.facility_id, fe.provider_id, fe.invoice_refno, lo.title " .
         "FROM billing AS b " .
         "JOIN code_types AS ct ON ct.ct_key = b.code_type " .
         "JOIN form_encounter AS fe ON fe.pid = b.pid AND fe.encounter = b.encounter " .
@@ -371,6 +432,9 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
       if ($form_facility) {
         $query .= " AND fe.facility_id = '$form_facility'";
       }
+      if ($form_provider) {
+        $query .= " AND fe.provider_id = '$form_provider'";
+      }
       $query .= " ORDER BY lo.title, b.code, fe.date, fe.id";
       //
       $res = sqlStatement($query);
@@ -381,7 +445,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
       }
       //
       $query = "SELECT s.sale_date, s.fee, s.quantity, s.pid, s.encounter, " .
-        "d.name, fe.date, fe.facility_id, fe.invoice_refno " .
+        "d.name, fe.date, fe.facility_id, fe.provider_id, fe.invoice_refno " .
         "FROM drug_sales AS s " .
         "JOIN drugs AS d ON d.drug_id = s.drug_id " .
         "JOIN form_encounter AS fe ON " .
@@ -391,6 +455,9 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
       // If a facility was specified.
       if ($form_facility) {
         $query .= " AND fe.facility_id = '$form_facility'";
+      }
+      if ($form_provider) {
+        $query .= " AND fe.provider_id = '$form_provider'";
       }
       $query .= " ORDER BY d.name, fe.date, fe.id";
       //
@@ -440,13 +507,16 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    <?php echo display_desc($catleft); $catleft = "&nbsp;"; ?>
   </td>
   <td class="detail" colspan="3">
-   <?php if ($_POST['form_details']) echo xl('Total for') . ' '; echo display_desc($product); ?>
+   <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo display_desc($product); ?>
   </td>
   <td align="right">
-   <?php echo $productqty; ?>
+   <?php echo ' '; ?>
   </td>
   <td align="right">
-   <?php bucks($producttotal); ?>
+   <?php echo attr($productqty); ?>
+  </td>
+  <td align="right">
+   <?php attr(bucks($producttotal)); ?>
   </td>
  </tr>
 
@@ -454,29 +524,36 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td class="detail">
    &nbsp;
   </td>
-  <td class="detail" colspan="3">
-   <?php echo xl('Total for category') . ' '; echo display_desc($category); ?>
-  </td>
+  <td class="detail" colspan="3"><b>
+   <?php echo xlt('Total for category') . ' '; echo display_desc($category); ?>
+  </b></td>
   <td align="right">
-   <?php echo $catqty; ?>
-  </td>
-  <td align="right">
-   <?php bucks($cattotal); ?>
-  </td>
+   <?php echo ' '; ?>
+  </td>  
+  <td align="right"><b>
+   <?php echo attr($catqty); ?>
+  </b></td>
+  <td align="right"><b>
+   <?php attr(bucks($cattotal)); ?>
+  </b></td>
  </tr>
 
  <tr>
-  <td class="detail" colspan="4">
-   <?php xl('Grand Total','e'); ?>
-  </td>
+  <td class="detail" colspan="4"><b>
+   <?php echo xlt('Grand Total'); ?>
+  </b></td>
   <td align="right">
-   <?php echo $grandqty; ?>
-  </td>
-  <td align="right">
-   <?php bucks($grandtotal); ?>
-  </td>
+   <?php echo ' '; ?>
+  </td>  
+  <td align="right"><b>
+   <?php echo attr($grandqty); ?>
+  </b></td>
+  <td align="right"><b>
+   <?php attr(bucks($grandtotal)); ?>
+  </b></td>
  </tr>
-
+ <?php $report_date = date("m/d/y",strtotime($form_from_date))  ; ?>
+<div align='right'><span class='title' ><?php echo xlt(' Report Date '); ?><?php echo attr($report_date);?></span></div>
 <?php
 
     } // End not csv export
@@ -491,7 +568,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
 </div> <!-- report results -->
 <?php } else { ?>
 <div class='text'>
- 	<?php echo xl('Please input search criteria above, and click Submit to view results.', 'e' ); ?>
+ 	<?php echo xlt('Please input search criteria above, and click Submit to view results.' ); ?>
 </div>
 <?php } ?>
 
