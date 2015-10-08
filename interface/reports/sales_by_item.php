@@ -367,7 +367,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
                     </a>
 
                     <?php if ($_POST['form_refresh'] || $_POST['form_csvexport']) { ?>
-                    <a href='#' class='css_button' onclick='window.print()'>
+                    <a href='#' class='css_button' id='printbutton'>
                     <span>
                         <?php echo xlt('Print'); ?>
                     </span>
