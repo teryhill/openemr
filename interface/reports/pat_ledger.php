@@ -26,7 +26,6 @@ $sanitize_all_escapes=true;
 $fake_register_globals=false;
 require_once('../globals.php');
 require_once($GLOBALS['srcdir'].'/patient.inc');
-require_once($GLOBALS['srcdir'].'/sql-ledger.inc');
 require_once($GLOBALS['srcdir'].'/acl.inc');
 require_once($GLOBALS['srcdir'].'/formatting.inc.php');
 require_once($GLOBALS['srcdir'].'/options.inc.php');
@@ -68,21 +67,10 @@ function GetAllUnapplied($pat='',$from_dt='',$to_dt='') {
     return($all);
 }
 
-function User_Name_From_ID($thisField) {
-  if(!$thisField) return '';
-  $ret = '';
-  $rlist= sqlStatementNoLog("SELECT * FROM users WHERE id=?",array($thisField));
-  $rrow= sqlFetchArray($rlist);
-  if($rrow) {
-    $ret = $rrow{'lname'}.', '.$rrow{'fname'}.' '.$rrow{'mname'};
-  }
-  return $ret;
-}
-
 function User_Id_Look($thisField) {
   if(!$thisField) return '';
   $ret = '';
-  $rlist= sqlStatementNoLog("SELECT * FROM users WHERE id=?",array($thisField));
+  $rlist= sqlStatement("SELECT lname, fname, mname FROM users WHERE id=?",array($thisField));
   $rrow= sqlFetchArray($rlist);
   if($rrow) {
     $ret = $rrow{'lname'}.', '.$rrow{'fname'}.' '.$rrow{'mname'};
@@ -92,10 +80,10 @@ function User_Id_Look($thisField) {
 
 function List_Look($thisData, $thisList) {
   if($thisList == 'occurrence') {
-    if(!$thisData || $thisData == '') return 'Unknown or N/A'; 
+    if(!$thisData || $thisData == '') return xl('Unknown or N/A'); 
   }
   if($thisData == '') return ''; 
-  $fres=sqlStatementNoLog("SELECT * FROM list_options WHERE list_id=? ".
+  $fres=sqlStatement("SELECT title FROM list_options WHERE list_id=? ".
         "AND option_id=?", array($thisList, $thisData));
   if($fres) {
     $rret=sqlFetchArray($fres);
@@ -155,7 +143,7 @@ function PrintCreditDetail($detail, $pat, $unassigned=false) {
            if(($pmt['pay_total'] - $pmt['applied']) == 0) continue;
         }
     $bgcolor = (($bgcolor == "#FFFFDD") ? "#FFDDDD" : "#FFFFDD");
-    $print = "<tr bgcolor='$bgcolor'>";
+    $print = "<tr bgcolor='" . attr($bgcolor) . "'>";
     $print .= "<td class='detail'>&nbsp;</td>";
     $method = List_Look($pmt['payment_method'],'payment_method');
     $desc = $pmt['description'];
@@ -220,7 +208,7 @@ function PrintCreditDetail($detail, $pat, $unassigned=false) {
 		echo $print;
         if($pmt['follow_up_note'] != '') {
   	      $bgcolor = (($bgcolor == "#FFFFDD") ? "#FFDDDD" : "#FFFFDD");
-          $print = "<tr bgcolor='$bgcolor'>";
+          $print = "<tr bgcolor='". attr($bgcolor) ."'>";
 	      $print .= "<td class='detail' colspan='2'>&nbsp;</td>";
           $print .= "<td colspan='7'>". xlt('Follow Up Note') .": ";
           $print .= text($pmt['follow_up_note']);
@@ -362,6 +350,14 @@ function sel_patient() {
 </style>
 
 <title><?php echo xlt('Patient Ledger by Date') ?></title>
+
+<script language="JavaScript">
+ $(document).ready(function() {
+  var win = top.printLogSetup ? top : opener.top;
+  win.printLogSetup(document.getElementById('printbutton'));
+ });
+</script>
+
 </head>
 <body class="body_top">
 <?php if($type_form == '0') { ?>
@@ -369,13 +365,17 @@ function sel_patient() {
 <?php }else{ ?>
 <span class='title' id='title'><?php echo xlt('Patient Ledger'); ?></span>
 <?php } ?>
-<form method='post' action='pat_ledger.php?form=<?php echo $type_form;?>&patient_id=<?php echo $form_pid;?>' id='theform'>
+<form method='post' action='pat_ledger.php?form=<?php echo attr($type_form);?>&patient_id=<?php echo attr($form_pid);?>' id='theform'>
 <div id="report_parameters">
 <input type='hidden' name='form_refresh' id='form_refresh' value=''/>
 <input type='hidden' name='form_csvexport' id='form_csvexport' value=''/>
 <table>
  <tr>
+  <?php if($type_form == '1') { ?>
+    <td width='35%'>
+  <?php }else{ ?>
   <td width='70%'>
+  <?php } ?>
 	<div style='float:left'>
 	<table class='text'>
 		<tr>
@@ -440,12 +440,12 @@ function sel_patient() {
 
 			<?php if ($_REQUEST['form_refresh'] || $_REQUEST['form_csvexport']) { ?>
 					<div id="controls">
+                    <a href='#' class='css_button' id='printbutton'>
+                         <span><?php echo xlt('Print Ledger'); ?></span></a>
                     <?php if($type_form == '1') { ?>
                     <a href="../patient_file/summary/demographics.php" <?php if (!$GLOBALS['concurrent_layout']) echo "target='Main'"; ?> class="css_button" onclick="top.restoreSession()">
                          <span><?php echo xlt('Back To Patient');?></span></a>
                     <?php } ?>    
-					<a href='#' class='css_button' onclick='window.print()'>
-						<span><?php echo xlt('Print'); ?></span></a>
 					</div>
 					<?php } ?>
 				</div>
@@ -506,18 +506,18 @@ if ($_REQUEST['form_refresh'] || $_REQUEST['form_csvexport']) {
     <td class="title" ><?php echo xlt('Patient Ledger'); ?></td>
   </tr>
   <tr>
-    <td class="title" ><?php echo attr($facility{'name'}); ?></td>
+    <td class="title" ><?php echo text($facility{'name'}); ?></td>
   </tr>
   <tr>
-    <td class="title" ><?php echo attr($facility{'addr'}); ?></td>
+    <td class="title" ><?php echo text($facility{'addr'}); ?></td>
   </tr>
   <tr>
-    <td class="title" ><?php echo attr($facility{'city'}).", ".attr($facility{'state'})." ".attr($facility{'postal_code'}); ?></td>
+    <td class="title" ><?php echo text($facility{'city'}).", ".text($facility{'state'})." ".text($facility{'postal_code'}); ?></td>
   </tr>
 	<tr>
 		<?php 
 			$title = xl('All Providers');
-			if($form_provider) { $title = xl('For Provider') . ': '.User_Name_From_ID($form_provider); }
+			if($form_provider) { $title = xl('For Provider') . ': '.User_Id_Look($form_provider); }
 		?>
     <td class="title" ><?php echo text($title); ?></td>
 	</tr>
@@ -601,7 +601,7 @@ if ($_REQUEST['form_refresh'] || $_REQUEST['form_csvexport']) {
                 $code_desc = $erow['code_text'];
                 if(strlen($code_desc) > 50) $code_desc = substr($code_desc,0,50).'...';
                 $bgcolor = (($bgcolor == "#FFFFDD") ? "#FFDDDD" : "#FFFFDD");
-                $print = "<tr bgcolor='$bgcolor'>";
+                $print = "<tr bgcolor='". attr($bgcolor) ."'>";
                 $print .= "<td class='detail'>".text($erow['code'])."</td>";
                 $print .= "<td class='detail' colspan='2'>".text($code_desc)."</td>";
       	        $who = ($erow['name'] == '') ? xl('Self') : $erow['name'];
