@@ -91,16 +91,16 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    <?php echo display_desc($catleft); $catleft = "&nbsp;"; ?>
   </td>
   <td class="detail" colspan="3">
-   <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo display_desc($product); ?>
+   <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo text(display_desc($product)); ?>
   </td>
   <td align="right">
    <?php echo ' '; ?>
   </td>
   <td align="right">
-   <?php echo attr($productqty); ?>
+   <?php echo text($productqty); ?>
   </td>
   <td align="right">
-   <?php attr(bucks($producttotal)); ?>
+   <?php text(bucks($producttotal)); ?>
   </td>
  </tr>
 <?php
@@ -123,16 +123,16 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    &nbsp;
   </td>
   <td class="detail" colspan="3">
-   <?php echo xlt('Total for category') . ' '; echo display_desc($category); ?>
+   <?php echo xlt('Total for category') . ' '; echo text(display_desc($category)); ?>
   </td>
   <td align="right">
    <?php echo ' '; ?>
   </td>
   <td align="right">
-   <?php echo $catqty; ?>
+   <?php echo text($catqty); ?>
   </td>
   <td align="right">
-   <?php bucks($cattotal); ?>
+   <?php text(bucks($cattotal)); ?>
   </td>
  </tr>
 <?php
@@ -164,7 +164,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    <?php echo display_desc($productleft); $productleft = "&nbsp;"; ?>
   </td>
   <td>
-   <?php echo oeFormatShortDate($transdate); ?>
+   <?php echo text(oeFormatShortDate($transdate)); ?>
   </td>
    <?php if($GLOBALS['sales_report_invoice'] == 1) {?>
   <td>
@@ -172,22 +172,22 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   </td>
    <?php }else{ ?>
   <td>
-   <?php echo $pat_name; ?>
+   <?php echo text($pat_name); ?>
   </td>
    <?php } ?>  
   <td class="detail">
   <?php if($GLOBALS['sales_report_invoice'] == 1) {?>
    <a href='../patient_file/pos_checkout.php?ptid=<?php echo $patient_id; ?>&enc=<?php echo $encounter_id; ?>'>
-   <?php echo $invnumber; ?></a>
+   <?php echo text($invnumber); ?></a>
    <?php }else{ ?>
-   <?php echo $patient_id; ?>
+   <?php echo text($patient_id); ?>
    <?php } ?>
   </td>
   <td align="right">
-   <?php echo $qty; ?>
+   <?php echo text($qty); ?>
   </td>
   <td align="right">
-   <?php bucks($rowamount); ?>
+   <?php text(bucks($rowamount)); ?>
   </td>
  </tr>
 <?php
@@ -341,7 +341,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
                     }
                     echo "   </select>\n";
                     } else {
-                    echo "<input type='hidden' name='form_provider' value='" . $_SESSION['authUserID'] . "'>";
+                    echo "<input type='hidden' name='form_provider' value='" . attr($_SESSION['authUserID']) . "'>";
                     }
             ?>
             &nbsp;
@@ -428,9 +428,8 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
 }
 
   if ($_POST['form_refresh'] || $_POST['form_csvexport']) {
-    $from_date = $form_from_date;
-    $to_date   = $form_to_date;
-
+    $from_date = $form_from_date . ' 00:00:00';
+    $to_date = $form_to_date . ' 23:59:59';
     $category = "";
     $catleft = "";
     $cattotal = 0;
@@ -443,6 +442,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
     $grandqty = 0;
 
     if ($INTEGRATED_AR) {
+      $sqlBindArray = array();
       $query = "SELECT b.fee, b.pid, b.encounter, b.code_type, b.code, b.units, " .
         "b.code_text, fe.date, fe.facility_id, fe.provider_id, fe.invoice_refno, lo.title " .
         "FROM billing AS b " .
@@ -451,54 +451,63 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
         "LEFT JOIN codes AS c ON c.code_type = ct.ct_id AND c.code = b.code AND c.modifier = b.modifier " .
         "LEFT JOIN list_options AS lo ON lo.list_id = 'superbill' AND lo.option_id = c.superbill " .
         "WHERE b.code_type != 'COPAY' AND b.activity = 1 AND b.fee != 0 AND " .
-        "fe.date >= '$from_date 00:00:00' AND fe.date <= '$to_date 23:59:59'";
+        "fe.date >= ? AND fe.date <= ?";
+        array_push($sqlBindArray,$from_date,$to_date,$form_pid);
       // If a facility was specified.
       if ($form_facility) {
-        $query .= " AND fe.facility_id = '$form_facility'";
+        $query .= " AND fe.facility_id = ?";
+        array_push($sqlBindArray,$form_facility);
       }
       if ($form_provider) {
-        $query .= " AND fe.provider_id = '$form_provider'";
+        $query .= " AND fe.provider_id = ?";
+        array_push($sqlBindArray,$form_provider);
       }
       $query .= " ORDER BY lo.title, b.code, fe.date, fe.id";
       //
-      $res = sqlStatement($query);
+      $res = sqlStatement($query,$sqlBindArray);
       while ($row = sqlFetchArray($res)) {
         thisLineItem($row['pid'], $row['encounter'],
           $row['title'], $row['code'] . ' ' . $row['code_text'],
           substr($row['date'], 0, 10), $row['units'], $row['fee'], $row['invoice_refno']);
       }
       //
+      $sqlBindArray = array();
       $query = "SELECT s.sale_date, s.fee, s.quantity, s.pid, s.encounter, " .
         "d.name, fe.date, fe.facility_id, fe.provider_id, fe.invoice_refno " .
         "FROM drug_sales AS s " .
         "JOIN drugs AS d ON d.drug_id = s.drug_id " .
         "JOIN form_encounter AS fe ON " .
         "fe.pid = s.pid AND fe.encounter = s.encounter AND " .
-        "fe.date >= '$from_date 00:00:00' AND fe.date <= '$to_date 23:59:59' " .
+        "fe.date >= ? AND fe.date <= ? " .
         "WHERE s.fee != 0";
+        array_push($sqlBindArray,$from_date,$to_date,$form_pid);
       // If a facility was specified.
       if ($form_facility) {
-        $query .= " AND fe.facility_id = '$form_facility'";
+        $query .= " AND fe.facility_id = ?";
+         array_push($sqlBindArray,$form_facility);
       }
       if ($form_provider) {
-        $query .= " AND fe.provider_id = '$form_provider'";
+        $query .= " AND fe.provider_id = ?";
+        array_push($sqlBindArray,$form_provider);
       }
       $query .= " ORDER BY d.name, fe.date, fe.id";
       //
-      $res = sqlStatement($query);
+      $res = sqlStatement($query,$sqlBindArray);
       while ($row = sqlFetchArray($res)) {
         thisLineItem($row['pid'], $row['encounter'], xl('Products'), $row['name'],
           substr($row['date'], 0, 10), $row['quantity'], $row['fee'], $row['invoice_refno']);
       }
     }
     else {
+      $sqlBindArray = array();
       $query = "SELECT ar.invnumber, ar.transdate, " .
         "invoice.description, invoice.qty, invoice.sellprice " .
         "FROM ar, invoice WHERE " .
-        "ar.transdate >= '$from_date' AND ar.transdate <= '$to_date' " .
+        "ar.transdate >= ? AND ar.transdate <= ? " .
         "AND invoice.trans_id = ar.id " .
         "ORDER BY invoice.description, ar.transdate, ar.id";
-      $t_res = SLQuery($query);
+        array_push($sqlBindArray,$from_date,$to_date);
+      $t_res = SLQuery($query,$sqlBindArray);
       if ($sl_err) die($sl_err);
       for ($irow = 0; $irow < SLRowCount($t_res); ++$irow) {
         $row = SLGetRow($t_res, $irow);
@@ -507,8 +516,8 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
         // do not indicate that facility.
         if ($form_facility) {
           $tmp = sqlQuery("SELECT count(*) AS count FROM form_encounter WHERE " .
-            "pid = '$patient_id' AND encounter = '$encounter_id' AND " .
-            "facility_id = '$form_facility'");
+            "pid = ? AND encounter = ? AND " .
+            "facility_id = ?", array($patient_id, $encounter_id, $form_facility));
           if (empty($tmp['count'])) continue;
         }
         thisLineItem($patient_id, $encounter_id, '', $row['description'],
@@ -531,16 +540,16 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    <?php echo display_desc($catleft); $catleft = "&nbsp;"; ?>
   </td>
   <td class="detail" colspan="3">
-   <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo display_desc($product); ?>
+   <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo text(display_desc($product)); ?>
   </td>
   <td align="right">
    <?php echo ' '; ?>
   </td>
   <td align="right">
-   <?php echo attr($productqty); ?>
+   <?php echo text($productqty); ?>
   </td>
   <td align="right">
-   <?php attr(bucks($producttotal)); ?>
+   <?php text(bucks($producttotal)); ?>
   </td>
  </tr>
 
@@ -549,16 +558,16 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    &nbsp;
   </td>
   <td class="detail" colspan="3"><b>
-   <?php echo xlt('Total for category') . ' '; echo display_desc($category); ?>
+   <?php echo xlt('Total for category') . ' '; echo text(display_desc($category)); ?>
   </b></td>
   <td align="right">
    <?php echo ' '; ?>
   </td>  
   <td align="right"><b>
-   <?php echo attr($catqty); ?>
+   <?php echo text($catqty); ?>
   </b></td>
   <td align="right"><b>
-   <?php attr(bucks($cattotal)); ?>
+   <?php text(bucks($cattotal)); ?>
   </b></td>
  </tr>
 
@@ -570,16 +579,16 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
    <?php echo ' '; ?>
   </td>  
   <td align="right"><b>
-   <?php echo attr($grandqty); ?>
+   <?php echo text($grandqty); ?>
   </b></td>
   <td align="right"><b>
-   <?php attr(bucks($grandtotal)); ?>
+   <?php text(bucks($grandtotal)); ?>
   </b></td>
  </tr>
  <?php $report_from_date = date("m/d/y",strtotime($form_from_date))  ;
        $report_to_date = date("m/d/y",strtotime($form_to_date))  ;
  ?>
-<div align='right'><span class='title' ><?php echo xlt(' Report Date '); ?><?php echo attr($report_from_date);?> - <?php echo attr($report_to_date);?></span></div>
+<div align='right'><span class='title' ><?php echo xlt('Report Date'). ' '; ?><?php echo attr($report_from_date);?> - <?php echo attr($report_to_date);?></span></div>
 <?php
 
     } // End not csv export
