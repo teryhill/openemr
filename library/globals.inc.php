@@ -760,10 +760,14 @@ $GLOBALS_METADATA = array(
     ),
 
     'sales_report_invoice' => array(
-      xl('Display Invoice Number in Sales Report'),
-		'bool',                           // data type
+      xl('Display Invoice Number or Patient Name or Both in the Sales Report'),
+      array(
+        '0' => xl('Invoice Number'),
+        '1' => xl('Patient Name and ID'),
+        '2' => xl('Patient Name and Invoice'),   
+      ),   
 		'1',                              // default = true
-      xl('This will Display the Invoice Number in the Sales Report if checked or the Patient Name and ID if unchecked.')
+      xl('This will Display the Invoice Number in the Sales Report or the Patient Name and ID or Patient Name and Invoice Number.')
     ),
     
   ),

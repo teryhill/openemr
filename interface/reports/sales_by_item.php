@@ -93,8 +93,13 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td class="detail" colspan="3">
    <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo text(display_desc($product)); ?>
   </td>
+  <?php if($GLOBALS['sales_report_invoice'] == 0 || $GLOBALS['sales_report_invoice'] == 2) {?>
+  <td>
+  &nbsp;
+  </td>
+  <?php } ?>
   <td align="right">
-   <?php echo ' '; ?>
+   &nbsp;
   </td>
   <td align="right">
    <?php echo text($productqty); ?>
@@ -125,8 +130,13 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td class="detail" colspan="3">
    <?php echo xlt('Total for category') . ' '; echo text(display_desc($category)); ?>
   </td>
+  <?php if($GLOBALS['sales_report_invoice'] == 0 || $GLOBALS['sales_report_invoice'] == 2) {?>
+  <td>
+   &nbsp;
+  </td>
+  <?php } ?>
   <td align="right">
-   <?php echo ' '; ?>
+   &nbsp;
   </td>
   <td align="right">
    <?php echo text($catqty); ?>
@@ -166,23 +176,30 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td>
    <?php echo text(oeFormatShortDate($transdate)); ?>
   </td>
-   <?php if($GLOBALS['sales_report_invoice'] == 1) {?>
+   <?php if($GLOBALS['sales_report_invoice'] == 0 || $GLOBALS['sales_report_invoice'] == 2) {?>
   <td>
-   <?php echo ' '; ?>
+   &nbsp;
   </td>
-   <?php }else{ ?>
+   <?php } if($GLOBALS['sales_report_invoice'] == 1 || $GLOBALS['sales_report_invoice'] == 2 ) { ?>
   <td>
    <?php echo text($pat_name); ?>
   </td>
    <?php } ?>  
   <td class="detail">
-  <?php if($GLOBALS['sales_report_invoice'] == 1) {?>
-   <a href='../patient_file/pos_checkout.php?ptid=<?php echo $patient_id; ?>&enc=<?php echo $encounter_id; ?>'>
+  <?php if($GLOBALS['sales_report_invoice'] == 0 || $GLOBALS['sales_report_invoice'] == 2) { ?>
+   <a href='../patient_file/pos_checkout.php?ptid=<?php echo attr($patient_id); ?>&enc=<?php echo attr($encounter_id); ?>'>
    <?php echo text($invnumber); ?></a>
-   <?php }else{ ?>
-   <?php echo text($patient_id); ?>
-   <?php } ?>
+   <?php } 
+   if($GLOBALS['sales_report_invoice'] == 1 ) { 
+     echo text($patient_id); 
+    } 
+    ?>
   </td>
+  <?php if($GLOBALS['sales_report_invoice'] == 0) {?>
+  <td>
+   &nbsp;
+  </td>
+  <?php } ?>
   <td align="right">
    <?php echo text($qty); ?>
   </td>
@@ -403,18 +420,33 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <th>
    <?php if ($form_details) echo xlt('Date'); ?>
   </th>
+    <?php if($GLOBALS['sales_report_invoice'] == 2) {?>
   <th>
-   <?php if($GLOBALS['sales_report_invoice'] == 1) {?>
-   <?php if ($form_details) echo ' '; ?>
+   &nbsp;
+  </th>
+  <?php } ?>
+  <th>
+   <?php 
+   if($GLOBALS['sales_report_invoice'] == 0) {
+    if ($form_details) echo ' ';
+   ?>
   </th>
   <th>
-   <?php if ($form_details) echo xlt('Invoice'); ?>
-   <?php }else{ ?>   
-   <?php if ($form_details) echo xlt('Name'); ?>
+   <?php 
+   if ($form_details) echo xlt('Invoice');  } 
+    if($GLOBALS['sales_report_invoice'] == 1 || $GLOBALS['sales_report_invoice'] == 2 ) { 
+     if ($form_details) echo xlt('Name'); 
+    } ?>
   </th>
   <th>
-   <?php if ($form_details) echo xlt('ID'); ?>
-   <?php } ?>
+   <?php 
+   if($GLOBALS['sales_report_invoice'] == 2) { 
+    if ($form_details) echo xlt('Invoice'); 
+   } 
+   if($GLOBALS['sales_report_invoice'] == 1) { 
+    if ($form_details) echo xlt('ID'); 
+    } 
+   ?>
   </th>
   <th align="right">
    <?php echo xlt('Qty'); ?>
@@ -499,15 +531,13 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
       }
     }
     else {
-      $sqlBindArray = array();
       $query = "SELECT ar.invnumber, ar.transdate, " .
         "invoice.description, invoice.qty, invoice.sellprice " .
         "FROM ar, invoice WHERE " .
-        "ar.transdate >= ? AND ar.transdate <= ? " .
+        "ar.transdate >= '$from_date' AND ar.transdate <= '$to_date' " .
         "AND invoice.trans_id = ar.id " .
         "ORDER BY invoice.description, ar.transdate, ar.id";
-        array_push($sqlBindArray,$from_date,$to_date);
-      $t_res = SLQuery($query,$sqlBindArray);
+      $t_res = SLQuery($query);
       if ($sl_err) die($sl_err);
       for ($irow = 0; $irow < SLRowCount($t_res); ++$irow) {
         $row = SLGetRow($t_res, $irow);
@@ -516,8 +546,8 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
         // do not indicate that facility.
         if ($form_facility) {
           $tmp = sqlQuery("SELECT count(*) AS count FROM form_encounter WHERE " .
-            "pid = ? AND encounter = ? AND " .
-            "facility_id = ?", array($patient_id, $encounter_id, $form_facility));
+            "pid = '$patient_id' AND encounter = '$encounter_id' AND " .
+            "facility_id = '$form_facility'");
           if (empty($tmp['count'])) continue;
         }
         thisLineItem($patient_id, $encounter_id, '', $row['description'],
@@ -542,8 +572,13 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td class="detail" colspan="3">
    <?php if ($_POST['form_details']) echo xlt('Total for') . ' '; echo text(display_desc($product)); ?>
   </td>
+  <?php if($GLOBALS['sales_report_invoice'] == 0 || $GLOBALS['sales_report_invoice'] == 2) {?>
+  <td>
+   &nbsp;
+  </td>
+  <?php } ?>
   <td align="right">
-   <?php echo ' '; ?>
+   &nbsp;
   </td>
   <td align="right">
    <?php echo text($productqty); ?>
@@ -560,8 +595,13 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td class="detail" colspan="3"><b>
    <?php echo xlt('Total for category') . ' '; echo text(display_desc($category)); ?>
   </b></td>
+  <?php if($GLOBALS['sales_report_invoice'] == 0 || $GLOBALS['sales_report_invoice'] == 2) {?>
+  <td>
+   &nbsp;
+  </td>
+  <?php } ?>
   <td align="right">
-   <?php echo ' '; ?>
+   &nbsp;
   </td>  
   <td align="right"><b>
    <?php echo text($catqty); ?>
@@ -575,8 +615,13 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
   <td class="detail" colspan="4"><b>
    <?php echo xlt('Grand Total'); ?>
   </b></td>
+  <?php if($GLOBALS['sales_report_invoice'] == 0 || $GLOBALS['sales_report_invoice'] == 2) {?>
+  <td>
+   &nbsp;
+  </td>
+  <?php } ?>
   <td align="right">
-   <?php echo ' '; ?>
+   &nbsp;
   </td>  
   <td align="right"><b>
    <?php echo text($grandqty); ?>
@@ -588,7 +633,7 @@ function thisLineItem($patient_id, $encounter_id, $rowcat, $description, $transd
  <?php $report_from_date = date("m/d/y",strtotime($form_from_date))  ;
        $report_to_date = date("m/d/y",strtotime($form_to_date))  ;
  ?>
-<div align='right'><span class='title' ><?php echo xlt('Report Date'). ' '; ?><?php echo attr($report_from_date);?> - <?php echo attr($report_to_date);?></span></div>
+<div align='right'><span class='title' ><?php echo xlt('Report Date'). ' '; ?><?php echo text($report_from_date);?> - <?php echo text($report_to_date);?></span></div>
 <?php
 
     } // End not csv export
