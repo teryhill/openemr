@@ -712,7 +712,6 @@ $GLOBALS_METADATA = array(
       xl('This specifies whether to include date in Box 31.')
     ),
 
-      
      'cms_1500_box_31_date' => array(
       xl('CMS 1500: Date in Box 31 (Signature)'),
       array(
@@ -730,7 +729,11 @@ $GLOBALS_METADATA = array(
 		'1',                              // default = true
 		xl('Enable amendments feature')
 	),
-	
+
+  ),
+    // Report Tab
+ 
+  'Report' => array(
     'use_custom_daysheet' => array(
       xl('Use Custom End of Day Report'),
       array(
@@ -752,8 +755,15 @@ $GLOBALS_METADATA = array(
       '1',                              // default
       xl('This specifies the Printing of the Custom End of Day Report grouped Provider or allow the Printing of Totals Only')
     ),
-
-  ),
+ 
+    'default_provider' => array(
+       xl('Default Provider in Fee Sheet'),
+	   'bool',                           // data type
+	   '0',                              // default = true
+	   xl('This Defaults the provider in the fee sheet')
+    ),
+  
+  ),  
     // E-Sign Tab
     //
     'E-Sign' => array(

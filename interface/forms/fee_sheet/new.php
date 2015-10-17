@@ -133,7 +133,11 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
   global $code_types, $ndc_applies, $ndc_uom_choices, $justinit, $pid;
   global $contraception, $usbillstyle, $hasCharges;
 
- $provider_id=findProvider();
+  if($GLOBALS['default_provider'] == 1) {
+    if ($provider_id == 0) {
+      $provider_id = 0 + findProvider();
+    }
+  }
 
   if ($codetype == 'COPAY') {
     if (!$code_text) $code_text = 'Cash';
@@ -1237,7 +1241,13 @@ if ($_POST['newcodes']) {
 $tmp = sqlQuery("SELECT provider_id, supervisor_id FROM form_encounter " .
   "WHERE pid = ? AND encounter = ? " .
   "ORDER BY id DESC LIMIT 1", array($pid,$encounter) );
-$encounter_provid =findProvider();
+   if($GLOBALS['default_provider'] == 1) {
+        $encounter_provid = 0 + findProvider();
+    }
+    else
+    {
+        $encounter_provid = 0 + $tmp['provider_id'];
+    }
 $encounter_supid  = 0 + $tmp['supervisor_id'];
 ?>
 </table>
