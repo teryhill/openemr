@@ -501,20 +501,35 @@ if ($_REQUEST['form_refresh'] || $_REQUEST['form_csvexport']) {
       $patient = sqlQuery("SELECT * from patient_data WHERE pid=?", array($form_patient));
       $pat_dob = $patient['DOB'];
       $pat_name = $patient['fname']. ' ' . $patient['lname'];
+      $next_year = mktime(0,0,0,date('m'),date('d'),date('Y')+2);
+      $next_day = mktime(0,0,0,date('m'),date('d')+1,date('Y'));
+      $new_to_date = date('Y-m-d', $next_year);
+      $new_from_date = date('Y-m-d', $next_day);
+      $events = array();
+      $events = fetchAppointments( $new_from_date, $new_to_date, $form_patient, $form_provider, $form_facility);
+      $events = sortAppointments($events);
+      $next_appoint = oeFormatShortDate($events[0]['pc_eventDate']);
 ?>
 <div id="report_header">
 <table width="98%"  border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td class="title" ><?php echo xlt('Patient Ledger'); ?></td>
-  </tr>
-  <tr>
     <td class="title" ><?php echo text($facility{'name'}); ?></td>
   </tr>
   <tr>
-    <td class="title" ><?php echo text($facility{'addr'}); ?></td>
+    <td class="title" ><?php echo text($facility{'street'}); ?></td>
   </tr>
   <tr>
     <td class="title" ><?php echo text($facility{'city'}).", ".text($facility{'state'})." ".text($facility{'postal_code'}); ?></td>
+  </tr>
+  <tr>
+    <td class="title" ><?php echo xlt('Phone').': ' .text($facility{'phone'}); ?></td>
+  </tr>
+  <tr>
+    <td class="title" ><?php echo xlt('Tax Id').': ' .text($facility{'federal_ein'}); ?></td>
+  </tr>
+  <tr><td>&nbsp;</td></tr>
+  <tr>
+    <td class="title" ><?php echo xlt('Patient Ledger'); ?></td>
   </tr>
 	<tr>
 		<?php 
@@ -672,7 +687,14 @@ if ($_REQUEST['form_refresh'] || $_REQUEST['form_csvexport']) {
       echo " </tr>\n";
     ?>
     </table>
+  <tr><td>&nbsp;</td></tr><br><br>
+    <?php if($GLOBALS['print_next_appointment_on_ledger'] == 1) {   ?>
+  <tr>
+    <td class="title" ><?php echo xlt('Next Appointment').': ' .text($next_appoint); ?></td>
+  </tr>
+  
     <?php
+          }
     }
       echo "</div>\n";
 }
