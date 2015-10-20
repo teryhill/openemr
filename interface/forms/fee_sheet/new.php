@@ -111,7 +111,7 @@ function findProvider() {
       $providerid = $_SESSION[authUserID];
   }    
   if($providerid == 0) {
-  $find_provider = sqlQuery("SELECT provider_id, supervisor_id FROM form_encounter " .
+  $find_provider = sqlQuery("SELECT provider_id FROM form_encounter " .
 		"WHERE pid = ? AND encounter = ? " .
 		"ORDER BY id DESC LIMIT 1", array($pid,$encounter) );
   $providerid = $find_provider['provider_id'];
@@ -133,7 +133,7 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
   global $code_types, $ndc_applies, $ndc_uom_choices, $justinit, $pid;
   global $contraception, $usbillstyle, $hasCharges;
 
-  if($GLOBALS['default_provider'] == 1) {
+  if($GLOBALS['default_fee_sheet_line_item_provider'] == 1) {
     if ($provider_id == 0) {
       $provider_id = 0 + findProvider();
     }
@@ -1241,13 +1241,7 @@ if ($_POST['newcodes']) {
 $tmp = sqlQuery("SELECT provider_id, supervisor_id FROM form_encounter " .
   "WHERE pid = ? AND encounter = ? " .
   "ORDER BY id DESC LIMIT 1", array($pid,$encounter) );
-   if($GLOBALS['default_provider'] == 1) {
-        $encounter_provid = 0 + findProvider();
-    }
-    else
-    {
-        $encounter_provid = 0 + $tmp['provider_id'];
-    }
+$encounter_provid = 0 + findProvider();
 $encounter_supid  = 0 + $tmp['supervisor_id'];
 ?>
 </table>

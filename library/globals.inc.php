@@ -756,11 +756,11 @@ $GLOBALS_METADATA = array(
       xl('This specifies the Printing of the Custom End of Day Report grouped Provider or allow the Printing of Totals Only')
     ),
  
-    'default_provider' => array(
-       xl('Default Provider in Fee Sheet'),
+    'default_fee_sheet_line_item_provider' => array(
+       xl('Changes the word Default in the Fee Sheet Line item to the Provider Name'),
 	   'bool',                           // data type
 	   '0',                              // default = true
-	   xl('This Defaults the provider in the fee sheet')
+	   xl('This Changes the word Default in the Fee Sheet Line item to the Provider Name')
     ),
   
   ),  
