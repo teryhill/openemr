@@ -755,20 +755,26 @@ $GLOBALS_METADATA = array(
       '1',                              // default
       xl('This specifies the Printing of the Custom End of Day Report grouped Provider or allow the Printing of Totals Only')
     ),
- 
-    'remove_fee_sheet_line_item_provider' => array(
-       xl('Removes the Provider drop down from Fee Sheet Line Item'),
+
+  ),
+    
+  // Billing Tab
+    
+  'Billing' => array(
+    
+    'support_fee_sheet_line_item_provider' => array(
+       xl('Support line item billing in fee sheet'),
 	   'bool',                           // data type
 	   '0',                              // default = false
-	   xl('This Removes the line item Rendering Provider drop down list in the Fee Sheet')
+	   xl('This Enables line item billing in the fee sheet')
     ),
 
     'default_fee_sheet_line_item_provider' => array(
-       xl('Defaults to Rendering Provider for Fee Sheet Line item'),
+       xl('Default to a provider for line item billing in the fee sheet'),
 	   'bool',                           // data type
 	   '0',                              // default = false
-	   xl('This Replaces the word Default in the Fee Sheet Line item with the Provider Name')
-    ),
+	   xl('Default to a provider for line item billing in the fee sheet.(only applicable if Support line item billing in option above)')
+    ),	
   
   ),  
     // E-Sign Tab

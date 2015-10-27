@@ -129,7 +129,7 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
   global $code_types, $ndc_applies, $ndc_uom_choices, $justinit, $pid;
   global $contraception, $usbillstyle, $hasCharges;
 
-  if($GLOBALS['default_fee_sheet_line_item_provider'] == 1) {
+  if($GLOBALS['default_fee_sheet_line_item_provider'] == 1 && $GLOBALS['support_fee_sheet_line_item_provider'] ==1 ) {
     if ($provider_id == 0) {
       $provider_id = 0 + findProvider();
     }
@@ -214,11 +214,16 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
     }
 
     // Show provider for this line.
-    if($GLOBALS['remove_fee_sheet_line_item_provider'] !=1) { 
+    if($GLOBALS['support_fee_sheet_line_item_provider'] ==1) {
       echo "  <td class='billcell' align='center'>";
+    }
+    else 
+    {
+      echo "  <td class='billcell' align='center' style='display: none'>";
+    }
       genProviderSelect('', '-- '.xl("Default").' --', $provider_id, true);
       echo "</td>\n";
-    }
+
     if ($code_types[$codetype]['claim'] && !$code_types[$codetype]['diag']) {
       echo "  <td class='billcell' align='center'$usbillstyle>" .
         htmlspecialchars($notecodes, ENT_NOQUOTES) . "</td>\n";
@@ -279,11 +284,15 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
     }
 
     // Provider drop-list for this line.
-    if($GLOBALS['remove_fee_sheet_line_item_provider'] !=1) { 
+    if($GLOBALS['support_fee_sheet_line_item_provider'] ==1) {
       echo "  <td class='billcell' align='center'>";
+    }
+    else 
+    {
+      echo "  <td class='billcell' align='center' style='display: none'>";
+    }
       genProviderSelect("bill[$lino][provid]", '-- '.xl("Default").' --', $provider_id);
       echo "</td>\n";
-    }
     if ($code_types[$codetype]['claim'] && !$code_types[$codetype]['diag']) {
       echo "  <td class='billcell' align='center'$usbillstyle><input type='text' name='bill[".attr($lino)."][notecodes]' " .
         "value='" . htmlspecialchars($notecodes, ENT_QUOTES) . "' maxlength='10' size='8' /></td>\n";
@@ -1051,7 +1060,7 @@ echo " </tr>\n";
 <?php if (justifiers_are_used()) { ?>
   <td class='billcell' align='center'<?php echo $usbillstyle; ?>><b><?php echo xlt('Justify');?></b></td>
 <?php } ?>
-  <?php if($GLOBALS['remove_fee_sheet_line_item_provider'] !=1) { ?>
+  <?php if($GLOBALS['support_fee_sheet_line_item_provider'] ==1) { ?>
     <td class='billcell' align='center'><b><?php echo xlt('Provider');?></b></td>
   <?php } ?>
   <td class='billcell' align='center'<?php echo $usbillstyle; ?>><b><?php echo xlt('Note Codes');?></b></td>
