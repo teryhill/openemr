@@ -2,9 +2,6 @@
 /*
 * 
 * Fee Sheet Program used to create charges, copays and add diagnosis codes to the encounter
-* (TLH) Added the code to allow defaulting the provider. The current encounter is checked first
-*  if there is no provider in the encounter, meaning it did not auto generate from the calender 
-*  then the provider in the patient file is used.
 * 
 * Copyright (C) 2005-2015 Rod Roark <rod@sunsetsystems.com>
 * 
@@ -102,17 +99,16 @@ function contraceptionClass($code_type, $code) {
   }
   return $contra;
 }
-# finds the provider in the encounter file or patient file
+# gets the provider from the encounter file , or from the logged on user or from the patient file
 function findProvider() {
   global $encounter, $pid;   
   $find_provider = sqlQuery("SELECT provider_id FROM form_encounter " .
-		"WHERE pid = ? AND encounter = ? " .
-		"ORDER BY id DESC LIMIT 1", array($pid,$encounter) );
+        "WHERE pid = ? AND encounter = ? " .
+        "ORDER BY id DESC LIMIT 1", array($pid,$encounter) );
   $providerid = $find_provider['provider_id'];
   if($providerid == 0) {
-  $get_authorized = sqlQuery("SELECT authorized FROM users WHERE " .
-    " id = ? ", array($_SESSION[authUserID]) );
-   if($get_authorized['authorized'] ==1) {
+   $get_authorized = $_SESSION['userauthorized'];
+   if($get_authorized ==1) {
       $providerid = $_SESSION[authUserID];
    }
   }
@@ -218,9 +214,11 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
     }
 
     // Show provider for this line.
-    echo "  <td class='billcell' align='center'>";
-    genProviderSelect('', '-- '.xl("Default").' --', $provider_id, true);
-    echo "</td>\n";
+    if($GLOBALS['remove_fee_sheet_line_item_provider'] !=1) { 
+      echo "  <td class='billcell' align='center'>";
+      genProviderSelect('', '-- '.xl("Default").' --', $provider_id, true);
+      echo "</td>\n";
+    }
     if ($code_types[$codetype]['claim'] && !$code_types[$codetype]['diag']) {
       echo "  <td class='billcell' align='center'$usbillstyle>" .
         htmlspecialchars($notecodes, ENT_NOQUOTES) . "</td>\n";
@@ -281,9 +279,11 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
     }
 
     // Provider drop-list for this line.
-    echo "  <td class='billcell' align='center'>";
-    genProviderSelect("bill[$lino][provid]", '-- '.xl("Default").' --', $provider_id);
-    echo "</td>\n";
+    if($GLOBALS['remove_fee_sheet_line_item_provider'] !=1) { 
+      echo "  <td class='billcell' align='center'>";
+      genProviderSelect("bill[$lino][provid]", '-- '.xl("Default").' --', $provider_id);
+      echo "</td>\n";
+    }
     if ($code_types[$codetype]['claim'] && !$code_types[$codetype]['diag']) {
       echo "  <td class='billcell' align='center'$usbillstyle><input type='text' name='bill[".attr($lino)."][notecodes]' " .
         "value='" . htmlspecialchars($notecodes, ENT_QUOTES) . "' maxlength='10' size='8' /></td>\n";
@@ -1051,7 +1051,9 @@ echo " </tr>\n";
 <?php if (justifiers_are_used()) { ?>
   <td class='billcell' align='center'<?php echo $usbillstyle; ?>><b><?php echo xlt('Justify');?></b></td>
 <?php } ?>
-  <td class='billcell' align='center'><b><?php echo xlt('Provider');?></b></td>
+  <?php if($GLOBALS['remove_fee_sheet_line_item_provider'] !=1) { ?>
+    <td class='billcell' align='center'><b><?php echo xlt('Provider');?></b></td>
+  <?php } ?>
   <td class='billcell' align='center'<?php echo $usbillstyle; ?>><b><?php echo xlt('Note Codes');?></b></td>
   <td class='billcell' align='center'<?php echo $usbillstyle; ?>><b><?php echo xlt('Auth');?></b></td>
   <td class='billcell' align='center'><b><?php echo xlt('Delete');?></b></td>
