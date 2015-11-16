@@ -512,11 +512,12 @@ function gen_x12_837($pid, $encounter, &$log, $encounter_claim=false) {
     // Segment PER (Property and Casualty Patient Contact Information) omitted.
 
   } // end of patient different from insured
-
+//error_log(print_r($claim, true));
   $proccount = $claim->procCount();
 
   $clm_total_charges = 0;
   for ($prockey = 0; $prockey < $proccount; ++$prockey) {
+    if ($claim->excludeEntry($prockey) == 1) continue;
     $clm_total_charges += $claim->cptCharges($prockey);
   }
 
@@ -1053,6 +1054,7 @@ function gen_x12_837($pid, $encounter, &$log, $encounter_claim=false) {
   // Procedure loop starts here.
   //
   for ($prockey = 0; $prockey < $proccount; ++$prockey) {
+         if ($claim->excludeEntry($prockey) == 1) continue;
     ++$loopcount;
 
     ++$edicount;

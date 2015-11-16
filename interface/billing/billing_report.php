@@ -1064,8 +1064,13 @@ if(is_array($ret))
     $rhtml .= '<td width=100>&nbsp;&nbsp;&nbsp;<span style="font-size:8pt;">';
     if ($iter['id']) $rhtml .= text(oeFormatSDFT(strtotime($iter{"date"})));
     $rhtml .= "</span></td>\n";
+    # This error message is generated if the authorized check box is not checked
     if ($iter['id'] && $iter['authorized'] != 1) {
-      $rhtml .= "<td><span class=alert>".xlt("Note: This code was not entered by an authorized user. Only authorized codes may be uploaded to the Open Medical Billing Network for processing. If you wish to upload these codes, please select an authorized user here.")."</span></td>\n";
+      $rhtml .= "<td><span class=alert>".xlt("Note: This code was not entered by an authorized user. \nOnly authorized codes may be uploaded to the Open \nMedical Billing Network for processing. \nIf you wish to upload these codes, \nplease select an authorized user here.")."</span></td>\n";
+    }
+    # This will check if an item is excluded and will tell the user if it is the case.
+    else if ($iter['id'] && $iter['authorized'] == 1 && $iter['exclude'] == 1) {
+      $rhtml .= "<td><span class=alert>".xlt("Note: Excluded from X12 and CMS1500.")."</span></td>\n";
     }
     else {
       $rhtml .= "<td></td>\n";
