@@ -208,8 +208,6 @@ $out .= sprintf("_______________________________________________________________
 $out .= "\n";
 $out .= sprintf("%-32s\n",$label_payby.' '.$label_cards);
 $out .= "\n";
-$out .= "\n";
-$out .= "\n";
 $out .= sprintf("%s_____________________  %s______ %s___________________\n",
                 $label_cardnum,$label_expiry,$label_sign);
 $out .= sprintf("%-20s %s\n",null,$label_retpay);
@@ -222,7 +220,7 @@ $out .= "\n";
  
  // This must be set to the number of lines generated above.
  //
- $count = 23;
+ $count = 21;
 
  // This generates the detail lines.  Again, note that the values must
  // be specified in the order used.
@@ -294,8 +292,12 @@ else {
  
  // This is the bottom portion of the page.
  $out .= "\n";
- $out .= sprintf("%-46s\n",$stmt['bill_note']);
- $out .= sprintf("%-46s\n",$dun_message);
+ if(strlen($stmt['bill_note']) !=0 && $GLOBALS['statement_bill_note_print']) {
+   $out .= sprintf("%-46s\n",$stmt['bill_note']);
+}
+ if ($GLOBALS['use_dunning_message']) { 
+   $out .= sprintf("%-46s\n",$dun_message);
+ }
  $out .= "\n";
  $out .= sprintf("%-s: %-25s %-s: %-14s %-s: %8s\n",$label_ptname,$stmt['patient'],
                  $label_today,$stmt['today'],$label_due,$stmt['amount']);
