@@ -6,8 +6,8 @@
 require_once("../globals.php");
 require_once("../../library/acl.inc");
 require_once("$srcdir/sql.inc");
-require_once("$srcdir/calendar.inc");
 require_once("$srcdir/formdata.inc.php");
+require_once("$srcdir/calendar.inc");
 require_once("$srcdir/options.inc.php");
 require_once(dirname(__FILE__) . "/../../library/classes/WSProvider.class.php");
 require_once("$srcdir/erx_javascript.inc.php");
@@ -19,7 +19,7 @@ if ($_GET["mode"] == "update") {
   if ($_GET["username"]) {
     // $tqvar = addslashes(trim($_GET["username"]));
     $tqvar = trim(formData('username','G'));
-    $user_data = mysql_fetch_array(sqlStatement("select * from users where id={$_GET["id"]}"));
+    $user_data = sqlFetchArray(sqlStatement("select * from users where id={$_GET["id"]}"));
     sqlStatement("update users set username='$tqvar' where id={$_GET["id"]}");
     sqlStatement("update groups set user='$tqvar' where user='". $user_data["username"]  ."'");
     //echo "query was: " ."update groups set user='$tqvar' where user='". $user_data["username"]  ."'" ;
@@ -130,7 +130,7 @@ if ($_GET["mode"] == "update") {
 
   if (isset($phpgacl_location) && acl_check('admin', 'acl')) {
     // Set the access control group of user
-    $user_data = mysql_fetch_array(sqlStatement("select username from users where id={$_GET["id"]}"));
+    $user_data = sqlFetchArray(sqlStatement("select username from users where id={$_GET["id"]}"));
     set_user_aro($_GET['access_group'], $user_data["username"],
       formData('fname','G'), formData('mname','G'), formData('lname','G'));
   }

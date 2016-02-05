@@ -345,8 +345,11 @@ function pnInit()
     }
 
     // ADODB configuration
-    define('ADODB_DIR', 'pnadodb');
-    require 'pnadodb/adodb.inc.php';
+    if (!defined('ADODB_DIR')) {
+        define('ADODB_DIR', dirname(__FILE__) . '/../../../../library/adodb');
+    }
+
+    require ADODB_DIR . '/adodb.inc.php';
 
     // Temporary fix for hacking the hlpfile global
     // TODO - remove with pre-0.71 code
@@ -477,6 +480,7 @@ function pnDBInit()
     global $pnconfig;
     $dbtype = $pnconfig['dbtype'];
     $dbhost = $pnconfig['dbhost'];
+    $dbport = $pnconfig['dbport'];
     $dbname = $pnconfig['dbname'];
     $dbuname = $pnconfig['dbuname'];
     $dbpass = $pnconfig['dbpass'];
@@ -486,6 +490,7 @@ function pnDBInit()
 
     // Start connection
     $dbconn = ADONewConnection($dbtype);
+    $dbconn->port = $dbport;
     $dbh = $dbconn->Connect($dbhost, $dbuname, $dbpass, $dbname);
     if (!$dbh) {
     	//$dbpass = "";
@@ -579,7 +584,7 @@ function pnVarCleanFromInput()
         }
 
         // Clean var
-        if (get_magic_quotes_gpc()) {
+        if (check_magic_quotes()) {
             pnStripslashes($ourvar);
         }
         if (!pnSecAuthAction(0, '::', '::', ACCESS_ADMIN)) {

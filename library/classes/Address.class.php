@@ -49,14 +49,14 @@ class Address extends ORDataObject{
 			 $foreign_id= "like '%'";
 		}
 		else {
-			$foreign_id= " = '" . mysql_real_escape_string(strval($foreign_id)) . "'";
+			$foreign_id= " = '" . add_escape_custom(strval($foreign_id)) . "'";
 		}
 		$a = new Address();
 		$sql = "SELECT id FROM  " . $a->_table . " WHERE foreign_id " .$foreign_id ;
 		//echo $sql . "<bR />";
 		$results = sqlQ($sql);
 		//echo "sql: $sql";
-		$row = mysql_fetch_array($results);
+		$row = sqlFetchArray($results);
 		if (!empty($row)) {
 			$a = new Address($row['id']);
 		}

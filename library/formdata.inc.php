@@ -29,7 +29,7 @@
  */
 function add_escape_custom($s) {
       //prepare for safe mysql insertion
-      $s = mysql_real_escape_string($s);
+      $s = mysqli_real_escape_string($GLOBALS['dbh'], $s);
       return $s;
 }
 
@@ -286,5 +286,14 @@ function strip_escape_custom($s) {
  */
 function formTrim($s) {
   return formDataCore($s,true);
+}
+
+/**
+ * Wrapper function for get_magic_quotes_gpc()
+ *
+ * @return int
+ */
+function check_magic_quotes() {
+  return get_magic_quotes_gpc();
 }
 ?>

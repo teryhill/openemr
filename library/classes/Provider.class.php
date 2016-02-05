@@ -41,7 +41,7 @@ class Provider extends ORDataObject{
         }
 
         function populate() {
-                $res = sqlQuery("SELECT fname,lname,federaldrugid, specialty, npi, state_license_number FROM users where id =". mysql_real_escape_string($this->id));
+                $res = sqlQuery("SELECT fname,lname,federaldrugid, specialty, npi, state_license_number FROM users where id =". add_escape_custom($this->id));
 
                 if (is_array($res)) {
                         $this->lname = $res['lname'];
@@ -59,7 +59,7 @@ class Provider extends ORDataObject{
         function utility_provider_array() {
                 $provider_array = array();
                 $res = sqlQ("Select id,fname,lname  from users where authorized = 1");
-                while ($row = mysql_fetch_array($res) ) {
+                while ($row = sqlFetchArray($res) ) {
                                 $provider_array[$row['id']] = $row['fname'] . " " . $row['lname'];
                 }
                 return $provider_array;
@@ -70,7 +70,7 @@ class Provider extends ORDataObject{
                 $sql = "SELECT id FROM "  . $this->_table . " where authorized = 1 " . $sort;
                 $results = sqlQ($sql);
 
-                while($row = mysql_fetch_array($results) ) {
+                while($row = sqlFetchArray($results) ) {
                                 $psa[] = new Provider($row['id']);
                 }
 

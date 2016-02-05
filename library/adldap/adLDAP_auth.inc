@@ -229,23 +229,23 @@ function validateGroupStatus ($user_to_be_checked, $group_user) {
         elseif ($_SESSION['authorizeduser'] == 1)
             return true;
 
-        $query = "SELECT groups.name FROM users,groups WHERE users.username =  \"" . mysql_real_escape_string($user_to_be_checked) . "\" " .
+        $query = "SELECT groups.name FROM users,groups WHERE users.username =  \"" . add_escape_custom($user_to_be_checked) . "\" " .
                  "AND users.username = groups.user group by groups.name";
         $result = sqlStatement($query);
 
         $usertbcGroups = array();
 
-        while ($row = mysql_fetch_array($result)) {
+        while ($row = sqlFetchArray($result)) {
             $usertbcGroups[] = $row[0];
         }
 
-        $query = "SELECT groups.name FROM users,groups WHERE users.username =  \"" . mysql_real_escape_string($group_user) . "\" " .
+        $query = "SELECT groups.name FROM users,groups WHERE users.username =  \"" . add_escape_custom($group_user) . "\" " .
                  "AND users.username = groups.user group by groups.name";
         $result = sqlStatement($query);
 
         $usergGroups = array();
 
-        while ($row = mysql_fetch_array($result)) {
+        while ($row = sqlFetchArray($result)) {
             $usergGroups[] = $row[0];
         }
         foreach ($usertbcGroups as $group) {

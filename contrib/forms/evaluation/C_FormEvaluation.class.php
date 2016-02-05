@@ -52,11 +52,11 @@ class C_FormEvaluation extends Controller {
 		addForm($GLOBALS['encounter'], "Evaluation Form", $this->evaluation->id, "evaluation", $GLOBALS['pid'], $_SESSION['userauthorized']);
 		
 		if (!empty($_POST['cpt_code'])) {
-			$sql = "select * from codes where code ='" . mysql_real_escape_string($_POST['cpt_code']) . "' order by id";
+			$sql = "select * from codes where code ='" . add_escape_custom($_POST['cpt_code']) . "' order by id";
 			
 			$results = sqlQ($sql);	
 			
-			$row = mysql_fetch_array($results);
+			$row = sqlFetchArray($results);
 			if (!empty($row)) {
 				addBilling(	date("Ymd"), 	'CPT4', 	$row['code'],	$row['code_text'],  $_SESSION['pid'], 	$_SESSION['userauthorized'], 	$_SESSION['authUserID'],$row['modifier'],$row['units'],$row['fee']);
 			}

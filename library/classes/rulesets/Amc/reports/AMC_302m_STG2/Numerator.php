@@ -30,7 +30,6 @@ class AMC_302m_STG2_Numerator implements AmcFilterIF
     public function test( AmcPatient $patient, $beginDate, $endDate ) 
     {
         // Is patient provided patient specific education during the report period.
-
         // Check for any patient specific education instances.
         $item = sqlQuery("SELECT * FROM `amc_misc_data` as amc, `form_encounter` as enc " .
                          "WHERE enc.pid = amc.pid AND enc.pid = ? " .

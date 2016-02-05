@@ -208,6 +208,26 @@ class C_Prescription extends Controller {
       processAmcCall('e_prescribe_amc', true, 'remove', $this->prescriptions[0]->get_patient_id(), 'prescriptions', $this->prescriptions[0]->id);
     }
 
+    // Set the AMC reporting flag (to record prescriptions that checked drug formulary)
+    if (!(empty($_POST['checked_formulary_flag']))) {
+      // add the e-prescribe flag
+      processAmcCall('e_prescribe_chk_formulary_amc', true, 'add', $this->prescriptions[0]->get_patient_id(), 'prescriptions', $this->prescriptions[0]->id);
+    }
+    else {
+      // remove the e-prescribe flag
+      processAmcCall('e_prescribe_chk_formulary_amc', true, 'remove', $this->prescriptions[0]->get_patient_id(), 'prescriptions', $this->prescriptions[0]->id);
+    }
+
+    // Set the AMC reporting flag (to record prescriptions that are controlled substances)
+    if (!(empty($_POST['controlled_substance_flag']))) {
+      // add the e-prescribe flag
+      processAmcCall('e_prescribe_cont_subst_amc', true, 'add', $this->prescriptions[0]->get_patient_id(), 'prescriptions', $this->prescriptions[0]->id);
+    }
+    else {
+      // remove the e-prescribe flag
+      processAmcCall('e_prescribe_cont_subst_amc', true, 'remove', $this->prescriptions[0]->get_patient_id(), 'prescriptions', $this->prescriptions[0]->id);
+    }
+
 // TajEmo Work by CB 2012/05/29 02:58:29 PM to stop from going to send screen. Improves Work Flow 
 //     if ($this->prescriptions[0]->get_active() > 0) {
 //       return $this->send_action($this->prescriptions[0]->id);
@@ -249,7 +269,7 @@ class C_Prescription extends Controller {
 		$pdf->ezImage($GLOBALS['oer_config']['prescriptions']['logo'],'','50','','center','');
 		$pdf->ezColumnsStart(array('num'=>2, 'gap'=>10));
 		$res = sqlQuery("SELECT concat('<b>',f.name,'</b>\n',f.street,'\n',f.city,', ',f.state,' ',f.postal_code,'\nTel:',f.phone,if(f.fax != '',concat('\nFax: ',f.fax),'')) addr FROM users JOIN facility AS f ON f.name = users.facility where users.id ='" .
-			mysql_real_escape_string($p->provider->id) . "'");
+			add_escape_custom($p->provider->id) . "'");
 		$pdf->ezText($res['addr'],12);
 		$my_y = $pdf->y;
 		$pdf->ezNewPage();
@@ -295,7 +315,7 @@ class C_Prescription extends Controller {
 		$pdf->line($pdf->ez['leftMargin'],$pdf->y,$pdf->ez['pageWidth']-$pdf->ez['rightMargin'],$pdf->y);
 		$pdf->ezText('<b>' . xl('Patient Name & Address') . '</b>',6);
 		$pdf->ezText($p->patient->get_name_display(),10);
-		$res = sqlQuery("SELECT  concat(street,'\n',city,', ',state,' ',postal_code,'\n',if(phone_home!='',phone_home,if(phone_cell!='',phone_cell,if(phone_biz!='',phone_biz,'')))) addr from patient_data where pid =". mysql_real_escape_string ($p->patient->id));
+		$res = sqlQuery("SELECT  concat(street,'\n',city,', ',state,' ',postal_code,'\n',if(phone_home!='',phone_home,if(phone_cell!='',phone_cell,if(phone_biz!='',phone_biz,'')))) addr from patient_data where pid =". add_escape_custom($p->patient->id));
 		$pdf->ezText($res['addr']);
 		$my_y = $pdf->y;
 		$pdf->ezNewPage();
@@ -328,7 +348,7 @@ class C_Prescription extends Controller {
 	        echo ("</tr>\n");
 	        echo ("<tr>\n");
 	        echo ("<td>\n");
-	        $res = sqlQuery("SELECT concat('<b>',f.name,'</b>\n',f.street,'\n',f.city,', ',f.state,' ',f.postal_code,'\nTel:',f.phone,if(f.fax != '',concat('\nFax: ',f.fax),'')) addr FROM users JOIN facility AS f ON f.name = users.facility where users.id ='" . mysql_real_escape_string($p->provider->id) . "'");
+	        $res = sqlQuery("SELECT concat('<b>',f.name,'</b>\n',f.street,'\n',f.city,', ',f.state,' ',f.postal_code,'\nTel:',f.phone,if(f.fax != '',concat('\nFax: ',f.fax),'')) addr FROM users JOIN facility AS f ON f.name = users.facility where users.id ='" . add_escape_custom($p->provider->id) . "'");
 	        $patterns = array ('/\n/','/Tel:/','/Fax:/');
 	        $replace = array ('<br>', xl('Tel').':', xl('Fax').':');
 	        $res = preg_replace($patterns, $replace, $res);
@@ -367,7 +387,7 @@ class C_Prescription extends Controller {
 	        echo ("<td rowspan='2' class='bordered'>\n");
                 echo ('<b><span class="small">' . xl('Patient Name & Address') . '</span></b>'. '<br>');
                 echo ($p->patient->get_name_display() . '<br>');
-                $res = sqlQuery("SELECT  concat(street,'\n',city,', ',state,' ',postal_code,'\n',if(phone_home!='',phone_home,if(phone_cell!='',phone_cell,if(phone_biz!='',phone_biz,'')))) addr from patient_data where pid =". mysql_real_escape_string ($p->patient->id));
+                $res = sqlQuery("SELECT  concat(street,'\n',city,', ',state,' ',postal_code,'\n',if(phone_home!='',phone_home,if(phone_cell!='',phone_cell,if(phone_biz!='',phone_biz,'')))) addr from patient_data where pid =". add_escape_custom($p->patient->id));
                 $patterns = array ('/\n/');
 	        $replace = array ('<br>');
 	        $res = preg_replace($patterns, $replace, $res);
@@ -568,7 +588,7 @@ class C_Prescription extends Controller {
 			$this->function_argument_error();
 		}
 		require_once ($GLOBALS['fileroot'] . "/library/classes/class.ezpdf.php");
-		$pdf =& new Cezpdf($GLOBALS['rx_paper_size']);
+		$pdf = new Cezpdf($GLOBALS['rx_paper_size']);
 		$pdf->ezSetMargins($GLOBALS['rx_top_margin']
 			,$GLOBALS['rx_bottom_margin']
 			,$GLOBALS['rx_left_margin']
@@ -703,7 +723,7 @@ class C_Prescription extends Controller {
 
 	function _print_prescription($p, & $toFile) {
 		require_once ($GLOBALS['fileroot'] . "/library/classes/class.ezpdf.php");
-		$pdf =& new Cezpdf($GLOBALS['rx_paper_size']);
+		$pdf = new Cezpdf($GLOBALS['rx_paper_size']);
 		$pdf->ezSetMargins($GLOBALS['rx_top_margin']
 			,$GLOBALS['rx_bottom_margin']
 			,$GLOBALS['rx_left_margin']
@@ -741,7 +761,7 @@ class C_Prescription extends Controller {
 
 	function _print_prescription_old($p, & $toFile) {
 		require_once ($GLOBALS['fileroot'] . "/library/classes/class.ezpdf.php");
-		$pdf =& new Cezpdf($GLOBALS['rx_paper_size']);
+		$pdf = new Cezpdf($GLOBALS['rx_paper_size']);
 		$pdf->ezSetMargins($GLOBALS['rx_top_margin']
                       ,$GLOBALS['rx_bottom_margin']
 		                  ,$GLOBALS['rx_left_margin']

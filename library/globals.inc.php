@@ -310,7 +310,7 @@ $GLOBALS_METADATA = array(
       '0',                              // default
       xl('Special treatment for the Vitals form')
     ),
-
+    
   ),
 
   // Locale Tab
@@ -733,6 +733,7 @@ $GLOBALS_METADATA = array(
 		'1',                              // default = true
 		xl('Enable amendments feature')
 	),
+
    ),   
     // Report Tab
     //
@@ -796,6 +797,13 @@ $GLOBALS_METADATA = array(
   // Billing Tab
     
   'Billing' => array(
+
+    'default_search_code_type' => array(
+      xl('Default Search Code Type'),
+      'all_code_types',                           // data type
+      'ICD10',                 // default
+      xl('The default code type to search for in the Fee Sheet.')
+    ),
     
     'support_fee_sheet_line_item_provider' => array(
        xl('Support provider in line item in fee sheet'),
@@ -811,6 +819,7 @@ $GLOBALS_METADATA = array(
 	   xl('Default to a provider for line item in the fee sheet.(only applicable if Support line item billing in option above)')
     ),	
   
+<<<<<<< HEAD
     'bill_to_patient' => array(
        xl('Allows Fee Sheet Items to be excluded from claim and billed to patient'),
 	   'bool',                           // data type
@@ -819,6 +828,100 @@ $GLOBALS_METADATA = array(
     ),
   
   ),  
+=======
+  	'use_custom_statement' => array(
+      xl('Use Custom Statement'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('This will use the custom Statment showing the description instead of the codes.')
+    ),
+	 
+  	'statement_bill_note_print' => array(
+      xl('Print Patient Billing Note'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('This will allow printing of the Patient Billing Note on the statements.')
+    ),  
+	
+  	'use_dunning_message' => array(
+      xl('Use Custom Dunning Messages'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('This will allow use of the custom Dunning Messages on the statements.')
+    ),
+	
+    'first_dun_msg_set' => array(
+      xl('Number of days before showing first account message'),
+      'num',                           // data type
+      '30',
+      xl('Number of days before showing first account message.')
+    ),
+
+    'first_dun_msg_text' => array(
+      xl('First account message'),
+      'text',                           // data type
+      '',
+      xl('Text for first account message.')
+    ),
+    
+    'second_dun_msg_set' => array(
+      xl('Number of days before showing second account message'),
+      'num',                           // data type
+      '60',
+      xl('Number of days before showing second account message.')
+    ),
+
+    'second_dun_msg_text' => array(
+      xl('Second account message'),
+      'text',                           // data type
+      '',
+      xl('Text for second account message.')
+    ),  
+
+    'third_dun_msg_set' => array(
+      xl('Number of days before showing third account message'),
+      'num',                           // data type
+      '90',
+      xl('Number of days before showing third account message.')
+    ),
+
+    'third_dun_msg_text' => array(
+      xl('Third account message'),
+      'text',                           // data type
+      '',
+      xl('Text for third account message.')
+    ),
+    
+    'fourth_dun_msg_set' => array(
+      xl('Number of days before showing fourth account message'),
+      'num',                           // data type
+      '120',
+      xl('Number of days before showing fourth account message.')
+    ),
+
+    'fourth_dun_msg_text' => array(
+      xl('Fourth account message'),
+      'text',                           // data type
+      '',
+      xl('Text for fourth account message.')
+    ),
+
+    'fifth_dun_msg_set' => array(
+      xl('Number of days before showing fifth account message'),
+      'num',                           // data type
+      '150',
+      xl('Number of days before showing fifth account message.')
+    ),
+
+    'fifth_dun_msg_text' => array(
+      xl('Fifth account message'),
+      'text',                           // data type
+      '',
+      xl('Text for fifth account message.')
+    ),
+  ),
+  
+>>>>>>> refs/heads/master
     // E-Sign Tab
     //
     'E-Sign' => array(
@@ -868,6 +971,7 @@ $GLOBALS_METADATA = array(
   ),
     //Documents Tab
     'Documents' => array(
+
         'document_storage_method' => array(
             xl('Document Storage Method'),
             array(
@@ -913,6 +1017,13 @@ $GLOBALS_METADATA = array(
             '0',
             xl('Enable log for document uploads/downloads to CouchDB'),
         ),
+
+    'expand_document_tree' => array(
+      xl('Expand All Document Categories'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('Expand All Document Categories by Default')
+    ),
 
     'patient_id_category_name' => array(
       xl('Patient ID Category Name'),
@@ -1321,19 +1432,40 @@ $GLOBALS_METADATA = array(
       '1',                               // default
       xl('Enable Clinical Decisions Rules (CDR)')
     ),
-    
-    'enable_cdr_crw' => array(
-      xl('Enable Clinical Reminder Widget'),
+
+    'enable_allergy_check' => array(
+      xl('Enable Allergy Check'),
       'bool',                           // data type
       '1',                               // default
-      xl('Enable Clinical Reminder Widget')
+      xl('Enable Allergy Check Against Medications and Prescriptions')
+    ),
+
+    'enable_alert_log' => array(
+      xl('Enable Alert Log'),
+      'bool',                           // data type
+      '1',                               // default
+      xl('Enable Alert Logging')
+    ),
+
+    'enable_cdr_new_crp' => array(
+      xl('Enable Clinical Passive New Reminder(s) Popup'),
+      'bool',                           // data type
+      '1',                               // default
+      xl('Enable Clinical Passive New Reminder(s) Popup')
+    ),
+
+    'enable_cdr_crw' => array(
+      xl('Enable Clinical Passive Reminder Widget'),
+      'bool',                           // data type
+      '1',                               // default
+      xl('Enable Clinical Passive Reminder Widget')
     ),
 
     'enable_cdr_crp' => array(
-      xl('Enable Clinical Reminder Popup'),
+      xl('Enable Clinical Active Reminder Popup'),
       'bool',                           // data type
       '1',                               // default
-      xl('Enable Clinical Reminder Popup')
+      xl('Enable Clinical Active Reminder Popup')
     ),
 
     'enable_cdr_prw' => array(
@@ -1718,7 +1850,6 @@ $GLOBALS_METADATA = array(
       '/mnt/scan_docs',                 // default
       xl('Location where scans are stored.')
     ),
-
   ),
 
   // Portal Tab
@@ -2476,5 +2607,8 @@ $GLOBALS_METADATA = array(
     ),
 	
    ),
+   
+
+   
 );
 ?>
