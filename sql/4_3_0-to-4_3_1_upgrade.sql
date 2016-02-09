@@ -118,3 +118,13 @@ INSERT INTO `rule_reminder` ( `id`, `method`, `method_detail`, `value` ) VALUES 
 INSERT INTO `rule_target` ( `id`, `group_id`, `include_flag`, `required_flag`, `method`, `value`, `interval` ) VALUES ('rule_inr_measure', 1, 1, 1, 'target_proc', 'INR::CPT4:85610::::::ge::1', 0);
 #EndIf
 
+#IfMissingColumn patient_data billing_note
+ ALTER TABLE `patient_data`
+ ADD COLUMN   `billing_note` text NOT NULL;
+ UPDATE `patient_data` SET `billing_note` = `genericval2`;
+#EndIf
+
+#IfNotRow2D layout_options form_id DEM field_id billing_note
+ INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`, `fld_rows`, `list_backup_id`, `source`, `conditions`) VALUES
+ ('DEM', 'billing_note', '6Misc', 'Billing Note', 19, 2, 0, 60, 255, '', 1, 3, '', '', 'Patient Level Billing Note (Collections)', 0, '', 'F', '');
+#Endif
