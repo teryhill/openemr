@@ -706,7 +706,7 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
    xlt('Total Balance Due').
    " : " . text(oeFormatMoney($totalbalance)) .
    "</font></span></td></td></tr>";
- if ($result['billing_note'] != EMPTY) {
+ if (!empty($result['billing_note'])) {
    echo "<tr><td><span class='bold'><font color='red'>" .
     xlt('Billing Note') . ":" .
     text($result['billing_note']) .
