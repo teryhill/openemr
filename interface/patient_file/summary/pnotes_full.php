@@ -288,7 +288,7 @@ $billing_note = "";
 $colorbeg = "";
 $colorend = "";
 $resnote = getPatientData($patient_id, "billing_note");
-if($resnote && $resnote['billing_note'] != NULL) {
+if($resnote && $resnote['billing_note'] != EMPTY) {
   $billing_note = $resnote['billing_note'];
   $colorbeg = "<span style='color:red'>";
   $colorend = "</span>";

@@ -227,12 +227,12 @@ foreach ($result as $iter) {
     // what, regardless it gets special coloring and an extra line of output
     // in the 'name' column -- JRM
     $trClass = "oneresult";
-    if ($iter['billing_note'] != NULL) { $trClass .= " billing"; }
+    if ($iter['billing_note'] != EMPTY) { $trClass .= " billing"; }
 
     echo " <tr class='".$trClass."' id='" .
         htmlspecialchars( $iterpid."~".$iterlname."~".$iterfname."~".$iterdob, ENT_QUOTES) . "'>";
     echo "  <td class='srName'>" . htmlspecialchars( $iterlname.", ".$iterfname." ".$itermname, ENT_NOQUOTES);
-    if ($iter['billing_note'] != NULL) { echo "<br>" . htmlspecialchars( $iter['billing_note'], ENT_NOQUOTES); }
+    if ($iter['billing_note'] != EMPTY) { echo "<br>" . htmlspecialchars( $iter['billing_note'], ENT_NOQUOTES); }
     echo "</td>\n";
     echo "  <td class='srPhone'>" . htmlspecialchars( $iter['phone_home'], ENT_NOQUOTES) . "</td>\n"; //(CHEMED) Search by phone number
     echo "  <td class='srSS'>" . htmlspecialchars( $iter['ss'], ENT_NOQUOTES) . "</td>\n";

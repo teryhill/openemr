@@ -685,7 +685,7 @@ function updateFields(payField, adjField, balField, coPayField, isFirstProcCode)
   }
 ?>
  </tr>
-<?php if ($pdrow['billing_note'] != NULL) { ?>
+<?php if ($pdrow['billing_note'] != EMPTY) { ?>
  <tr>
   <td>
    <?php xl('Billing Note:','e')?>

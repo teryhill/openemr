@@ -911,7 +911,7 @@ if ($_POST['form_search'] || $_POST['form_print']) {
 
       // Determine if customer is in collections.
       //
-      $billnote = ($row['billing_note'] != NULL) ? $row['billing_note'] : '';
+      $billnote = ($row['billing_note'] != EMPTY) ? $row['billing_note'] : '';
       $in_collections = stristr($billnote, 'IN COLLECTIONS') !== false;
 ?>
  <tr bgcolor='<?php echo $bgcolor ?>'>

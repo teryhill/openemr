@@ -1065,7 +1065,7 @@ if(is_array($ret))
     if ($iter['id']) $rhtml .= text(oeFormatSDFT(strtotime($iter{"date"})));
     $rhtml .= "</span></td>\n";
     if ($iter['id'] && $iter['authorized'] != 1) {
-      $rhtml .= "<td><span class=alert>".xlt("Note: This code is has not been authorized.")."</span></td>\n";
+      $rhtml .= "<td><span class=alert>".xlt("Note: This code has not been authorized.")."</span></td>\n";
     }
     else {
       $rhtml .= "<td></td>\n";
@@ -1111,7 +1111,7 @@ if(is_array($ret))
           $rhtml2 .= text(oeFormatSDFT(strtotime($date)));
           $rhtml2 .= "</span></td>\n";
           if ($iter['id'] && $iter['authorized'] != 1) {
-            $rhtml2 .= "<td><span class=alert>".xlt("Note: This copay was entered against billing that has not been authorized.  Please review status.")."</span></td>\n";
+            $rhtml2 .= "<td><span class=alert>".xlt("Note: This copay was entered against billing that has not been authorized. Please review status.")."</span></td>\n";
           }else{
             $rhtml2 .= "<td></td>\n";
           }
