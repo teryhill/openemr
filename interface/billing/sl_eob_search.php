@@ -1023,7 +1023,7 @@ if ($_POST['form_search'] || $_POST['form_print']) {
         "im.foreign_id = " . $row['custid'] . " AND " .
         "im.foreign_table = 'customer' AND " .
         "pd.id = im.local_id");
-      $row['billnote'] = ($pdrow['billing_note'] ;
+      $row['billnote'] = $pdrow['billing_note'] ;
       $in_collections = stristr($row['billnote'], 'IN COLLECTIONS') !== false;
 ?>
  <tr bgcolor='<?php echo $bgcolor ?>'>
