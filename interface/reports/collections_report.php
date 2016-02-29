@@ -1005,7 +1005,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
       $row['ss'] = $pdrow['ss'];
       $row['DOB'] = $pdrow['DOB'];
       $row['pubpid'] = $pdrow['pubpid'];
-      $row['billnote'] = ($pdrow['billing_note'] : '';
+      $row['billnote'] = $pdrow['billing_note'];
       $row['referrer'] = $pdrow['referrer'];
       
       $ptname = $pdrow['lname'] . ", " . $pdrow['fname'];

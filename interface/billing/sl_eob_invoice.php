@@ -469,7 +469,7 @@ function updateFields(payField, adjField, balField, coPayField, isFirstProcCode)
     $codes = get_invoice_summary($trans_id, true);
   }
 
-  $pdrow = sqlQuery("select billing_note" .
+  $pdrow = sqlQuery("select billing_note " .
     "from patient_data where pid = '$patient_id' limit 1");
 ?>
 <center>
