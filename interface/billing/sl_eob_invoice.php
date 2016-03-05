@@ -20,9 +20,12 @@
  * @package OpenEMR
  * @author  Rod Roark <rod@sunsetsystems.com>
  * @author  Roberto Vasquez <robertogagliotta@gmail.com>
+ * @author  Terry Hill <terry@lillysystems.com>
  * @link    http://www.open-emr.org
  */
 
+ 
+ 
   require_once("../globals.php");
   require_once("$srcdir/log.inc");
   require_once("$srcdir/patient.inc");

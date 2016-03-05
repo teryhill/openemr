@@ -195,15 +195,23 @@ $form_end_date   = fixDate($_POST['form_end_date'], date("Y-m-d"));
       $patient_id = $row['pid'];
       $encounter_id = $row['encounter'];
       $invnumber = $row['pid'] . "." . $row['encounter'];
-
-        $ares = SLQuery("SELECT duedate, amount, paid FROM ar WHERE " .
-          "ar.invnumber = '$invnumber'");
-        if ($sl_err) die($sl_err);
-        if (SLRowCount($ares) == 0) continue;
-        $arow = SLGetRow($ares, 0);
-        $inv_amount  = $arow['amount'];
-        $inv_paid    = $arow['paid'];
-        $inv_duedate = $arow['duedate'];
+        $inv_duedate = '';
+        $arow = sqlQuery("SELECT SUM(fee) AS amount FROM drug_sales WHERE " .
+          "pid = '$patient_id' AND encounter = '$encounter_id'");
+        $inv_amount = $arow['amount'];
+        $arow = sqlQuery("SELECT SUM(fee) AS amount FROM billing WHERE " .
+          "pid = '$patient_id' AND encounter = '$encounter_id' AND " .
+          "activity = 1 AND code_type != 'COPAY'");
+        $inv_amount += $arow['amount'];
+        $arow = sqlQuery("SELECT SUM(fee) AS amount FROM billing WHERE " .
+          "pid = '$patient_id' AND encounter = '$encounter_id' AND " .
+          "activity = 1 AND code_type = 'COPAY'");
+        $inv_paid = 0 - $arow['amount'];
+        $arow = sqlQuery("SELECT SUM(pay_amount) AS pay, " .
+          "sum(adj_amount) AS adj FROM ar_activity WHERE " .
+          "pid = '$patient_id' AND encounter = '$encounter_id'");
+        $inv_paid   += $arow['pay'];
+        $inv_amount -= $arow['adj'];
       $total_amount += bucks($inv_amount);
       $total_paid   += bucks($inv_paid);
 

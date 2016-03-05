@@ -31,6 +31,7 @@ $sanitize_all_escapes=true;
 require_once("../globals.php");
 require_once("../../library/patient.inc");
 require_once("../../library/invoice_summary.inc.php");
+require_once("../../library/sl_eob.inc.php");
 require_once("../../library/formatting.inc.php");
 require_once "$srcdir/options.inc.php";
 require_once "$srcdir/formdata.inc.php";
@@ -560,7 +561,7 @@ function checkAll(checked) {
 if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport']) {
   $rows = array();
   $where = "";
-
+  $sqlArray = array(); 
     if ($_POST['form_export'] || $_POST['form_csvexport']) {
        
       $where = "( 1 = 2";

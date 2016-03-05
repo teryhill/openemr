@@ -561,7 +561,7 @@ if ($_POST['form_search'] || $_POST['form_print']) {
    &nbsp;<?php xl('Svc Date','e'); ?>
   </td>
   <td class="dehead">
-   &nbsp;<?php xl('Due Date','e'); ?>
+   &nbsp;<?php xl('Last Stmt','e'); ?>
   </td>
   <td class="dehead" align="right">
    <?php xl('Charge','e'); ?>&nbsp;
