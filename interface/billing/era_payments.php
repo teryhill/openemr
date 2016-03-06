@@ -49,7 +49,7 @@ function era_callback(&$out) {
   list($pid, $encounter, $invnumber) = slInvoiceNumber($out);
   if ($pid && $encounter) {
     if ($where) $where .= ' OR ';
-      $where .= "invnumber = '$invnumber'";
+      $where .= "( f.pid = '$pid' AND f.encounter = '$encounter' )";
   }
 }
 //===============================================================================
