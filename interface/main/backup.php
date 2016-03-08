@@ -216,6 +216,7 @@ if ($form_step == 2) {
 }
 
 if ($form_step == 3) {
+	#This step was left blank after removing support for sql-ledger.
     ++$form_step;
   }
 
@@ -268,6 +269,7 @@ if ($form_step == 5) {
 }
 
 if ($form_step == 6) {
+	#This step was left blank after removing support for sql-ledger.
     ++$form_step;
   }
 if ($form_step == 7) {   // create the final compressed tar containing all files

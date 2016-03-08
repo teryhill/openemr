@@ -205,7 +205,11 @@ function popup_close() {
     form_delete($row['formdir'], $row['form_id']);
    }
    row_delete("forms", "pid = '$patient'");
-
+   
+   // integration_mapping was used for sql-ledger (which is no longer supported) and is virtually obsolete now.
+   $row = sqlQuery("SELECT id FROM patient_data WHERE pid = '$patient'");
+   row_delete("integration_mapping", "local_table = 'patient_data' AND " .
+    "local_id = '" . $row['id'] . "'");
 
    // Delete all documents for the patient.
    $res = sqlStatement("SELECT id FROM documents WHERE foreign_id = '$patient'");

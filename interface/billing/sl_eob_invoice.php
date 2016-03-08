@@ -476,8 +476,8 @@ function updateFields(payField, adjField, balField, coPayField, isFirstProcCode)
  </tr>
  <tr>
   <td>
-   <input type='text' name='form_duedate' size='10' value='<?php echo $arrow['duedate'] ?>'
-    title='<?php xl('Due date mm/dd/yyyy or yyyy-mm-dd','e')?>'>
+  </td>
+  <td>
   </td>
   <td colspan="2">
    <input type="checkbox" name="form_secondary" value="1"> <?php xl('Needs secondary billing','e')?>
