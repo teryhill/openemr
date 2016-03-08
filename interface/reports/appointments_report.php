@@ -283,6 +283,8 @@ function fetch_reminders($pid, $appt_date) {
                                     <span> <?php echo xlt('Print'); ?> </span> </a> 
                                 <a href='#' class='css_button' onclick='window.open("../patient_file/printed_fee_sheet.php?fill=2","_blank")' onsubmit='return top.restoreSession()'> 
                                     <span> <?php echo xlt('Superbills'); ?> </span> </a> 
+                               <a href='#' class='css_button' onclick='window.open("../patient_file/addr_appt_label.php?fill=2","_blank")' onsubmit='return top.restoreSession()'> 
+                                    <span> <?php echo xlt('Address Labels'); ?> </span> </a> 
                                 <?php } ?></div>
 				</td>
 			</tr>
