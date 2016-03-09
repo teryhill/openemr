@@ -89,7 +89,7 @@ $EXPORT_FILE = $GLOBALS['temporary_files_dir'] . "/openemr_config.sql";
 $MYSQL_PATH = $GLOBALS['mysql_bin_dir'];
 $PERL_PATH = $GLOBALS['perl_bin_dir'];
 
-if ($form_step == 8) {
+if ($form_step == 7) {
   header("Pragma: public");
   header("Expires: 0");
   header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -216,11 +216,6 @@ if ($form_step == 2) {
 }
 
 if ($form_step == 3) {
-	#This step was left blank after removing support for sql-ledger.
-    ++$form_step;
-  }
-
-if ($form_step == 4) {
   $form_status .= xl('Dumping OpenEMR web directory tree') . "...<br />";
   echo nl2br($form_status);
   $cur_dir = getcwd();
@@ -250,7 +245,7 @@ if ($form_step == 4) {
   $auto_continue = true;
 }
 
-if ($form_step == 5) {
+if ($form_step == 4) {
   if ((!empty($phpgacl_location)) && ($phpgacl_location != $srcdir."/../gacl") ) {
     $form_status .= xl('Dumping phpGACL web directory tree') . "...<br />";
     echo nl2br($form_status);
@@ -268,11 +263,7 @@ if ($form_step == 5) {
   }
 }
 
-if ($form_step == 6) {
-	#This step was left blank after removing support for sql-ledger.
-    ++$form_step;
-  }
-if ($form_step == 7) {   // create the final compressed tar containing all files
+if ($form_step == 5) {   // create the final compressed tar containing all files
   $form_status .= xl('Backup file has been created. Will now send download.') . "<br />";
   echo nl2br($form_status);
   $cur_dir = getcwd();
