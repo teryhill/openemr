@@ -840,7 +840,14 @@ $GLOBALS_METADATA = array(
 	   '0',                              // default = false
 	   xl('Default to a provider for line item in the fee sheet.(only applicable if Support line item billing in option above)')
     ),	
-  
+ 
+    'replicate_justification' => array(
+      xl('Replicate First Encounter Justification for ALL Codes'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('Replicate First Encounter Justification for ALL Codes in the encounter.')
+    ),
+ 
   	'use_custom_statement' => array(
       xl('Use Custom Statement'),
       'bool',                           // data type
