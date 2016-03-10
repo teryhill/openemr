@@ -586,7 +586,7 @@ if (!$alertmsg && ($_POST['bn_save'] || $_POST['bn_save_close'])) {
          $autojustify =  $justify;
       }
     }
-    If ($GLOBALS['replicate_justification']=='1' && ($code_type !='ICD10' && $code_type !='COPAY' ) ) {
+    If ($GLOBALS['replicate_justification']=='1' && (check_is_code_type_justify($code_type)) {
         $justify =  $autojustify; 
     }
 
