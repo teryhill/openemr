@@ -18,7 +18,7 @@
 * 
 * @package OpenEMR 
 * @author Rod Roark <rod@sunsetsystems.com>
-* @author Terry Hill <terry@lillysystems.com>
+* @author Terry Hill <terry@lillysystems.com> Exclusion added
 * @link http://www.open-emr.org 
 */
 
@@ -142,7 +142,7 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
   }
   if (! $code_text) {
     $sqlArray = array();
-    $query = "select id, units, code_text from codes where code_type = ? " .
+    $query = "select id, units, exclude, code_text from codes where code_type = ? " .
       " and " .
       "code = ? and ";
     array_push($sqlArray,$code_types[$codetype]['id'],$code);
@@ -154,6 +154,8 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
     }
     $result = sqlQuery($query, $sqlArray);
     $code_text = $result['code_text'];
+    $exclude = $result['exclude'];
+
     if (empty($units)) $units = max(1, intval($result['units']));
     if (!isset($fee)) {
       // Fees come from the prices table now.
@@ -236,8 +238,10 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
       ($auth ? " checked" : "") . " disabled /></td>\n";
     echo "  <td class='billcell' align='center'><input type='checkbox'" .
       " disabled /></td>\n";
+    if($GLOBALS['bill_to_patient'] ==1) {
     echo "  <td class='billcell' align='center'$usbillstyle><input type='checkbox'" .
       ($exclude ? " checked" : "") . " disabled /></td>\n";
+  }
   }
   else { // not billed
     if (modifiers_are_used(true)) {
@@ -308,7 +312,7 @@ function echoLine($lino, $codetype, $code, $modifier, $ndc_info='',
       "value='1'" . ($auth ? " checked" : "") . " /></td>\n";
     echo "  <td class='billcell' align='center'><input type='checkbox' name='bill[".attr($lino)."][del]' " .
       "value='1'" . ($del ? " checked" : "") . " /></td>\n";
-        //ADD THE NEW CHECKBOX "EXCLUDE"
+        //ADD THE NEW CHECKBOX "Bill to Patient EXCLUDE"
     if($GLOBALS['bill_to_patient'] ==1) {
       echo "  <td class='billcell' align='center'><input type='checkbox' name='bill[".attr($lino)."][exclude]' " .
         "value='1'" . ($exclude ? " checked" : "") . " /></td>\n";

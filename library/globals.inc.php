@@ -5,7 +5,10 @@
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-
+//
+// @author Rod Roark <rod@sunsetsystems.com>
+// @author Terry Hill <terry@lillysystems.com> Exclusion added
+//
 // $GLOBALS['print_command'] is the
 // Print command for spooling to printers, used by statements.inc.php
 // This is the command to be used for printing (without the filename).
@@ -819,7 +822,6 @@ $GLOBALS_METADATA = array(
 	   xl('Default to a provider for line item in the fee sheet.(only applicable if Support line item billing in option above)')
     ),	
   
-<<<<<<< HEAD
     'bill_to_patient' => array(
        xl('Allows Fee Sheet Items to be excluded from claim and billed to patient'),
 	   'bool',                           // data type
@@ -828,7 +830,7 @@ $GLOBALS_METADATA = array(
     ),
   
   ),  
-=======
+
   	'use_custom_statement' => array(
       xl('Use Custom Statement'),
       'bool',                           // data type
@@ -921,7 +923,6 @@ $GLOBALS_METADATA = array(
     ),
   ),
   
->>>>>>> refs/heads/master
     // E-Sign Tab
     //
     'E-Sign' => array(

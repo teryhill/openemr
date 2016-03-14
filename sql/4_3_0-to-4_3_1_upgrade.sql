@@ -118,3 +118,10 @@ INSERT INTO `rule_reminder` ( `id`, `method`, `method_detail`, `value` ) VALUES 
 INSERT INTO `rule_target` ( `id`, `group_id`, `include_flag`, `required_flag`, `method`, `value`, `interval` ) VALUES ('rule_inr_measure', 1, 1, 1, 'target_proc', 'INR::CPT4:85610::::::ge::1', 0);
 #EndIf
 
+#IfMissingColumn billing exclude
+  ALTER TABLE billing ADD COLUMN exclude tinyint(1) NOT NULL default 0;
+#EndIf
+ 
+#IfMissingColumn codes exclude
+  ALTER TABLE codes ADD COLUMN exclude tinyint(1) NOT NULL default 0;
+#EndIf 
