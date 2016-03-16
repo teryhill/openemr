@@ -190,6 +190,7 @@ function topatient(pid, pubpid, pname, enc, datestr, dobstr) {
 EncounterDateArray=new Array;
 CalendarCategoryArray=new Array;
 EncounterIdArray=new Array;
+EncounterNoteArray=new Array;
 function SubmitTheScreen()
  {//Action on Update List link
   if(!ProcessBeforeSubmitting())
@@ -802,7 +803,7 @@ if(is_array($ret))
         text($iter['enc_encounter']) . ")</span>";
 
          //Encounter details are stored to javacript as array.
-        $result4 = sqlStatement("SELECT fe.encounter,fe.date,openemr_postcalendar_categories.pc_catname FROM form_encounter AS fe ".
+        $result4 = sqlStatement("SELECT fe.encounter,fe.date,fe.billing_note,openemr_postcalendar_categories.pc_catname FROM form_encounter AS fe ".
             " left join openemr_postcalendar_categories on fe.pc_catid=openemr_postcalendar_categories.pc_catid  WHERE fe.pid = ? order by fe.date desc", array($iter['enc_pid']) );
            if(sqlNumRows($result4)>0)
             ?>
@@ -811,6 +812,7 @@ if(is_array($ret))
             EncounterDateArray[<?php echo attr($iter['enc_pid']); ?>]=new Array;
             CalendarCategoryArray[<?php echo attr($iter['enc_pid']); ?>]=new Array;
             EncounterIdArray[<?php echo attr($iter['enc_pid']); ?>]=new Array;
+			EncounterNoteArray[<?php echo attr($iter['enc_pid']); ?>]=new Array;
             <?php
             while($rowresult4 = sqlFetchArray($result4))
              {
@@ -818,8 +820,10 @@ if(is_array($ret))
                 EncounterIdArray[<?php echo attr($iter['enc_pid']); ?>][Count]='<?php echo htmlspecialchars($rowresult4['encounter'], ENT_QUOTES); ?>';
                 EncounterDateArray[<?php echo attr($iter['enc_pid']); ?>][Count]='<?php echo htmlspecialchars(oeFormatShortDate(date("Y-m-d", strtotime($rowresult4['date']))), ENT_QUOTES); ?>';
                 CalendarCategoryArray[<?php echo attr($iter['enc_pid']); ?>][Count]='<?php echo htmlspecialchars( xl_appt_category($rowresult4['pc_catname']), ENT_QUOTES); ?>';
+				EncounterNoteArray[<?php echo attr($iter['enc_pid']); ?>][Count]='<?php echo htmlspecialchars($rowresult4['billing_note'], ENT_QUOTES); ?>';
                 Count++;
          <?php
+		 $enc_billing_note = $rowresult4['billing_note'];
              }
          ?>
         </script>
@@ -847,7 +851,10 @@ if(is_array($ret))
                  "], CalendarCategoryArray[" . $iter['enc_pid'] . "])\">[" . xlt('To Dems') . "]</a>";
         $divnos=$divnos+1;
       $lhtml .= "&nbsp;&nbsp;&nbsp;<a  onclick='divtoggle(\"spanid_$divnos\",\"divid_$divnos\");' class='small' id='aid_$divnos' href=\"JavaScript:void(0);".
-        "\">(<span id=spanid_$divnos class=\"indicator\">" . htmlspecialchars( xl('Expand'), ENT_QUOTES) . '</span>)</a> <span style="margin-left: 20px; font-weight bold; color: red">'.text($billing_note).'</span>';
+        "\">(<span id=spanid_$divnos class=\"indicator\">" . htmlspecialchars( xl('Expand'), ENT_QUOTES) . '</span>)<br></a>';		
+      if($GLOBALS['notes_to_display_in_Billing'] == 2 || $GLOBALS['notes_to_display_in_Billing'] == 3){
+      $lhtml .= '<span style="margin-left: 20px; font-weight bold; color: red">'.text($billing_note).'</span>';
+      }
 
       if ($iter['id']) {
 
@@ -899,7 +906,11 @@ if(is_array($ret))
         }
         $lhtml .= "</select>";
         $DivPut='yes';
-        $lhtml .= "<br>\n&nbsp;<div   id='divid_$divnos' style='display:none'>" . text(oeFormatShortDate(substr($iter['date'], 0, 10)))
+		
+		if($GLOBALS['notes_to_display_in_Billing'] == 1 || $GLOBALS['notes_to_display_in_Billing'] == 3) {
+          $lhtml .= "<br><span style='margin-left: 20px; font-weight bold; color: red'>".text($enc_billing_note)."</span>";
+        }
+          $lhtml .= "<br>\n&nbsp;<div   id='divid_$divnos' style='display:none'>" . text(oeFormatShortDate(substr($iter['date'], 0, 10)))
           . text(substr($iter['date'], 10, 6)) . " " . xlt("Encounter was coded");
 
         $query = "SELECT * FROM claims WHERE " .
@@ -1061,14 +1072,18 @@ if(is_array($ret))
     $rhtml .= '<td><span style="font-size:8pt;">&nbsp;&nbsp;&nbsp;';
     if ($iter['id']) $rhtml .= getProviderName(empty($iter['provider_id']) ? text($iter['enc_provider_id']) : text($iter['provider_id']));
     $rhtml .= "</span></td>\n";
+    $rhtml .= '<td><span style="font-size:8pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+    if($GLOBALS['display_units_in_billing'] != 0) {
+	if ($iter['id']) $rhtml .= xlt("Units") . ":";
+    if ($iter['id']) $rhtml .= text($iter{"units"});
+    }
+	$rhtml .= "</span></td>\n";
     $rhtml .= '<td width=100>&nbsp;&nbsp;&nbsp;<span style="font-size:8pt;">';
     if ($iter['id']) $rhtml .= text(oeFormatSDFT(strtotime($iter{"date"})));
     $rhtml .= "</span></td>\n";
+    # This error message is generated if the authorized check box is not checked
     if ($iter['id'] && $iter['authorized'] != 1) {
       $rhtml .= "<td><span class=alert>".xlt("Note: This code has not been authorized.")."</span></td>\n";
-    }
-    else {
-      $rhtml .= "<td></td>\n";
     }
     if ($iter['id'] && $last_encounter_id != $this_encounter_id) {
       $tmpbpr = $iter['bill_process'];
