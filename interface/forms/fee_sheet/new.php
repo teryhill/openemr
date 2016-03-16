@@ -581,12 +581,12 @@ if (!$alertmsg && ($_POST['bn_save'] || $_POST['bn_save_close'])) {
     }
     $justify   = trim($iter['justify']);
     # Code to create justification for all codes based on first justification
-    If ($GLOBALS['replicate_justification']=='1' ) {
-      If ($justify !='') {
+    if ($GLOBALS['replicate_justification']=='1' ) {
+      if ($justify !='') {
          $autojustify =  $justify;
       }
     }
-    If ($GLOBALS['replicate_justification']=='1' && (check_is_code_type_justify($code_type)) {
+    if ($GLOBALS['replicate_justification']=='1' && (check_is_code_type_justify($code_type))) {
         $justify =  $autojustify; 
     }
 
