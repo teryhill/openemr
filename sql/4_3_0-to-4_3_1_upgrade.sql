@@ -124,4 +124,5 @@ INSERT INTO `rule_target` ( `id`, `group_id`, `include_flag`, `required_flag`, `
  
 #IfMissingColumn codes exclude
   ALTER TABLE codes ADD COLUMN exclude tinyint(1) NOT NULL default 0;
-#EndIf 
+#EndIf
+ 
