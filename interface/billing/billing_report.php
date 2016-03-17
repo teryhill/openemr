@@ -1090,10 +1090,6 @@ if(is_array($ret))
     if ($iter['id'] && $iter['authorized'] != 1) {
       $rhtml .= "<td><span class=alert>".xlt("Note: This code has not been authorized.")."</span></td>\n";
     }
-    # This will check if an item is excluded and will tell the user if it is the case.
-    else if ($iter['id'] && $iter['authorized'] == 1 && $iter['exclude'] == 1) {
-      $rhtml .= "<td><span class=alert>".xlt("Note: Excluded from X12 and CMS1500.")."</span></td>\n";
-    }
     if ($iter['id'] && $last_encounter_id != $this_encounter_id) {
       $tmpbpr = $iter['bill_process'];
       if ($tmpbpr == '0' && $iter['billed']) $tmpbpr = '2';
