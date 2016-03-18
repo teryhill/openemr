@@ -32,26 +32,9 @@ require_once("../globals.php");
 require_once("$srcdir/classes/PDF_Label.php");
 require_once("$srcdir/formatting.inc.php");
 
-# This tells us if patient/encounter data is to be filled in.
-# 2=array of PIDs for session.
-
-if (empty($_GET['fill'])) {
-    $form_fill = 0;
-} else {
-    $form_fill = $_GET['fill'];
-}
-
 # This is based on session array. 
 $pid_list = array();
-
-if(!empty($_SESSION['pidList']) and $form_fill == 2)
-{
-    $pid_list = $_SESSION['pidList'];
-}
-
-# make sure to clean up the session 
-#
-unset($_SESSION['pidList']);
+$pid_list = $_SESSION['pidList'];
 
 #get label type and number of labels on sheet
 #
