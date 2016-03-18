@@ -586,7 +586,7 @@ if (!$alertmsg && ($_POST['bn_save'] || $_POST['bn_save_close'])) {
          $autojustify =  $justify;
       }
     }
-    if ($GLOBALS['replicate_justification']=='1' && (check_is_code_type_justify($code_type))) {
+    if ($GLOBALS['replicate_justification']=='1' && (check_is_code_type_justify($code_type) && $justify == '')) {
         $justify =  $autojustify; 
     }
 

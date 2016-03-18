@@ -842,10 +842,10 @@ $GLOBALS_METADATA = array(
     ),	
  
     'replicate_justification' => array(
-      xl('Replicate First Encounter Justification for ALL Codes'),
+      xl('Automatically replicate justification codes in Fee Sheet'),
       'bool',                           // data type
       '0',                              // default = false
-      xl('Replicate First Encounter Justification for ALL Codes in the encounter.')
+      xl('Automatically replicate justification codes in Fee Sheet (basically fills in the blanks with the justification code above it).')
     ),
  
   	'use_custom_statement' => array(
