@@ -22,6 +22,12 @@ require_once "$srcdir/formdata.inc.php";
 require_once "$srcdir/appointments.inc.php";
 require_once "$srcdir/clinical_rules.php";
 
+# make sure to clean up the session 
+# else we'll build off of trash in the combo-drop down for a single patient later
+# This was moved from the printed_fee_sheet program to here so on any page load, it gets reset
+
+unset($_SESSION['pidList']);
+
 $alertmsg = ''; // not used yet but maybe later
 $patient = $_REQUEST['patient'];
 
