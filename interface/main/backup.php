@@ -89,7 +89,7 @@ $EXPORT_FILE = $GLOBALS['temporary_files_dir'] . "/openemr_config.sql";
 $MYSQL_PATH = $GLOBALS['mysql_bin_dir'];
 $PERL_PATH = $GLOBALS['perl_bin_dir'];
 
-if ($form_step == 7) {
+if ($form_step == 6) {
   header("Pragma: public");
   header("Expires: 0");
   header("Cache-Control: must-revalidate, post-check=0, pre-check=0");

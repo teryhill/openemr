@@ -169,7 +169,7 @@ $form_end_date   = fixDate($_POST['form_end_date'], date("Y-m-d"));
  </thead>
 
 <?php
-  if ($_POST['form_search']) {
+  if ($_POST['form_refresh']) {
 
     $where = "";
 
