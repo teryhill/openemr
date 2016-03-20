@@ -850,13 +850,10 @@ if(is_array($ret))
                  top.window.parent.left_nav.setPatientEncounter(EncounterIdArray[" . $iter['enc_pid'] . "],EncounterDateArray[" . $iter['enc_pid'] . 
                  "], CalendarCategoryArray[" . $iter['enc_pid'] . "])\">[" . xlt('To Dems') . "]</a>";
         $divnos=$divnos+1;
-      if($GLOBALS['notes_to_display_in_Billing'] == 2 || $GLOBALS['notes_to_display_in_Billing'] == 3){
       $lhtml .= "&nbsp;&nbsp;&nbsp;<a  onclick='divtoggle(\"spanid_$divnos\",\"divid_$divnos\");' class='small' id='aid_$divnos' href=\"JavaScript:void(0);".
-        "\">(<span id=spanid_$divnos class=\"indicator\">" . htmlspecialchars( xl('Expand'), ENT_QUOTES) . '</span>)<br></a> <span style="margin-left: 20px; font-weight bold; color: red">'.text($billing_note).'</span>';
-      }
-      else{
-        $lhtml .= "&nbsp;&nbsp;&nbsp;<a  onclick='divtoggle(\"spanid_$divnos\",\"divid_$divnos\");' class='small' id='aid_$divnos' href=\"JavaScript:void(0);".
-        "\">(<span id=spanid_$divnos class=\"indicator\">" . htmlspecialchars( xl('Expand'), ENT_QUOTES) . '</span>)<br></a>';
+        "\">(<span id=spanid_$divnos class=\"indicator\">" . htmlspecialchars( xl('Expand'), ENT_QUOTES) . '</span>)<br></a>';		
+      if($GLOBALS['notes_to_display_in_Billing'] == 2 || $GLOBALS['notes_to_display_in_Billing'] == 3){
+      $lhtml .= '<span style="margin-left: 20px; font-weight bold; color: red">'.text($billing_note).'</span>';
       }
 
       if ($iter['id']) {
@@ -911,12 +908,10 @@ if(is_array($ret))
         $DivPut='yes';
 		
 		if($GLOBALS['notes_to_display_in_Billing'] == 1 || $GLOBALS['notes_to_display_in_Billing'] == 3) {
-          $lhtml .= "<br><span style='margin-left: 20px; font-weight bold; color: red'>".text($enc_billing_note)."</span><br>\n&nbsp;<div   id='divid_$divnos' style='display:none'>" . text(oeFormatShortDate(substr($iter['date'], 0, 10)))
-          . text(substr($iter['date'], 10, 6)) . " " . xlt("Encounter was coded");
-        }else{
-          $lhtml .= "<br><br>\n&nbsp;<div   id='divid_$divnos' style='display:none'>" . text(oeFormatShortDate(substr($iter['date'], 0, 10)))
-          . text(substr($iter['date'], 10, 6)) . " " . xlt("Encounter was coded");
+          $lhtml .= "<br><span style='margin-left: 20px; font-weight bold; color: red'>".text($enc_billing_note)."</span>";
         }
+          $lhtml .= "<br>\n&nbsp;<div   id='divid_$divnos' style='display:none'>" . text(oeFormatShortDate(substr($iter['date'], 0, 10)))
+          . text(substr($iter['date'], 10, 6)) . " " . xlt("Encounter was coded");
 
         $query = "SELECT * FROM claims WHERE " .
           "patient_id = ? AND " .
@@ -1079,7 +1074,7 @@ if(is_array($ret))
     $rhtml .= "</span></td>\n";
     $rhtml .= '<td><span style="font-size:8pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
     if($GLOBALS['display_units_in_billing'] != 0) {
-	if ($iter['id']) $rhtml .= xlt("Units:");
+	if ($iter['id']) $rhtml .= xlt("Units") . ":";
     if ($iter['id']) $rhtml .= text($iter{"units"});
     }
 	$rhtml .= "</span></td>\n";

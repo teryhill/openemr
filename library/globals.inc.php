@@ -863,7 +863,7 @@ $GLOBALS_METADATA = array(
         '2' => xl('Patient Billing Note'), 
         '3' => xl('All'),  		
       ),   
-      '3',                              // default = 2
+      '3',
      xl('Display the Encounter Billing Note or Patient Billing Note or Both in the Billing Screen.')
     ),
   
