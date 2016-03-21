@@ -93,7 +93,7 @@ function getInsuranceProviders() {
         $sql = "select insurance_companies.name, insurance_companies.id, " .
           "addresses.zip, addresses.line1 " .
           "from insurance_companies, addresses " .
-          "where addresses.foreign_id = insurance_companies.id " .
+          "where addresses.foreign_id = insurance_companies.id and inactive != 'Y'".
           "order by insurance_companies.name, addresses.zip";
 
         $rez = sqlStatement($sql);
@@ -115,7 +115,7 @@ function getInsuranceProvidersExtra() {
         $sql = "select insurance_companies.name, insurance_companies.id, " .
           "addresses.zip, addresses.line1, addresses.state " .
           "from insurance_companies, addresses " .
-          "where addresses.foreign_id = insurance_companies.id " .
+          "where addresses.foreign_id = insurance_companies.id and inactive != 'Y'".
           "order by insurance_companies.name, addresses.zip";
 
         $rez = sqlStatement($sql);
