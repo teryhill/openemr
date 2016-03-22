@@ -850,10 +850,10 @@ $GLOBALS_METADATA = array(
     ),	
 
     'bill_to_patient' => array(
-       xl('Allows Fee Sheet Items to be excluded from claim and billed to patient'),
+       xl('Allows Fee Sheet Items to be excluded from Insurance Billing'),
 	   'bool',                           // data type
 	   '0',                              // default = false
-	   xl('Allows Fee Sheet Items to be excluded from claim and billed to directly patient')
+	   xl('Allows Fee Sheet Items to be excluded from Insurance Billing')
     ),
  
     'replicate_justification' => array(

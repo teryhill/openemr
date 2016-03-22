@@ -15,7 +15,7 @@
 * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
 * 
 * @package OpenEMR 
-* @author Terry Hill <terry@lillysystems.com> Exclusion added
+* @author Terry Hill <terry@lillysystems.com> exclude form insurance billing added
 * @link http://www.open-emr.org 
 */
 
@@ -51,7 +51,7 @@ $mode = $_POST['mode'];
 $code_id = 0;
 $related_code = '';
 $active = 1;
-$exclude = 0;
+$exclude_form_insurance_billing = 0;
 $reportable = 0;
 $financial_reporting = 0;
 
@@ -65,7 +65,7 @@ if (isset($mode)) {
   $related_code = $_POST['related_code'];
   $cyp_factor = $_POST['cyp_factor'] + 0;
   $active     = empty($_POST['active']) ? 0 : 1;
-  $exclude    = empty($_POST['exclude']) ? 0 : 1;
+  $exclude_form_insurance_billing    = empty($_POST['exclude_form_insurance_billing']) ? 0 : 1;
   $reportable = empty($_POST['reportable']) ? 0 : 1; // dx reporting
   $financial_reporting = empty($_POST['financial_reporting']) ? 0 : 1; // financial service reporting
 
@@ -100,7 +100,7 @@ if (isset($mode)) {
         "cyp_factor = '"   . ffescape($cyp_factor)   . "', " .
         "taxrates = '"     . ffescape($taxrates)     . "', " .
         "active = "        . add_escape_custom($active) . ", " .
-        "exclude = "        . add_escape_custom($exclude) . ", " .
+        "exclude_form_insurance_billing = "        . add_escape_custom($exclude_form_insurance_billing) . ", " .
         "financial_reporting = " . add_escape_custom($financial_reporting) . ", " .
         "reportable = "    . add_escape_custom($reportable);
       if ($code_id) {
@@ -127,7 +127,7 @@ if (isset($mode)) {
         $cyp_factor = 0;
         $taxrates = '';
         $active = 1;
-        $exclude = 0;
+        $exclude_form_insurance_billing = 0;
         $reportable = 0;
       }
     }
@@ -146,7 +146,7 @@ if (isset($mode)) {
       $cyp_factor   = $row['cyp_factor'];
       $taxrates     = $row['taxrates'];
       $active       = 0 + $row['active'];
-      $exclude      = 0 + $row['exclude'];
+      $exclude_form_insurance_billing      = 0 + $row['exclude_form_insurance_billing'];
       $reportable   = 0 + $row['reportable'];
       $financial_reporting  = 0 + $row['financial_reporting'];
     }
@@ -169,7 +169,7 @@ if (isset($mode)) {
       $cyp_factor   = $row['cyp_factor'];
       $taxrates     = $row['taxrates'];
       $active       = $row['active'];
-      $exclude      = $row['exclude'];
+      $exclude_form_insurance_billing      = $row['exclude_form_insurance_billing'];
       $reportable   = $row['reportable'];
       $financial_reporting  = $row['financial_reporting'];
     }
@@ -431,8 +431,8 @@ foreach ($code_types as $key => $value) {
    <?php echo xlt('Active');
    if($GLOBALS['bill_to_patient'] ==1) {?>
    &nbsp;&nbsp;
-   <input type='checkbox' name='exclude' value='1'<?php if (!empty($exclude) || ($mode == 'modify' && $exclude == NULL) ) echo ' checked'; ?> />
-   <?php echo xlt('Exclude');
+   <input type='checkbox' name='exclude_form_insurance_billing' value='1'<?php if (!empty($exclude_form_insurance_billing) || ($mode == 'modify' && $exclude_form_insurance_billing == NULL) ) echo ' checked'; ?> />
+   <?php echo xlt('Exclude Form Insurance Billing');
    }?>
   </td>
  </tr>
@@ -594,7 +594,7 @@ foreach ($code_types as $key => $value) {
   <td><span class='bold'><?php echo xlt('Mod'); ?></span></td>
   <td><span class='bold'><?php echo xlt('Act'); ?></span></td>
   <?php if($GLOBALS['bill_to_patient'] ==1) { ?>
-     <td><span class='bold'><?php echo xlt('Exclude'); ?></span></td>
+     <td><span class='bold'><?php echo xlt('Exclude Form Insurance Billing'); ?></span></td>
   <?php } ?>
   <td><span class='bold'><?php echo xlt('Dx Rep'); ?></span></td>
   <td><span class='bold'><?php echo xlt('Serv Rep'); ?></span></td>
@@ -646,7 +646,7 @@ if (!empty($all)) {
     else {
       echo "  <td class='text'>" . ( ($iter["active"]) ? xlt('Yes') : xlt('No')) . "</td>\n";
     }
-    echo "  <td class='text'>" . ($iter["exclude"] ? xlt('Yes') : xlt('No')) . "</td>\n";
+    echo "  <td class='text'>" . ($iter["exclude_form_insurance_billing"] ? xlt('Yes') : xlt('No')) . "</td>\n";
     echo "  <td class='text'>" . ($iter["reportable"] ? xlt('Yes') : xlt('No')) . "</td>\n";
     echo "  <td class='text'>" . ($iter["financial_reporting"] ? xlt('Yes') : xlt('No')) . "</td>\n";
     echo "  <td class='text'>" . text($iter['code_type_name']) . "</td>\n";
