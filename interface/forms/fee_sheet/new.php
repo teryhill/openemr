@@ -1102,7 +1102,7 @@ echo " </tr>\n";
   <?php } else { ?>
     <td class='billcell' align='center' style='display: none'>
   <?php } ?>
-  <b><?php echo xlt('Bill to Patient');?></b></td>
+  <b><?php echo xlt('Exclude From Insurance Billing');?></b></td>
   
   <td class='billcell'><b><?php echo xlt('Description');?></b></td>
  </tr>
