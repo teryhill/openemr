@@ -134,10 +134,10 @@ UPDATE `lang_languages` SET `lang_is_rtl`=1 WHERE `lang_code` IN ('he','ar') OR 
 #EndIf
 
 #IfMissingColumn billing exclude_form_insurance_billing
-  ALTER TABLE billing ADD COLUMN exclude_form_insurance_billing tinyint(1) NOT NULL default 0;
+  ALTER TABLE billing ADD COLUMN exclude_from_insurance_billing tinyint(1) NOT NULL default 0;
 #EndIf
  
 #IfMissingColumn codes exclude_form_insurance_billing
-  ALTER TABLE codes ADD COLUMN exclude_form_insurance_billing tinyint(1) NOT NULL default 0;
+  ALTER TABLE codes ADD COLUMN exclude_from_insurance_billing tinyint(1) NOT NULL default 0;
 #EndIf
 
