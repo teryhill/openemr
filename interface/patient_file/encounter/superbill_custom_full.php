@@ -646,7 +646,9 @@ if (!empty($all)) {
     else {
       echo "  <td class='text'>" . ( ($iter["active"]) ? xlt('Yes') : xlt('No')) . "</td>\n";
     }
-    echo "  <td class='text'>" . ($iter["exclude_from_insurance_billing"] ? xlt('Yes') : xlt('No')) . "</td>\n";
+	if($GLOBALS['bill_to_patient'] ==1) {
+      echo "  <td class='text'>" . ($iter["exclude_from_insurance_billing"] ? xlt('Yes') : xlt('No')) . "</td>\n";
+	}
     echo "  <td class='text'>" . ($iter["reportable"] ? xlt('Yes') : xlt('No')) . "</td>\n";
     echo "  <td class='text'>" . ($iter["financial_reporting"] ? xlt('Yes') : xlt('No')) . "</td>\n";
     echo "  <td class='text'>" . text($iter['code_type_name']) . "</td>\n";
