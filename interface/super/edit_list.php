@@ -307,12 +307,12 @@ function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping=''
   echo "<input type='checkbox' name='opt[$opt_line_no][default]' value='1' " .
     "onclick='defClicked($opt_line_no)' class='optin'$checked />";
   echo "</td>\n";
-
+  if($list_id != 'apptstat') {
     echo "  <td align='center' class='optcell'>";
     echo "<input type='checkbox' name='opt[$opt_line_no][activity]' value='1' " .
         " class='optin'$checked_active />";
     echo "</td>\n";
-  
+  }  
   // Tax rates, contraceptive methods and LBF names have an additional attribute.
   //
   if ($list_id == 'taxrate' || $list_id == 'contrameth' || $list_id == 'lbfnames' || $list_id == 'transactions') {
