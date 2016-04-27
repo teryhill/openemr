@@ -746,7 +746,7 @@ $GLOBALS_METADATA = array(
     'allow_pat_delete' => array(
        xl('Allow Administrators to Delete Patients'),
 	   'bool',                           // data type
-	   '1',                              // default = true 
+	   '0',                              // default = true 
 	   xl('Allow Administrators to Delete Patients')
 
     ),	
