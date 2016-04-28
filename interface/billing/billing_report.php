@@ -1161,10 +1161,12 @@ if ($alertmsg) {
 ?>
 $(document).ready(function() {
     $("#view-log-link").click( function() {
+		top.restoreSession();
         dlgopen('customize_log.php', '_blank', 500, 400);
     });
     
     $('input[type="submit"]').click( function() {
+		top.restoreSession();
         $(this).attr('data-clicked', true);
     });
     
@@ -1178,6 +1180,7 @@ $(document).ready(function() {
             $(this).removeAttr("target");
             return top.restoreSession(); 
         } else {
+			top.restoreSession();
             var w = window.open('about:blank','Popup_Window','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
             this.target = 'Popup_Window';
         }

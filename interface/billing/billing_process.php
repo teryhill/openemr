@@ -290,7 +290,7 @@ function process_form($ar) {
 <?php if (function_exists(html_header_show)) html_header_show(); ?>
 
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-<script type="text/javascript" src="../../library/js/jquery.1.3.2.js"></script>
+<script type="text/javascript" src="../../library/js/jquery-2.2.0.min.js"></script>
 <script>
     $(document).ready( function() {
         $("#close-link").click( function() {
@@ -301,7 +301,7 @@ function process_form($ar) {
 
 </head>
 <body class="body_top">
-<br><p><h3><?php xl('Billing queue results:','e'); ?></h3><a href="#" id="close-link">close</a><ul>
+<br><p><h3><?php echo xlt('Billing queue results'); ?>:</h3><a href="#" id="close-link"><?php echo xlt('Close'); ?></a><ul>
 <?php
 foreach ($bill_info as $infoline) {
   echo nl2br($infoline);
