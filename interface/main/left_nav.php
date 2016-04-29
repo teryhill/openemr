@@ -1475,7 +1475,12 @@ if (!empty($reg)) {
 <div id='current_encounter' style = 'display:none'>
 <b><?php xl('None','e'); ?></b>
 </div>
-
+<?php
+  genPopupsList();
+  echo "<hr />\n";
+  genFindBlock();
+  echo "<hr />\n";
+?>
 <?php if (!empty($GLOBALS['online_support_link'])) { ?>
 <a href='<?php echo $GLOBALS["online_support_link"]; ?>' target="_blank" id="support_link" class='css_button' onClick="top.restoreSession()"><span><?php xl('Online Support','e'); ?></span></a>
 <?php } ?>
