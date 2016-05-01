@@ -133,6 +133,6 @@ ALTER TABLE `lang_languages` ADD COLUMN `lang_is_rtl` TINYINT DEFAULT 0;
 UPDATE `lang_languages` SET `lang_is_rtl`=1 WHERE `lang_code` IN ('he','ar') OR `lang_description` IN('Hebrew','Arabic');
 #EndIf
 
-#IfMissingColumn insurance_companies inactive
-ALTER TABLE `insurance_companies` ADD COLUMN `inactive` varchar(1) NOT NULL default 'N';
+#IfMissingColumn insurance_companies active
+ALTER TABLE `insurance_companies` ADD COLUMN `active` tinyint(1) NOT NULL default '0';
 #EndIf

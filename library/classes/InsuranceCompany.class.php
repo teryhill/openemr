@@ -50,7 +50,7 @@ class InsuranceCompany extends ORDataObject{
 	var $name;
 	var $phone;
 	var $attn;
-	var $inactive;
+	var $active;
 	var $cms_id;
 	var $alt_cms_id;
 	//this is now deprecated use new x12 partners instead
@@ -197,11 +197,11 @@ class InsuranceCompany extends ORDataObject{
 	function get_attn() {
 		return $this->attn;
 	}
-	function set_inactive($inactive) {
-		$this->inactive = $inactive;
+	function set_active($active) {
+		$this->active = $active;
 	}
-	function get_inactive() {
-		return $this->inactive;
+	function get_active() {
+		return $this->active;
 	}
 	function set_cms_id($id) {
 		$this->cms_id = $id;

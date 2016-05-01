@@ -13,7 +13,7 @@
 		<td><a href="{$CURRENT_ACTION}action=edit&id={$insurancecompany->id}" onsubmit="return top.restoreSession()">{$insurancecompany->name}&nbsp;</a></td>
 		<td>{$insurancecompany->address->city} {$insurancecompany->address->state|upper}&nbsp;</td>
 		<td>{$insurancecompany->get_x12_default_partner_name()}&nbsp;</td>
-		<td>{$insurancecompany->get_inactive()}&nbsp;</td>
+		<td>{if $insurancecompany->get_active() < 1} YES {/if} &nbsp;</td>
 	</tr>
 	{foreachelse}
 	<tr class="center_display">
