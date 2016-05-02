@@ -134,5 +134,5 @@ UPDATE `lang_languages` SET `lang_is_rtl`=1 WHERE `lang_code` IN ('he','ar') OR 
 #EndIf
 
 #IfMissingColumn insurance_companies active
-ALTER TABLE `insurance_companies` ADD COLUMN `active` tinyint(1) NOT NULL default '0';
+ALTER TABLE `insurance_companies` ADD COLUMN `active` tinyint(1) NOT NULL default '1';
 #EndIf
