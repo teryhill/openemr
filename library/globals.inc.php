@@ -815,18 +815,7 @@ $GLOBALS_METADATA = array(
       ),   
       '2',                              // default = 2
       xl('This will Display the Invoice Number in the Sales Report or the Patient Name and ID or Patient Name and Invoice Number.')
-    ),
-
-    'cash_receipts_report_invoice' => array(
-      xl('Display Invoice Number or Patient Name in the Cash Reciept Report'),
-      array(
-        '0' => xl('Invoice Number'),
-        '1' => xl('Patient Name'),  
-      ),   
-      '0',                              // default = 0
-      xl('This will Display the Invoice Number in the Cash Reciepts Report or the Patient Name.')
-    ),
-	
+    ), 
   ),
     
   // Billing Tab
