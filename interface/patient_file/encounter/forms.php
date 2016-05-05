@@ -580,7 +580,7 @@ if ( $esign->isButtonViewable() ) {
 }
 ?>
 
-<?php if ($GLOBALS['athletic_team'] && $GLOBALS['concurrent_layout'] == 2) { ?>
+<?php if ($GLOBALS['concurrent_layout'] == 2) { ?>
 <script language='JavaScript'>
  // If this is the top frame then show the encounters list in the bottom frame.
  // var n  = parent.parent.left_nav;
