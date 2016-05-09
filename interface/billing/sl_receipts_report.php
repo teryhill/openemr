@@ -49,7 +49,7 @@ require_once($GLOBALS['fileroot'].'/custom/code_types.inc.php');
   }
 
   function bucks($amount) {
-    if ($amount) echo oeFormatMoney($amount);
+    if ($amount) echo attr(oeFormatMoney($amount));
   }
 
   if (! acl_check('acct', 'rep')) die(xlt("Unauthorized access."));
@@ -436,11 +436,11 @@ function sel_diagnosis() {
       $sqlBindArray = array();
       $query = "SELECT a.pid, a.encounter, a.post_time, a.code, a.modifier, a.pay_amount, " .
         "fe.date, fe.id AS trans_id, fe.provider_id AS docid, fe.invoice_refno, s.deposit_date, s.payer_id, " .
-        "b.provider_id, concat(lname, ' ', fname) as 'pat_fulname' " .
+        "b.provider_id, concat(p.lname, ' ', p.fname) as 'pat_fulname' " .
         "FROM ar_activity AS a " .
         "JOIN form_encounter AS fe ON fe.pid = a.pid AND fe.encounter = a.encounter " .
         "LEFT OUTER JOIN ar_session AS s ON s.session_id = a.session_id " .
-        "LEFT OUTER JOIN patient_data ON patient_data.pid = a.pid " .
+        "LEFT OUTER JOIN patient_data AS p ON p.pid = a.pid " .
         "LEFT OUTER JOIN billing AS b ON b.pid = a.pid AND b.encounter = a.encounter AND " .
         "b.code = a.code AND b.modifier = a.modifier AND b.activity = 1 AND " .
         "b.code_type != 'COPAY' AND b.code_type != 'TAX' " .
@@ -528,7 +528,7 @@ function sel_diagnosis() {
       $insconame = '';
       if ($form_proc_codefull  && $row['project_id']) {
         $tmp = sqlQuery("SELECT name FROM insurance_companies WHERE " .
-          "id = '" . $row['project_id'] . "'");
+          "id = ?", array($row['project_id']));
         $insconame = $tmp['name'];
       }
 
@@ -550,11 +550,11 @@ function sel_diagnosis() {
    <?php echo xlt('Totals for ') . text($docname) ?>
   </td>
   <td align="right">
-   <?php text(bucks($doctotal1)) ?>
+   <?php bucks($doctotal1) ?>
   </td>
 <?php if ($form_procedures) { ?>
   <td align="right">
-   <?php text(bucks($doctotal2)) ?>
+   <?php bucks($doctotal2) ?>
   </td>
 <?php } ?>
  </tr>
@@ -591,7 +591,7 @@ function sel_diagnosis() {
             list($patient_id, $encounter_id) = explode(".", $row['invnumber']);
             $tmp = sqlQuery("SELECT SUM(fee) AS sum FROM billing WHERE " .
               "pid = ? AND encounter = ? AND " .
-              "code_type = ? AND code = ? AND activity = 1", array($patient_id,$encounter_id,form_proc_codetype,$form_proc_code));
+              "code_type = ? AND code = ? AND activity = 1", array($patient_id,$encounter_id,$form_proc_codetype,$form_proc_code));
             bucks($tmp['sum']);
           echo "  </td>\n";
         }
@@ -607,11 +607,11 @@ function sel_diagnosis() {
   </td>
 <?php } ?>
   <td class="detail" align="right">
-   <?php text(bucks($amount1)) ?>
+   <?php bucks($amount1) ?>
   </td>
 <?php if ($form_procedures) { ?>
   <td class="detail" align="right">
-   <?php text(bucks($amount2)) ?>
+   <?php bucks($amount2) ?>
   </td>
 <?php } ?>
  </tr>
@@ -629,11 +629,11 @@ function sel_diagnosis() {
    <?php echo xlt('Totals for ') . text($docname) ?>
   </td>
   <td align="right">
-   <?php text(bucks($doctotal1)) ?>
+   <?php bucks($doctotal1) ?>
   </td>
 <?php if ($form_procedures) { ?>
   <td align="right">
-   <?php text(bucks($doctotal2)) ?>
+   <?php bucks($doctotal2) ?>
   </td>
 <?php } ?>
  </tr>
@@ -643,11 +643,11 @@ function sel_diagnosis() {
    <?php echo xlt('Grand Totals') ?>
   </td>
   <td align="right">
-   <?php text(bucks($grandtotal1)) ?>
+   <?php bucks($grandtotal1) ?>
   </td>
 <?php if ($form_procedures) { ?>
   <td align="right">
-   <?php text(bucks($grandtotal2)) ?>
+   <?php bucks($grandtotal2) ?>
   </td>
 <?php } ?>
  </tr>
