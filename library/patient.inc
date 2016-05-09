@@ -78,7 +78,7 @@ function getInsuranceProviders() {
     $returnval = array();
 
     if (true) {
-        $sql = "select name, id from insurance_companies order by name, id";
+        $sql = "select name, id from insurance_companies where active = 1 order by name, id ";
         $rez = sqlStatement($sql);
         for($iter=0; $row=sqlFetchArray($rez); $iter++) {
             $returnval[$row['id']] = $row['name'];
@@ -93,7 +93,7 @@ function getInsuranceProviders() {
         $sql = "select insurance_companies.name, insurance_companies.id, " .
           "addresses.zip, addresses.line1 " .
           "from insurance_companies, addresses " .
-          "where addresses.foreign_id = insurance_companies.id and active == '1'".
+          "where addresses.foreign_id = insurance_companies.id " .
           "order by insurance_companies.name, addresses.zip";
 
         $rez = sqlStatement($sql);
@@ -115,7 +115,7 @@ function getInsuranceProvidersExtra() {
         $sql = "select insurance_companies.name, insurance_companies.id, " .
           "addresses.zip, addresses.line1, addresses.state " .
           "from insurance_companies, addresses " .
-          "where addresses.foreign_id = insurance_companies.id and active == '1'".
+          "where addresses.foreign_id = insurance_companies.id and active = 1 ".
           "order by insurance_companies.name, addresses.zip";
 
         $rez = sqlStatement($sql);
@@ -892,7 +892,7 @@ function newPatientData(    $db_id="",
         genericval1 = '$genericval1',
         genericname2 = '$genericname2',
         genericval2 = '$genericval2',
-        billing_note= '$billing_note';
+        billing_note= '$billing_note',
         phone_cell = '$phone_cell',
         pharmacy_id = '$pharmacy_id',
         hipaa_mail = '$hipaa_mail',

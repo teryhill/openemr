@@ -875,6 +875,13 @@ $GLOBALS_METADATA = array(
      xl('Display the Encounter Billing Note or Patient Billing Note or Both in the Billing Screen.')
     ),
   
+   'inactivate_insurance_companies' => array(
+      xl('Allow Insurance Companies to be Inactivated'),
+      'bool',
+      '0',                              // default
+      xl('This Will Allow Individual Insurance Companies to be Inactivated')
+    ),
+  
   	'use_custom_statement' => array(
       xl('Use Custom Statement'),
       'bool',                           // data type

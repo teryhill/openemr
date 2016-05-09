@@ -92,6 +92,7 @@ This is now deprecated use the newer x12 partner code instead
 		{html_options name="x12_default_partner_id" options=$x12_partners selected=$insurancecompany->get_x12_default_partner_id()}
 	</td>
 </tr>
+    {php} if ($GLOBALS['inactivate_insurance_companies']) { {/php}
     <tr>
      <td VALIGN="MIDDLE" >
       <label for='active' > {xl t='Inactivate'} </label>
@@ -100,6 +101,7 @@ This is now deprecated use the newer x12 partner code instead
       <input  type='checkbox' name='active' value="1"{if $insurancecompany->get_active() < 1} checked{/if} / >
       </td>
     </tr>
+    {php} } {/php}
 <tr height="25"><td colspan=2>&nbsp;</td></tr>
 <tr>
 	<td colspan="2"><a href="javascript:submit_insurancecompany();" class="css_button"><span>{xl t='Save'}</span></a><a href="controller.php?practice_settings&insurance_company&action=list"  {php} if (!$GLOBALS['concurrent_layout']) echo "target='Main'"; {/php} class="css_button" onclick="top.restoreSession()">
