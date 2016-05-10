@@ -303,6 +303,10 @@ if ($fres) {
         title='<?php echo xla('Click here to choose a date'); ?>'>
      </td>
     </tr>
+	<tr>
+     <td class='text' colspan='2' style='padding-top:1em'>
+	 </td>
+    </tr> 
    </table>
 
   </td>
