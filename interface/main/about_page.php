@@ -30,6 +30,7 @@ $fake_register_globals=false;
 $sanitize_all_escapes=true;
 
 require_once("../globals.php");
+$link_version = "http://open-emr.org/wiki/index.php/OpenEMR_" . $v_major . "." . $v_minor . "." . $v_patch . "_Users_Guide" ;
 ?>
  <html>
   <head>
@@ -43,7 +44,7 @@ require_once("../globals.php");
      <span class="text"><?php  echo xlt('Support Phone Number'); ?>: <?php echo $GLOBALS['support_phone_number'] ?></span><br><br>
     <?php } ?>
    </div>
-   <a href="http://open-emr.org/wiki/index.php/OpenEMR_4.2.2_Users_Guide" target="_blank" class="css_button"><span><?php echo xlt('User Manual'); ?></span></a><br><br>
+   <a href=<?php echo text($link_version) ?> target="_blank" class="css_button"><span><?php echo xlt('User Manual'); ?></span></a><br><br>
    <?php if (!empty($GLOBALS['online_support_link'])) { ?>
     <a href='<?php echo $GLOBALS["online_support_link"]; ?>' target="_blank" class="css_button"><span><?php echo xlt('Online Support'); ?></span></a><br><br>
    <?php } ?>
