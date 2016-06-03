@@ -6,18 +6,14 @@
 		<th width="140px"><b>{xl t='Name'}</b></th>
 		<th width="300px"><b>{xl t='City, State'}</b></th>
 		<th><b>{xl t='Default X12 Partner'}</b></th>
-		{php} if ($GLOBALS['inactivate_insurance_companies']) { {/php}
 		<th><b>{xl t='Deactivated'}</b></th>
-		{php} } {/php}
 	</tr>
 	{foreach from=$icompanies item=insurancecompany}
 	<tr height="22">
 		<td><a href="{$CURRENT_ACTION}action=edit&id={$insurancecompany->id}" onsubmit="return top.restoreSession()">{$insurancecompany->name}&nbsp;</a></td>
 		<td>{$insurancecompany->address->city} {$insurancecompany->address->state|upper}&nbsp;</td>
 		<td>{$insurancecompany->get_x12_default_partner_name()}&nbsp;</td>
-		{php} if ($GLOBALS['inactivate_insurance_companies']) { {/php}
         <td>{if $insurancecompany->get_active() < 1} {xl t='YES'} {/if} &nbsp;</td>
-		{php} } {/php}
 	</tr>
 	{foreachelse}
 	<tr class="center_display">

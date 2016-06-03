@@ -78,7 +78,7 @@ function getInsuranceProviders() {
     $returnval = array();
 
     if (true) {
-        $sql = "select name, id from insurance_companies where active = 1 order by name, id ";
+        $sql = "select name, id from insurance_companies where insurance_companies.active = 1 order by name, id ";
         $rez = sqlStatement($sql);
         for($iter=0; $row=sqlFetchArray($rez); $iter++) {
             $returnval[$row['id']] = $row['name'];
@@ -115,7 +115,7 @@ function getInsuranceProvidersExtra() {
         $sql = "select insurance_companies.name, insurance_companies.id, " .
           "addresses.zip, addresses.line1, addresses.state " .
           "from insurance_companies, addresses " .
-          "where addresses.foreign_id = insurance_companies.id and active = 1 ".
+          "where addresses.foreign_id = insurance_companies.id and insurance_companies.active = 1 ".
           "order by insurance_companies.name, addresses.zip";
 
         $rez = sqlStatement($sql);
