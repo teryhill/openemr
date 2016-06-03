@@ -243,7 +243,7 @@ function manage_tracker_status($apptdate,$appttime,$eid,$pid,$user,$status='',$r
   }
   #Ensure the entry in calendar appt entry has been updated.
   $pc_appt =  sqlQuery("SELECT `pc_apptstatus`, `pc_room` FROM `openemr_postcalendar_events` WHERE `pc_eid` = ?", array($eid));
-  if ($status != $pc_appt['pc_apptstatus']) {
+  if ($status != $pc_appt['pc_apptstatus'] && $_POST['form_action'] == "duplicate") {
     sqlStatement("UPDATE `openemr_postcalendar_events` SET `pc_apptstatus` = ? WHERE `pc_eid` = ?", array($status,$eid));
   }
   if ($room != $pc_appt['pc_room']) {
